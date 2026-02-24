@@ -14,10 +14,10 @@
 package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.drive.DriveConstants.*;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.Constants;
 import frc.robot.util.SparkUtil;
 import java.util.Arrays;
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
@@ -31,8 +31,10 @@ public class ModuleIOSim implements ModuleIO {
 
   private boolean driveClosedLoop = false;
   private boolean turnClosedLoop = false;
-  private final PIDController driveController = new PIDController(driveSimP, 0, driveSimD);
-  private final PIDController turnController = new PIDController(turnSimP, 0, turnSimD);
+  private final PIDController driveController =
+      new PIDController(Constants.DriveConstants.driveSimP, 0, Constants.DriveConstants.driveSimD);
+  private final PIDController turnController =
+      new PIDController(Constants.DriveConstants.turnSimP, 0, Constants.DriveConstants.turnSimD);
   private double driveFFVolts = 0.0;
   private double driveAppliedVolts = 0.0;
   private double turnAppliedVolts = 0.0;
@@ -42,11 +44,11 @@ public class ModuleIOSim implements ModuleIO {
     this.driveMotor =
         moduleSimulation
             .useGenericMotorControllerForDrive()
-            .withCurrentLimit(Amps.of(driveMotorCurrentLimit));
+            .withCurrentLimit(Amps.of(Constants.DriveConstants.driveMotorCurrentLimit));
     this.turnMotor =
         moduleSimulation
             .useGenericControllerForSteer()
-            .withCurrentLimit(Amps.of(turnMotorCurrentLimit));
+            .withCurrentLimit(Amps.of(Constants.DriveConstants.turnMotorCurrentLimit));
 
     // Enable wrapping for turn PID
     turnController.enableContinuousInput(-Math.PI, Math.PI);
@@ -113,7 +115,9 @@ public class ModuleIOSim implements ModuleIO {
   @Override
   public void setDriveVelocity(double velocityRadPerSec) {
     driveClosedLoop = true;
-    driveFFVolts = driveSimKs * Math.signum(velocityRadPerSec) + driveSimKv * velocityRadPerSec;
+    driveFFVolts =
+        Constants.DriveConstants.driveSimKs * Math.signum(velocityRadPerSec)
+            + Constants.DriveConstants.driveSimKv * velocityRadPerSec;
     driveController.setSetpoint(velocityRadPerSec);
   }
 
