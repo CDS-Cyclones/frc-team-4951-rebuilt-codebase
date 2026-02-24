@@ -16,10 +16,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.util.TunableValues.TunableNum;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
-import frc.robot.util.TunableValues.TunableNum;
 
 public final class Constants {
   private Constants() {}
@@ -99,7 +99,7 @@ public final class Constants {
     // TODO: Tune
     public static final TunableNum driveKp = new TunableNum("Drive/drive/p", 0.0);
     public static final TunableNum driveKd = new TunableNum("Drive/drive/d", 0.0);
-    //TODO: Run FeedForward Characterization
+    // TODO: Run FeedForward Characterization
     public static final double driveKs = 0.0;
     public static final double driveKv = 0.1;
     public static final double driveSimP = 0.05;
@@ -119,8 +119,9 @@ public final class Constants {
     public static final double turnEncoderVelocityFactor = (2 * Math.PI) / 60.0; // RPM -> Rad/Sec
 
     // Turn PID configuration
-    public static final double turnKp = 2.0;
-    public static final double turnKd = 0.0;
+    //Todo: Tune
+    public static final TunableNum turnKp = new TunableNum("Drive/turn/p", 2.0);
+    public static final TunableNum turnKd = new TunableNum("Drive/turn/d", 0.0);
     public static final double turnSimP = 10.0;
     public static final double turnSimD = 0.2;
     public static final double turnPIDMinInput = 0; // Radians

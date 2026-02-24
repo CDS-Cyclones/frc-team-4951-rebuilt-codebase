@@ -13,9 +13,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import lombok.Setter;
 
-/**
- * An API to handle tunable dashboard values.
- */
+/** An API to handle tunable dashboard values. */
 public class TunableValues {
   @Setter private static boolean tuningMode = false;
 
@@ -24,29 +22,30 @@ public class TunableValues {
     private double defaultValue;
     private double previousValue;
 
-    /** 
-     * A number that can be tuned from the dashboard in test mode.
-     * Acts as a constant in teleop/autonomous modes.
+    /**
+     * A number that can be tuned from the dashboard in test mode. Acts as a constant in
+     * teleop/autonomous modes.
      */
     public TunableNum(String path, double defaultValue) {
-      this.entry = NetworkTableInstance
-        .getDefault()
-        .getDoubleTopic("/TunableValues/" + path)
-        .getEntry(defaultValue);
+      this.entry =
+          NetworkTableInstance.getDefault()
+              .getDoubleTopic("/TunableValues/" + path)
+              .getEntry(defaultValue);
       entry.setDefault(defaultValue);
       this.defaultValue = defaultValue;
       this.previousValue = defaultValue;
     }
 
     public void onChange(Runnable toRun) {
-      new Trigger(() -> {
-        if (!tuningMode)
-          return false;
-        var latest = get();
-        boolean hasChanged = latest != previousValue;
-        previousValue = latest;
-        return hasChanged;
-      }).onTrue(Commands.runOnce(toRun).ignoringDisable(true));
+      new Trigger(
+              () -> {
+                if (!tuningMode) return false;
+                var latest = get();
+                boolean hasChanged = latest != previousValue;
+                previousValue = latest;
+                return hasChanged;
+              })
+          .onTrue(Commands.runOnce(toRun).ignoringDisable(true));
     }
 
     public void setDefault(double defaultValue) {
@@ -68,27 +67,29 @@ public class TunableValues {
     private boolean defaultValue;
     private boolean previousValue = false;
 
-    /** 
-     * A boolean that can be tuned from the dashboard in test mode.
-     * Acts as a constant in teleop/autonomous modes.
+    /**
+     * A boolean that can be tuned from the dashboard in test mode. Acts as a constant in
+     * teleop/autonomous modes.
      */
     public TunableBool(String path, boolean defaultValue) {
-      this.entry = NetworkTableInstance.getDefault()
-        .getBooleanTopic("/TunableValues/" + path)
-        .getEntry(defaultValue);
+      this.entry =
+          NetworkTableInstance.getDefault()
+              .getBooleanTopic("/TunableValues/" + path)
+              .getEntry(defaultValue);
       entry.setDefault(defaultValue);
       this.defaultValue = defaultValue;
     }
 
     public void onChange(Runnable toRun) {
-      new Trigger(() -> {
-        if (!tuningMode)
-          return false;
-        var latest = get();
-        boolean hasChanged = latest != previousValue;
-        previousValue = latest;
-        return hasChanged;
-      }).onTrue(Commands.runOnce(toRun).ignoringDisable(true));
+      new Trigger(
+              () -> {
+                if (!tuningMode) return false;
+                var latest = get();
+                boolean hasChanged = latest != previousValue;
+                previousValue = latest;
+                return hasChanged;
+              })
+          .onTrue(Commands.runOnce(toRun).ignoringDisable(true));
     }
 
     public void setDefault(boolean defaultValue) {
