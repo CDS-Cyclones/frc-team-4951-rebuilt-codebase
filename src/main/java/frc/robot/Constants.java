@@ -82,7 +82,7 @@ public final class Constants {
     public static final int backRightTurnCanId = 2;
 
     // Drive motor configuration
-    public static final int driveMotorCurrentLimit = 50;
+    public static final int driveMotorCurrentLimit = 80;
     public static final double wheelRadiusMeters = Units.inchesToMeters(3.0);
     public static final double driveMotorReduction =
         (45.0 * 22.0) / (14.0 * 15.0); // MAXSwerve with 14 pinion teeth and 22 spur teeth
@@ -95,6 +95,7 @@ public final class Constants {
         (2 * Math.PI) / 60.0 / driveMotorReduction; // Rotor RPM -> Wheel Rad/Sec
 
     // Drive PID configuration
+    // TODO: Tune
     public static final double driveKp = 0.0;
     public static final double driveKd = 0.0;
     public static final double driveKs = 0.0;
@@ -106,7 +107,7 @@ public final class Constants {
 
     // Turn motor configuration
     public static final boolean turnInverted = false;
-    public static final int turnMotorCurrentLimit = 20;
+    public static final int turnMotorCurrentLimit = 40;
     public static final double turnMotorReduction = 9424.0 / 203.0;
     public static final DCMotor turnGearbox = DCMotor.getNeo550(1);
 
@@ -118,15 +119,15 @@ public final class Constants {
     // Turn PID configuration
     public static final double turnKp = 2.0;
     public static final double turnKd = 0.0;
-    public static final double turnSimP = 8.0;
-    public static final double turnSimD = 0.0;
+    public static final double turnSimP = 10.0;
+    public static final double turnSimD = 0.2;
     public static final double turnPIDMinInput = 0; // Radians
     public static final double turnPIDMaxInput = 2 * Math.PI; // Radians
 
     // PathPlanner configuration
-    public static final double robotMassKg = 74.088;
-    public static final double robotMOI = 6.883;
-    public static final double wheelCOF = 1.2;
+    public static final double robotMassKg = 59.0531907;
+    public static final double robotMOI = 7.31266;
+    public static final double wheelCOF = 1.6;
 
     public static final RobotConfig ppConfig =
         new RobotConfig(
