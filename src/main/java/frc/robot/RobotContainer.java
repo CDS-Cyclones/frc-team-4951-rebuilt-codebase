@@ -18,6 +18,10 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.*;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOLimelight;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
@@ -32,6 +36,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final Vision vision;
   private SwerveDriveSimulation driveSimulation = null;
 
   // Controller
@@ -52,6 +57,11 @@ public class RobotContainer {
                 new ModuleIOSpark(1),
                 new ModuleIOSpark(2),
                 new ModuleIOSpark(3));
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIOLimelight(Constants.VisionConstants.camera0Name, drive::getRotation));
+
         break;
 
       case SIM:
@@ -69,6 +79,14 @@ public class RobotContainer {
                 new ModuleIOSim(driveSimulation.getModules()[1]),
                 new ModuleIOSim(driveSimulation.getModules()[2]),
                 new ModuleIOSim(driveSimulation.getModules()[3]));
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIOPhotonVisionSim(
+                    "camera",
+                    Constants.VisionConstants.botToCamTransformSim,
+                    driveSimulation::getSimulatedDriveTrainPose));
+
         break;
 
       default:
@@ -80,6 +98,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+
         break;
     }
 

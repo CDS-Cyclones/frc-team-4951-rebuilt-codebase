@@ -49,6 +49,7 @@ public class Drive extends SubsystemBase {
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
   private final SysIdRoutine sysId;
+
   private final Alert gyroDisconnectedAlert =
       new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
 
@@ -293,7 +294,12 @@ public class Drive extends SubsystemBase {
 
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
-    poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+    odometryLock.lock();
+    try {
+      poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+    } finally {
+      odometryLock.unlock();
+    }
   }
 
   /** Adds a new timestamped vision measurement. */
@@ -301,8 +307,14 @@ public class Drive extends SubsystemBase {
       Pose2d visionRobotPoseMeters,
       double timestampSeconds,
       Matrix<N3, N1> visionMeasurementStdDevs) {
-    poseEstimator.addVisionMeasurement(
-        visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+    odometryLock.lock();
+    try {
+      poseEstimator.addVisionMeasurement(
+          visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+      System.out.println("Added vision measurement: " + visionRobotPoseMeters);
+    } finally {
+      odometryLock.unlock();
+    }
   }
 
   /** Returns the maximum linear speed in meters per sec. */
@@ -313,5 +325,14 @@ public class Drive extends SubsystemBase {
   /** Returns the maximum angular speed in radians per sec. */
   public double getMaxAngularSpeedRadPerSec() {
     return Constants.DriveConstants.maxSpeedMetersPerSec / Constants.DriveConstants.driveBaseRadius;
+  }
+
+  public void accept(
+      Pose2d visionRobotPoseMeters,
+      double timestampSeconds,
+      Matrix<N3, N1> visionMeasurementStdDevs) {
+    poseEstimator.addVisionMeasurement(
+        visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+    System.out.println("Vision measurement added: " + visionRobotPoseMeters);
   }
 }

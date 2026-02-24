@@ -149,7 +149,10 @@ public class ModuleIOSpark implements ModuleIO {
         .positionWrappingEnabled(true)
         .positionWrappingInputRange(
             Constants.DriveConstants.turnPIDMinInput, Constants.DriveConstants.turnPIDMaxInput)
-        .pid(Constants.DriveConstants.turnKp.getAsDouble(), 0.0, Constants.DriveConstants.turnKd.getAsDouble());
+        .pid(
+            Constants.DriveConstants.turnKp.getAsDouble(),
+            0.0,
+            Constants.DriveConstants.turnKd.getAsDouble());
     turnConfig
         .signals
         .absoluteEncoderPositionAlwaysOn(true)
