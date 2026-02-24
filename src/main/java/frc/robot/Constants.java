@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
+import frc.robot.util.TunableValues.TunableNum;
 
 public final class Constants {
   private Constants() {}
@@ -96,8 +97,9 @@ public final class Constants {
 
     // Drive PID configuration
     // TODO: Tune
-    public static final double driveKp = 0.0;
-    public static final double driveKd = 0.0;
+    public static final TunableNum driveKp = new TunableNum("Drive/drive/p", 0.0);
+    public static final TunableNum driveKd = new TunableNum("Drive/drive/d", 0.0);
+    //TODO: Run FeedForward Characterization
     public static final double driveKs = 0.0;
     public static final double driveKv = 0.1;
     public static final double driveSimP = 0.05;

@@ -109,7 +109,7 @@ public class ModuleIOSpark implements ModuleIO {
     driveConfig
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pid(Constants.DriveConstants.driveKp, 0.0, Constants.DriveConstants.driveKd);
+        .pid(Constants.DriveConstants.driveKp.getAsDouble(), 0.0, Constants.DriveConstants.driveKd.getAsDouble());
     driveConfig
         .signals
         .primaryEncoderPositionAlwaysOn(true)
