@@ -311,7 +311,7 @@ public class Drive extends SubsystemBase {
     try {
       poseEstimator.addVisionMeasurement(
           visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
-      System.out.println("Added vision measurement: " + visionRobotPoseMeters);
+      // System.out.println("Added vision measurement: " + visionRobotPoseMeters);
     } finally {
       odometryLock.unlock();
     }
@@ -325,14 +325,5 @@ public class Drive extends SubsystemBase {
   /** Returns the maximum angular speed in radians per sec. */
   public double getMaxAngularSpeedRadPerSec() {
     return Constants.DriveConstants.maxSpeedMetersPerSec / Constants.DriveConstants.driveBaseRadius;
-  }
-
-  public void accept(
-      Pose2d visionRobotPoseMeters,
-      double timestampSeconds,
-      Matrix<N3, N1> visionMeasurementStdDevs) {
-    poseEstimator.addVisionMeasurement(
-        visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
-    System.out.println("Vision measurement added: " + visionRobotPoseMeters);
   }
 }
