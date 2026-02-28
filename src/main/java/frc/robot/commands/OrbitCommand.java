@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -28,6 +29,7 @@ public class OrbitCommand extends Command {
   // drive input scales tangential motion through the center
   private static final double JOYSTICK_DEADBAND = 0.1;
   private static final double MAX_TANGENTIAL_SPEED_METERS_PER_SEC = 3.5;
+  private static final double RIGHT_OFFSET_METERS = Units.inchesToMeters(3.0);
   // target radius of how far we wanna orbit from
   private static final double TARGET_RADIUS_METERS = 1.5;
   private static final double MIN_CONTROL_RADIUS_METERS = 0.2;
@@ -82,7 +84,7 @@ public class OrbitCommand extends Command {
     Translation2d robotOffset = robotPose.getTranslation().minus(orbitCenter);
     double startRadius = robotOffset.getNorm();
 
-    if (startRadius < Math.pow(10,-5)) {
+    if (startRadius < Math.pow(10, -5)) {
       DriverStation.reportWarning(
           "OrbitCommand cannot start while robot is at the orbit center.", false);
       return;
@@ -161,7 +163,7 @@ public class OrbitCommand extends Command {
         ChassisSpeeds.fromFieldRelativeSpeeds(
             fieldVelocity.getX(), fieldVelocity.getY(), omega, drive.getRotation()));
     // end stolen from gpt stuff
-  
+
   }
 
   @Override
@@ -187,6 +189,15 @@ public class OrbitCommand extends Command {
 
     Translation2d firstTranslation = firstTag.get().getTranslation().toTranslation2d();
     Translation2d secondTranslation = secondTag.get().getTranslation().toTranslation2d();
-    return Optional.of(firstTranslation.interpolate(secondTranslation, 0.5));
+    Translation2d midpoint = firstTranslation.interpolate(secondTranslation, 0.5);
+    Rotation2d averageFacing =
+        firstTag
+            .get()
+            .getRotation()
+            .toRotation2d()
+            .interpolate(secondTag.get().getRotation().toRotation2d(), 0.5);
+    Translation2d rightOffset =
+        new Translation2d(RIGHT_OFFSET_METERS, averageFacing.minus(Rotation2d.fromDegrees(90.0)));
+    return Optional.of(midpoint.plus(rightOffset));
   }
 }
