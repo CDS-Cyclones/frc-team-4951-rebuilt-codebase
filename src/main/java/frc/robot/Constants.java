@@ -68,14 +68,13 @@ public final class Constants {
         };
 
     // Zeroed rotation values for each module, see setup instructions
-    public static final Rotation2d frontLeftZeroRotation = new Rotation2d(-2.593);
-    public static final Rotation2d frontRightZeroRotation = new Rotation2d(2.054);
-    public static final Rotation2d backLeftZeroRotation = new Rotation2d(1.012);
-    public static final Rotation2d backRightZeroRotation = new Rotation2d(0.006);
+    public static final Rotation2d frontLeftZeroRotation = new Rotation2d(-0.9685);
+    public static final Rotation2d frontRightZeroRotation = new Rotation2d(-1.0605);
+    public static final Rotation2d backLeftZeroRotation = new Rotation2d(-1.133);
+    public static final Rotation2d backRightZeroRotation = new Rotation2d(1.536);
 
     // Device CAN IDs
-    // TODO: Fix Pigeon ID
-    public static final int pigeonCanId = 9;
+    public static final int pigeonCanId = 60;
 
     public static final int frontLeftDriveCanId = 7;
     public static final int backLeftDriveCanId = 5;
