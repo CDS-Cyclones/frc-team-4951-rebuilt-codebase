@@ -134,20 +134,24 @@ public class OrbitCommand extends Command {
             1.0 - (Math.abs(headingErrorRadians) / HEADING_ERROR_SLOWDOWN_RADIANS),
             MIN_TRANSLATION_SCALE,
             1.0);
-    // stolen from gpt, it told me to add this ¯\_(ツ)_/¯
+    // vtotal^2 = vradial^2 + vt^2 
+    // this solves for max tangential component
     double maxTangentialSpeedFromLinearLimit =
         Math.sqrt(
             Math.max(
                 0.0,
                 Math.pow(drive.getMaxLinearSpeedMetersPerSec(), 2) - Math.pow(radialSpeed, 2)));
+    // clamps so velocity never goes beyond linear speed
     double tangentialSpeed =
         MathUtil.clamp(
             requestedTangentialSpeed,
             -maxTangentialSpeedFromLinearLimit,
             maxTangentialSpeedFromLinearLimit);
+    // constructs final field-relative velocity vector, vt component moves arobot around 
+    // radial moves toward or away from the center to keep the radius
     Translation2d fieldVelocity =
         tangentUnit.times(tangentialSpeed * translationScale).plus(radialUnit.times(radialSpeed));
-
+// heading correction to align robot w heading
     double headingFeedback =
         headingController.calculate(
             robotPose.getRotation().getRadians(), desiredHeading.getRadians());
@@ -158,11 +162,9 @@ public class OrbitCommand extends Command {
             headingFeedback + headingFeedforward,
             -MAX_ANGULAR_SPEED_RAD_PER_SEC,
             MAX_ANGULAR_SPEED_RAD_PER_SEC);
-
     drive.runVelocity(
         ChassisSpeeds.fromFieldRelativeSpeeds(
             fieldVelocity.getX(), fieldVelocity.getY(), omega, drive.getRotation()));
-    // end stolen from gpt stuff
 
   }
 
