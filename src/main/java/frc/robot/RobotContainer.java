@@ -107,7 +107,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
-        intake = new Intake(new IntakeIOSim());
+        intake = new Intake(new IntakeIO());
         break;
     }
 
