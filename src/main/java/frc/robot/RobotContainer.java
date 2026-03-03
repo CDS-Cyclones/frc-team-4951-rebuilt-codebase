@@ -21,6 +21,7 @@ import frc.robot.commands.ManipulationCommands;
 import frc.robot.commands.OrbitCommand;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOSparkFlex;
 import frc.robot.subsystems.vision.Vision;
@@ -107,7 +108,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
-        intake = new Intake(new IntakeIO());
+        intake = new Intake(new IntakeIO() {});
         break;
     }
 
