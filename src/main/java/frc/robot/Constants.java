@@ -218,5 +218,6 @@ public final class Constants {
     // TODO: Set final CAN ID
     public static final int kCanId = 0;
     public static final int kCurrentLimit = 40;
+    public static final double intakeSpeed = 0.8;
   }
 }
