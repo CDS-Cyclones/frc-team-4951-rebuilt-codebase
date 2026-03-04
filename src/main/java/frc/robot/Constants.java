@@ -213,4 +213,10 @@ public final class Constants {
     public static double angularStdDevMegatag2Factor =
         Double.POSITIVE_INFINITY; // No rotation data available
   }
+
+  public class IntakeConstants {
+    // TODO: Set final CAN ID
+    public static final int kCanId = 0;
+    public static final int kCurrentLimit = 40;
+  }
 }

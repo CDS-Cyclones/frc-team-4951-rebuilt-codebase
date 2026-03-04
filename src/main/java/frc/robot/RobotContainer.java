@@ -19,6 +19,9 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.OrbitCommand;
 import frc.robot.subsystems.drive.*;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOSparkFlex;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
@@ -34,10 +37,13 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
+@SuppressWarnings("unused")
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Vision vision;
+  private final Intake intake;
+
   private SwerveDriveSimulation driveSimulation = null;
 
   // Controller
@@ -62,7 +68,7 @@ public class RobotContainer {
             new Vision(
                 drive::addVisionMeasurement,
                 new VisionIOLimelight(Constants.VisionConstants.camera0Name, drive::getRotation));
-
+        intake = new Intake(new IntakeIOSparkFlex());
         break;
 
       case SIM:
@@ -87,7 +93,7 @@ public class RobotContainer {
                     "camera",
                     Constants.VisionConstants.botToCamTransformSim,
                     driveSimulation::getSimulatedDriveTrainPose));
-
+        intake = new Intake(new IntakeIOSim());
         break;
 
       default:
@@ -100,7 +106,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
-
+        intake = new Intake(new IntakeIOSim());
         break;
     }
 
@@ -157,6 +163,7 @@ public class RobotContainer {
                     new Pose2d(drive.getPose().getTranslation(), new Rotation2d())); // zero gyro
     controller.start().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
     controller.leftBumper().whileTrue(new OrbitCommand(drive, () -> controller.getLeftX()));
+    controller.povUp().toggleOnTrue(Commands.runEnd(() -> intake.run(0.8), intake::stop, intake));
   }
 
   /**
