@@ -134,7 +134,7 @@ public class OrbitCommand extends Command {
             1.0 - (Math.abs(headingErrorRadians) / HEADING_ERROR_SLOWDOWN_RADIANS),
             MIN_TRANSLATION_SCALE,
             1.0);
-    // vtotal^2 = vradial^2 + vt^2 
+    // vtotal^2 = vradial^2 + vt^2
     // this solves for max tangential component
     double maxTangentialSpeedFromLinearLimit =
         Math.sqrt(
@@ -147,11 +147,11 @@ public class OrbitCommand extends Command {
             requestedTangentialSpeed,
             -maxTangentialSpeedFromLinearLimit,
             maxTangentialSpeedFromLinearLimit);
-    // constructs final field-relative velocity vector, vt component moves arobot around 
+    // constructs final field-relative velocity vector, vt component moves arobot around
     // radial moves toward or away from the center to keep the radius
     Translation2d fieldVelocity =
         tangentUnit.times(tangentialSpeed * translationScale).plus(radialUnit.times(radialSpeed));
-// heading correction to align robot w heading
+    // heading correction to align robot w heading
     double headingFeedback =
         headingController.calculate(
             robotPose.getRotation().getRadians(), desiredHeading.getRadians());
@@ -165,7 +165,6 @@ public class OrbitCommand extends Command {
     drive.runVelocity(
         ChassisSpeeds.fromFieldRelativeSpeeds(
             fieldVelocity.getX(), fieldVelocity.getY(), omega, drive.getRotation()));
-
   }
 
   @Override
