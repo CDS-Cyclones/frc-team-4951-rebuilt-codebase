@@ -214,7 +214,8 @@ public final class Constants {
         Double.POSITIVE_INFINITY; // No rotation data available
   }
 
-  public class IntakeConstants {
+  public static final class IntakeConstants {
+    private IntakeConstants() {}
     // TODO: Set final CAN ID
     public static final int kCanId = 0;
     public static final int kCurrentLimit = 40;
