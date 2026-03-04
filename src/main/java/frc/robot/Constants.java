@@ -221,4 +221,12 @@ public final class Constants {
     public static final int kCurrentLimit = 40;
     public static final double intakeSpeed = 0.8;
   }
+
+  public static final class ShooterConstants {
+    private ShooterConstants() {}
+    // TODO: Set final CAN IDs
+    public static final int kLeftShooterCANId = 0;
+    public static final int kRightShooterCANId = 0;
+    public static final int kCurrentLimit = 80;
+  }
 }

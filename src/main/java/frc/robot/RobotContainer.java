@@ -23,7 +23,11 @@ import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
-import frc.robot.subsystems.intake.IntakeIOSparkFlex;
+import frc.robot.subsystems.intake.IntakeIOSparkMax;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOSim;
+import frc.robot.subsystems.shooter.ShooterIOSparkMax;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
@@ -45,6 +49,7 @@ public class RobotContainer {
   private final Drive drive;
   private final Vision vision;
   private final Intake intake;
+  private final Shooter shooter;
 
   private SwerveDriveSimulation driveSimulation = null;
 
@@ -70,7 +75,8 @@ public class RobotContainer {
             new Vision(
                 drive::addVisionMeasurement,
                 new VisionIOLimelight(Constants.VisionConstants.camera0Name, drive::getRotation));
-        intake = new Intake(new IntakeIOSparkFlex());
+        intake = new Intake(new IntakeIOSparkMax());
+        shooter = new Shooter(new ShooterIOSparkMax());
         break;
 
       case SIM:
@@ -96,6 +102,7 @@ public class RobotContainer {
                     Constants.VisionConstants.botToCamTransformSim,
                     driveSimulation::getSimulatedDriveTrainPose));
         intake = new Intake(new IntakeIOSim());
+        shooter = new Shooter(new ShooterIOSim());
         break;
 
       default:
@@ -109,6 +116,7 @@ public class RobotContainer {
                 new ModuleIO() {});
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         intake = new Intake(new IntakeIO() {});
+        shooter = new Shooter(new ShooterIO() {});
         break;
     }
 
@@ -166,6 +174,7 @@ public class RobotContainer {
     controller.start().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
     controller.leftBumper().whileTrue(new OrbitCommand(drive, () -> controller.getLeftX()));
     controller.povUp().toggleOnTrue(ManipulationCommands.toggleIntake(intake));
+    controller.povDown().toggleOnTrue(ManipulationCommands.shootFuel(shooter));
   }
 
   /**
