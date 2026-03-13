@@ -88,7 +88,7 @@ public final class Constants {
 
     // Drive motor configuration
     public static final int driveMotorCurrentLimit = 80;
-    public static final double wheelRadiusMeters = Units.inchesToMeters(3.0);
+    public static final double wheelRadiusMeters = Units.inchesToMeters(1.5);
     public static final double driveMotorReduction =
         (45.0 * 22.0) / (14.0 * 15.0); // MAXSwerve with 14 pinion teeth and 22 spur teeth
     public static final DCMotor driveGearbox = DCMotor.getNeoVortex(1);
@@ -132,9 +132,10 @@ public final class Constants {
     public static final double turnPIDMaxInput = 2 * Math.PI; // Radians
 
     // PathPlanner configuration
-    public static final double robotMassKg = 59.0531907;
-    public static final double robotMOI = 7.31266;
-    public static final double wheelCOF = 1.6;
+    public static final double robotMassKg = 68;
+    public static final double robotMOI = 7.047;
+    public static final double wheelCOF =
+        1.6; // https://www.chiefdelphi.com/t/wildstang-robotics-program-team-111-and-112-build-blog-2025/477716/36
 
     public static final RobotConfig ppConfig =
         new RobotConfig(
@@ -185,7 +186,6 @@ public final class Constants {
     public static Transform3d robotToCamera1 =
         new Transform3d(-0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, Math.PI));
 
-    // Basic filtering thresholds
     public static double maxAmbiguity = 0.3;
     public static double maxZError = 0.75;
 
@@ -208,10 +208,61 @@ public final class Constants {
           1.0 // Camera 1
         };
 
-    // Multipliers to apply for MegaTag 2 observations
     public static double linearStdDevMegatag2Factor = 0.5; // More stable than full 3D solve
     public static double angularStdDevMegatag2Factor =
         Double.POSITIVE_INFINITY; // No rotation data available
+  }
+
+  public static final class OrbitConstants {
+    private OrbitConstants() {}
+
+    // TODO: Tune all orbit behavior values to preference and field conditions.
+    // Tag ids for red and blue alliance.
+    public static final int[] RED_TAG_IDS = {9, 10};
+    public static final int[] BLUE_TAG_IDS = {25, 26};
+
+    // Driver input scales tangential motion around the orbit center.
+    public static final double JOYSTICK_DEADBAND = 0.1;
+    public static final double MAX_TANGENTIAL_SPEED_METERS_PER_SEC = 3.5;
+    public static final double RIGHT_OFFSET_METERS = Units.inchesToMeters(3.0);
+    // Target orbit radius.
+    public static final double TARGET_RADIUS_METERS = 1.5;
+    public static final double MIN_CONTROL_RADIUS_METERS = 0.2;
+    public static final double RADIUS_KP = 2.0;
+    public static final double MAX_RADIAL_SPEED_METERS_PER_SEC = 1.0;
+    // Heading control keeps the robot pointed at the tag midpoint while translating.
+    public static final double MAX_ANGULAR_SPEED_RAD_PER_SEC = 8.0;
+    public static final double HEADING_ERROR_SLOWDOWN_RADIANS = 0.6;
+    public static final double MIN_TRANSLATION_SCALE = 0.45;
+
+    public static final double HEADING_KP = 5.0;
+    public static final double HEADING_KD = 0.4;
+    public static final double HEADING_MAX_VELOCITY = 8.0;
+    public static final double HEADING_MAX_ACCELERATION = 20.0;
+  }
+
+  public static final class AutoAimShootConstants {
+    private AutoAimShootConstants() {}
+
+    // hub-facing tag pair on each alliance side. Midpoint is used as target.
+    public static final int[] RED_TARGET_TAG_IDS = {9, 10};
+    public static final int[] BLUE_TARGET_TAG_IDS = {25, 26};
+
+    // TODO: Tune auto-aim control responsiveness.
+    public static final double driveDeadband = 0.1;
+    public static final double aimKp = 5.0;
+    public static final double aimKd = 0.35;
+    public static final double aimMaxVelocityRadPerSec = 8.0;
+    public static final double aimMaxAccelerationRadPerSecSq = 20.0;
+
+    // TODO: Tune the distance->RPM shot map from real shooting data.
+    // Simple distance->RPM map (linear interpolation + clamping).
+    public static final double minShotDistanceMeters = 1.0;
+    public static final double maxShotDistanceMeters = 6.0;
+    public static final double minShotRpm = 3000.0;
+    public static final double maxShotRpm = 5200.0;
+
+    public static final double maxAimOmegaRadPerSec = 8.0;
   }
 
   public static final class IntakeConstants {
@@ -219,6 +270,7 @@ public final class Constants {
     // TODO: Set final CAN ID
     public static final int kCanId = 0;
     public static final int kCurrentLimit = 40;
+    // TODO: Tune intake speed for reliable pickup/retention.
     public static final double intakeSpeed = 0.8;
   }
 
@@ -228,5 +280,13 @@ public final class Constants {
     public static final int kLeftShooterCANId = 0;
     public static final int kRightShooterCANId = 0;
     public static final int kCurrentLimit = 80;
+
+    // TODO: Tune this
+    public static final TunableNum kShooterKp = new TunableNum("Shooter/kP", 0.0002);
+    public static final TunableNum kShooterKi = new TunableNum("Shooter/kI", 0.0);
+    public static final TunableNum kShooterKd = new TunableNum("Shooter/kD", 0.0);
+    // TODO: Tune actual shot RPM and "at speed" tolerance from real shots.
+    public static final double kShootRPM = 4500.0;
+    public static final double kVelocityToleranceRPM = 100.0;
   }
 }
