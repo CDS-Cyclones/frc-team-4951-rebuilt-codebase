@@ -90,6 +90,7 @@ public class Drive extends SubsystemBase {
         this::setPose,
         this::getChassisSpeeds,
         this::runVelocity,
+        // TODO: Tune PathPlanner translation/rotation PID constants.
         new PPHolonomicDriveController(
             new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
         Constants.DriveConstants.ppConfig,

@@ -14,6 +14,7 @@ public class ManipulationCommands {
   }
 
   public static Command shootFuel(Shooter shooter) {
-    return Commands.runEnd(() -> shooter.setPower(0.7), shooter::stop, shooter);
+    return Commands.runEnd(
+        () -> shooter.setVelocityRPM(Constants.ShooterConstants.kShootRPM), shooter::stop, shooter);
   }
 }

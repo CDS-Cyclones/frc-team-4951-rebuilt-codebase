@@ -15,7 +15,7 @@ import lombok.Setter;
 
 /** An API to handle tunable dashboard values. */
 public class TunableValues {
-  @Setter private static boolean tuningMode = false;
+  @Setter private static boolean tuningMode = true;
 
   public static class TunableNum implements DoubleSupplier {
     private final DoubleEntry entry;
