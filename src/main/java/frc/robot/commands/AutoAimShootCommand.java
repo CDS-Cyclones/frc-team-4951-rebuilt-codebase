@@ -1,10 +1,10 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -22,12 +22,9 @@ import org.littletonrobotics.junction.Logger;
  * shooter RPM from distance.
  */
 public class AutoAimShootCommand extends ParallelCommandGroup {
-  private final Drive drive;
 
   public AutoAimShootCommand(
       Drive drive, Shooter shooter, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
-    this.drive = drive;
-
     AtomicReference<Double> shotRpm = new AtomicReference<>(0.0);
     AtomicReference<Rotation2d> desiredHeading = new AtomicReference<>(drive.getRotation());
 

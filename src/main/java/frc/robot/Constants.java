@@ -288,5 +288,6 @@ public final class Constants {
     // TODO: Tune actual shot RPM and "at speed" tolerance from real shots.
     public static final double kShootRPM = 4500.0;
     public static final double kVelocityToleranceRPM = 100.0;
+    public static final TunableNum kAutoShootRPM = new TunableNum("Shooter/kAutoShootRPM", 1000);
   }
 }

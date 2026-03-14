@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left To Top"
+            "pathName": "Drive to Shoot Pos"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Top to Mid"
+            "name": "shootFuelAuto"
           }
         }
       ]
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": null,
   "choreoAuto": false
 }

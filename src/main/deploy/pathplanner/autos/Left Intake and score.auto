@@ -5,15 +5,47 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Left To Top"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Left To Top"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeStart"
+                }
+              }
+            ]
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "Top to Mid"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Mid To shoot position"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shootFuelAuto"
+                }
+              }
+            ]
           }
         }
       ]
