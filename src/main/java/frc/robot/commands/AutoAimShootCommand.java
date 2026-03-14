@@ -1,127 +1,69 @@
 package frc.robot.commands;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.shooter.Shooter;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 /**
- * Drives with normal translation controls while auto-aiming robot yaw at the speaker and scheduling
+ * Drives with normal translation controls while auto-aiming robot yaw at the hub and scheduling
  * shooter RPM from distance.
  */
-public class AutoAimShootCommand extends Command {
+public class AutoAimShootCommand extends ParallelCommandGroup {
   private final Drive drive;
-  private final Shooter shooter;
-  private final DoubleSupplier xSupplier;
-  private final DoubleSupplier ySupplier;
-
-  private final ProfiledPIDController headingController =
-      new ProfiledPIDController(
-          Constants.AutoAimShootConstants.aimKp,
-          0.0,
-          Constants.AutoAimShootConstants.aimKd,
-          new TrapezoidProfile.Constraints(
-              Constants.AutoAimShootConstants.aimMaxVelocityRadPerSec,
-              Constants.AutoAimShootConstants.aimMaxAccelerationRadPerSecSq));
 
   public AutoAimShootCommand(
       Drive drive, Shooter shooter, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
     this.drive = drive;
-    this.shooter = shooter;
-    this.xSupplier = xSupplier;
-    this.ySupplier = ySupplier;
 
-    headingController.enableContinuousInput(-Math.PI, Math.PI);
-    addRequirements(drive, shooter);
-  }
+    AtomicReference<Double> shotRpm = new AtomicReference<>(0.0);
+    AtomicReference<Rotation2d> desiredHeading = new AtomicReference<>(drive.getRotation());
 
-  @Override
-  public void initialize() {
-    headingController.reset(drive.getRotation().getRadians());
-  }
+    addCommands(
+        Commands.run(
+                () -> {
+                  Optional<Translation2d> targetOptional = getAllianceTarget();
+                  if (targetOptional.isEmpty()) {
+                    shotRpm.set(0.0);
+                    desiredHeading.set(drive.getRotation());
+                    DriverStation.reportWarning("AutoAimShoot could not find target tags.", false);
+                    return;
+                  }
 
-  @Override
-  public void execute() {
-    Optional<Translation2d> targetOptional = getAllianceTarget();
-    if (targetOptional.isEmpty()) {
-      drive.stop();
-      shooter.stop();
-      DriverStation.reportWarning("AutoAimShoot could not find target tags.", false);
-      return;
-    }
+                  Translation2d target = targetOptional.get();
+                  Pose2d robotPose = drive.getPose();
+                  Rotation2d targetHeading = target.minus(robotPose.getTranslation()).getAngle();
+                  desiredHeading.set(targetHeading);
 
-    Translation2d target = targetOptional.get();
-    Pose2d robotPose = drive.getPose();
+                  double distanceMeters = robotPose.getTranslation().getDistance(target);
+                  double rpm = getShotRpm(distanceMeters);
+                  shotRpm.set(rpm);
 
-    Translation2d linearVelocity = getLinearVelocityFromJoysticks();
-    Rotation2d desiredHeading = target.minus(robotPose.getTranslation()).getAngle();
-    double omega =
-        MathUtil.clamp(
-            headingController.calculate(
-                robotPose.getRotation().getRadians(), desiredHeading.getRadians()),
-            -Constants.AutoAimShootConstants.maxAimOmegaRadPerSec,
-            Constants.AutoAimShootConstants.maxAimOmegaRadPerSec);
-
-    ChassisSpeeds speeds =
-        new ChassisSpeeds(
-            linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-            linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-            omega);
-    boolean isFlipped =
-        DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().get() == Alliance.Red;
-    drive.runVelocity(
-        ChassisSpeeds.fromFieldRelativeSpeeds(
-            speeds,
-            isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation()));
-
-    double distanceMeters = robotPose.getTranslation().getDistance(target);
-    double rpm = getShotRpm(distanceMeters);
-    shooter.setVelocityRPM(rpm);
-
-    Logger.recordOutput("AutoAimShoot/TargetPose", new Pose2d(target, Rotation2d.kZero));
-    Logger.recordOutput("AutoAimShoot/DistanceMeters", distanceMeters);
-    Logger.recordOutput("AutoAimShoot/SetpointRPM", rpm);
-    Logger.recordOutput("AutoAimShoot/DesiredHeadingDeg", desiredHeading.getDegrees());
-  }
-
-  @Override
-  public void end(boolean interrupted) {
-    drive.stop();
-    shooter.stop();
-  }
-
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
-
-  private Translation2d getLinearVelocityFromJoysticks() {
-    double magnitude =
-        MathUtil.applyDeadband(
-            Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()),
-            Constants.AutoAimShootConstants.driveDeadband);
-    Rotation2d direction =
-        new Rotation2d(Math.atan2(ySupplier.getAsDouble(), xSupplier.getAsDouble()));
-    magnitude = magnitude * magnitude;
-
-    return new Pose2d(Translation2d.kZero, direction)
-        .transformBy(new Transform2d(magnitude, 0.0, Rotation2d.kZero))
-        .getTranslation();
+                  Logger.recordOutput(
+                      "AutoAimShoot/TargetPose", new Pose2d(target, Rotation2d.kZero));
+                  Logger.recordOutput("AutoAimShoot/DistanceMeters", distanceMeters);
+                  Logger.recordOutput("AutoAimShoot/SetpointRPM", rpm);
+                  Logger.recordOutput("AutoAimShoot/DesiredHeadingDeg", targetHeading.getDegrees());
+                })
+            .finallyDo(
+                () -> {
+                  shotRpm.set(0.0);
+                  desiredHeading.set(drive.getRotation());
+                }),
+        DriveCommands.joystickDriveAtAngle(drive, xSupplier, ySupplier, desiredHeading::get),
+        ManipulationCommands.shootFuel(shooter, shotRpm::get));
   }
 
   private Optional<Translation2d> getAllianceTarget() {

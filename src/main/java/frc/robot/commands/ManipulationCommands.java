@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
+import java.util.function.DoubleSupplier;
 
 public class ManipulationCommands {
 
@@ -14,7 +15,20 @@ public class ManipulationCommands {
   }
 
   public static Command shootFuel(Shooter shooter) {
+    return shootFuel(shooter, () -> Constants.ShooterConstants.kShootRPM);
+  }
+
+  public static Command shootFuel(Shooter shooter, DoubleSupplier rpmSupplier) {
     return Commands.runEnd(
-        () -> shooter.setVelocityRPM(Constants.ShooterConstants.kShootRPM), shooter::stop, shooter);
+        () -> {
+          double rpm = rpmSupplier.getAsDouble();
+          if (rpm > 0.0) {
+            shooter.setVelocityRPM(rpm);
+          } else {
+            shooter.stop();
+          }
+        },
+        shooter::stop,
+        shooter);
   }
 }
