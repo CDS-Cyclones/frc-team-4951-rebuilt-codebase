@@ -25,4 +25,8 @@ public class Intake extends SubsystemBase {
   public void stop() {
     io.stop();
   }
+
+  public void resetSimulationState() {
+    io.resetSimulationState();
+  }
 }

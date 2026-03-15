@@ -102,7 +102,7 @@ public class RobotContainer {
                     "camera",
                     Constants.VisionConstants.botToCamTransformSim,
                     driveSimulation::getSimulatedDriveTrainPose));
-        intake = new Intake(new IntakeIOSim());
+        intake = new Intake(new IntakeIOSim(driveSimulation));
         shooter = new Shooter(new ShooterIOSim());
         break;
 
@@ -200,9 +200,10 @@ public class RobotContainer {
   public void resetSimulationField() {
     if (Constants.currentMode != Constants.Mode.SIM) return;
 
-    driveSimulation.setSimulationWorldPose(new Pose2d(3, 3, new Rotation2d()));
+    driveSimulation.setSimulationWorldPose(new Pose2d(7, 7, new Rotation2d()));
     drive.setPose(driveSimulation.getSimulatedDriveTrainPose());
     SimulatedArena.getInstance().resetFieldForAuto();
+    intake.resetSimulationState();
   }
 
   public void displaySimFieldToAdvantageScope() {

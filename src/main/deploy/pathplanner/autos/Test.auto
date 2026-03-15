@@ -5,9 +5,22 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Test through bottom"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeStart"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Top to Mid"
+                }
+              }
+            ]
           }
         }
       ]

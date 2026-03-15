@@ -9,6 +9,7 @@ public interface IntakeIO {
     public double appliedVolts = 0.0;
     public double currentAmps = 0.0;
     public double velocityRPM = 0.0;
+    public int fuelCount = 0;
   }
 
   default void updateInputs(IntakeIOInputs inputs) {}
@@ -18,4 +19,6 @@ public interface IntakeIO {
   default void stop() {
     setPercent(0.0);
   }
+
+  default void resetSimulationState() {}
 }

@@ -1,29 +1,52 @@
-// dummy io implementation for simulation purposes
 package frc.robot.subsystems.intake;
 
-import edu.wpi.first.wpilibj.RobotBase;
+import static edu.wpi.first.units.Units.Meters;
+
+import edu.wpi.first.math.util.Units;
+import org.ironmaple.simulation.IntakeSimulation;
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 
 public class IntakeIOSim implements IntakeIO {
+  private static final double NOMINAL_VOLTAGE = 12.0;
 
-  private double percent = 0.0;
-  private boolean wasRunning = false;
+  private final IntakeSimulation intakeSimulation;
+  private double appliedPercent = 0.0;
+
+  public IntakeIOSim(AbstractDriveTrainSimulation driveTrain) {
+    intakeSimulation =
+        IntakeSimulation.InTheFrameIntake(
+            "Fuel",
+            driveTrain,
+            Meters.of(Units.inchesToMeters(16.67)),
+            IntakeSimulation.IntakeSide.FRONT,
+            40);
+    intakeSimulation.register();
+  }
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    inputs.appliedVolts = percent * 12.0;
+    intakeSimulation.removeObtainedGamePieces(SimulatedArena.getInstance());
+    inputs.appliedVolts = appliedPercent * NOMINAL_VOLTAGE;
     inputs.currentAmps = 0.0;
-    inputs.velocityRPM = percent * 5000.0; // fake number
+    inputs.velocityRPM = 0.0;
+    inputs.fuelCount = intakeSimulation.getGamePiecesAmount();
+  }
 
-    boolean isRunning = Math.abs(percent) > 0.01;
-
-    if (RobotBase.isSimulation() && isRunning != wasRunning) {
-      System.out.println("Intake " + (isRunning ? "ON" : "OFF"));
-      wasRunning = isRunning;
-    }
+  @Override
+  public void resetSimulationState() {
+    appliedPercent = 0.0;
+    intakeSimulation.stopIntake();
+    intakeSimulation.setGamePiecesCount(0);
   }
 
   @Override
   public void setPercent(double percent) {
-    this.percent = percent;
+    appliedPercent = percent;
+    if (Math.abs(percent) > 1e-3) {
+      intakeSimulation.startIntake();
+    } else {
+      intakeSimulation.stopIntake();
+    }
   }
 }
