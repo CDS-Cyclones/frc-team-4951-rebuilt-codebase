@@ -24,12 +24,24 @@ import org.littletonrobotics.junction.Logger;
 public class ManipulationCommands {
 
   public static Command toggleIntake(Intake intake) {
+    return holdIntake(intake);
+  }
+
+  public static Command holdIntake(Intake intake) {
     return Commands.runEnd(
         () -> intake.run(Constants.IntakeConstants.intakeSpeed), intake::stop, intake);
   }
 
+  public static Command startIntake(Intake intake) {
+    return Commands.runOnce(() -> intake.run(Constants.IntakeConstants.intakeSpeed), intake);
+  }
+
+  public static Command stopIntake(Intake intake) {
+    return Commands.runOnce(intake::stop, intake);
+  }
+
   public static Command shootFuel(Shooter shooter) {
-    return shootFuel(shooter, () -> Constants.ShooterConstants.kShootRPM);
+    return shootFuel(shooter, () -> Constants.ShooterConstants.kShootRPM.getAsDouble());
   }
 
   public static Command shootFuel(Shooter shooter, DoubleSupplier rpmSupplier) {
@@ -61,7 +73,8 @@ public class ManipulationCommands {
   }
 
   public static Command shootFuelSim(Drive drive, Shooter shooter, Intake intake) {
-    return shootFuelSim(drive, shooter, intake, () -> Constants.ShooterConstants.kShootRPM);
+    return shootFuelSim(
+        drive, shooter, intake, () -> Constants.ShooterConstants.kShootRPM.getAsDouble());
   }
 
   public static Command shootFuelSim(
@@ -94,9 +107,11 @@ public class ManipulationCommands {
 
           Pose3d[] emptyTrajectory = new Pose3d[] {};
           Rotation2d heading = drive.getRotation();
+          double simReferenceRpm = Constants.ShooterConstants.kSimReferenceRPM.getAsDouble();
+          double launchSpeedScale = simReferenceRpm > 1e-6 ? rpm / simReferenceRpm : 0.0;
           double launchSpeedMetersPerSecond =
-              Constants.ShooterConstants.kSimLaunchVelocityMetersPerSecond
-                  * (rpm / Constants.ShooterConstants.kShootRPM);
+              Constants.ShooterConstants.kSimLaunchVelocityMetersPerSecond.getAsDouble()
+                  * launchSpeedScale;
 
           var projectile =
               new RebuiltFuelOnFly(
@@ -107,7 +122,7 @@ public class ManipulationCommands {
                       heading,
                       Meters.of(Constants.ShooterConstants.kSimLaunchHeightMeters),
                       MetersPerSecond.of(launchSpeedMetersPerSecond),
-                      Degrees.of(Constants.ShooterConstants.kSimLaunchAngleDegrees))
+                      Degrees.of(Constants.ShooterConstants.kSimLaunchAngleDegrees.getAsDouble()))
                   .withProjectileTrajectoryDisplayCallBack(
                       trajectory ->
                           Logger.recordOutput(

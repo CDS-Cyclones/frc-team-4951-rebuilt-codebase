@@ -5,7 +5,7 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "sequential",
           "data": {
             "commands": [
               {
@@ -21,6 +21,18 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Sim Mid to shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootFuelAuto"
           }
         }
       ]

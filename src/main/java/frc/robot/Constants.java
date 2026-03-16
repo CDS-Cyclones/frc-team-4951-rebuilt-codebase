@@ -226,7 +226,7 @@ public final class Constants {
     public static final double MAX_TANGENTIAL_SPEED_METERS_PER_SEC = 3.5;
     public static final double RIGHT_OFFSET_METERS = Units.inchesToMeters(3.0);
     // Target orbit radius.
-    public static final double TARGET_RADIUS_METERS = 1.5;
+    public static final double TARGET_RADIUS_METERS = 2.0;
     public static final double MIN_CONTROL_RADIUS_METERS = 0.2;
     public static final double RADIUS_KP = 2.0;
     public static final double MAX_RADIAL_SPEED_METERS_PER_SEC = 1.0;
@@ -286,13 +286,17 @@ public final class Constants {
     public static final TunableNum kShooterKi = new TunableNum("Shooter/kI", 0.0);
     public static final TunableNum kShooterKd = new TunableNum("Shooter/kD", 0.0);
     // TODO: Tune actual shot RPM and "at speed" tolerance from real shots.
-    public static final double kShootRPM = 4000.0;
+    public static final TunableNum kShootRPM = new TunableNum("Shooter/kShootRPM", 4000);
     public static final double kVelocityToleranceRPM = 100.0;
-    public static final TunableNum kAutoShootRPM = new TunableNum("Shooter/kAutoShootRPM", 1000);
+    public static final TunableNum kAutoShootRPM = new TunableNum("Shooter/kAutoShootRPM", 4000);
     public static final double kSimLaunchPeriodSeconds = 0.20;
     public static final double kSimLaunchHeightMeters = Units.inchesToMeters(24.0);
-    public static final double kSimLaunchVelocityMetersPerSecond = 12.0;
-    public static final double kSimLaunchAngleDegrees = 38.0;
+    public static final TunableNum kSimReferenceRPM =
+        new TunableNum("Shooter/SimReferenceRPM", 4000.0);
+    public static final TunableNum kSimLaunchVelocityMetersPerSecond =
+        new TunableNum("Shooter/SimLaunchVelocityMetersPerSecond", 6.8);
+    public static final TunableNum kSimLaunchAngleDegrees =
+        new TunableNum("Shooter/SimLaunchAngleDegrees", 65.0);
     public static final double kSimLaunchForwardOffsetMeters = Units.inchesToMeters(12.0);
   }
 }
