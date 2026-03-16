@@ -20,5 +20,13 @@ public interface IntakeIO {
     setPercent(0.0);
   }
 
+  default int getFuelCount() {
+    return 0;
+  }
+
+  default boolean consumeFuel() {
+    return false;
+  }
+
   default void resetSimulationState() {}
 }

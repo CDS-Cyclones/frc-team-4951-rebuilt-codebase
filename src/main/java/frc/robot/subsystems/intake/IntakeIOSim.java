@@ -34,6 +34,22 @@ public class IntakeIOSim implements IntakeIO {
   }
 
   @Override
+  public int getFuelCount() {
+    return intakeSimulation.getGamePiecesAmount();
+  }
+
+  @Override
+  public boolean consumeFuel() {
+    int fuelCount = intakeSimulation.getGamePiecesAmount();
+    if (fuelCount <= 0) {
+      return false;
+    }
+
+    intakeSimulation.setGamePiecesCount(fuelCount - 1);
+    return true;
+  }
+
+  @Override
   public void resetSimulationState() {
     appliedPercent = 0.0;
     intakeSimulation.stopIntake();

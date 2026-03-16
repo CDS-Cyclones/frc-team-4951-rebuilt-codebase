@@ -26,6 +26,18 @@ public class Intake extends SubsystemBase {
     io.stop();
   }
 
+  public int getFuelCount() {
+    return io.getFuelCount();
+  }
+
+  public boolean hasFuel() {
+    return getFuelCount() > 0;
+  }
+
+  public boolean consumeFuel() {
+    return io.consumeFuel();
+  }
+
   public void resetSimulationState() {
     io.resetSimulationState();
   }

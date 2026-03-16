@@ -286,8 +286,13 @@ public final class Constants {
     public static final TunableNum kShooterKi = new TunableNum("Shooter/kI", 0.0);
     public static final TunableNum kShooterKd = new TunableNum("Shooter/kD", 0.0);
     // TODO: Tune actual shot RPM and "at speed" tolerance from real shots.
-    public static final double kShootRPM = 4500.0;
+    public static final double kShootRPM = 4000.0;
     public static final double kVelocityToleranceRPM = 100.0;
     public static final TunableNum kAutoShootRPM = new TunableNum("Shooter/kAutoShootRPM", 1000);
+    public static final double kSimLaunchPeriodSeconds = 0.20;
+    public static final double kSimLaunchHeightMeters = Units.inchesToMeters(24.0);
+    public static final double kSimLaunchVelocityMetersPerSecond = 12.0;
+    public static final double kSimLaunchAngleDegrees = 38.0;
+    public static final double kSimLaunchForwardOffsetMeters = Units.inchesToMeters(12.0);
   }
 }

@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -24,7 +25,11 @@ import org.littletonrobotics.junction.Logger;
 public class AutoAimShootCommand extends ParallelCommandGroup {
 
   public AutoAimShootCommand(
-      Drive drive, Shooter shooter, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
+      Drive drive,
+      Intake intake,
+      Shooter shooter,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier) {
     AtomicReference<Double> shotRpm = new AtomicReference<>(0.0);
     AtomicReference<Rotation2d> desiredHeading = new AtomicReference<>(drive.getRotation());
 
@@ -60,7 +65,8 @@ public class AutoAimShootCommand extends ParallelCommandGroup {
                   desiredHeading.set(drive.getRotation());
                 }),
         DriveCommands.joystickDriveAtAngle(drive, xSupplier, ySupplier, desiredHeading::get),
-        ManipulationCommands.shootFuel(shooter, shotRpm::get));
+        ManipulationCommands.shootFuel(shooter, shotRpm::get, intake::hasFuel),
+        ManipulationCommands.shootFuelSim(drive, shooter, intake, shotRpm::get));
   }
 
   private Optional<Translation2d> getAllianceTarget() {
