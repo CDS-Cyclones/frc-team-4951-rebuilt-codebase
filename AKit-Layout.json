@@ -22,9 +22,11 @@
             "/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized/0/angle",
             "/AdvantageKit/RealOutputs/SwerveStates/Measured",
             "/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized",
-            "/AdvantageKit/Drive",
             "/AdvantageKit/Drive/Module0",
-            "/SmartDashboard/VisionSystemSim-main/Sim Field"
+            "/SmartDashboard/VisionSystemSim-main/Sim Field",
+            "/AdvantageKit",
+            "/AdvantageKit/RealOutputs/FieldSimulation",
+            "/PathPlanner"
           ]
         },
         "tabs": {
@@ -35,7 +37,7 @@
               "title": "",
               "controller": null,
               "controllerUUID": "grimvlgu9aluj8btvwotco2wpj0pto2h",
-              "renderer": "#/",
+              "renderer": "",
               "controlsHeight": 0
             },
             {
@@ -131,6 +133,35 @@
                     "options": {
                       "model": "Crab Bot"
                     }
+                  },
+                  {
+                    "type": "gamePiece",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/FuelPositions",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "variant": "Fuel"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/FuelShotTrajectory",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/PathPlanner/targetPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "2026 KitBot",
+                      "color": "#ff0000"
+                    }
                   }
                 ],
                 "game": "FRC:2026 Field"
@@ -140,17 +171,17 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  -0.000018579158229947797,
-                  19.082138446035643,
-                  -3.327892642937568e-7
+                  -10.1080911188332,
+                  5.402132724135396,
+                  -2.027578232091496
                 ],
                 "cameraTarget": [
-                  0,
-                  0.5,
-                  0
+                  -3.603980380911472,
+                  1.2294014686606989,
+                  0.6194190050902505
                 ]
               },
-              "controlsHeight": 200
+              "controlsHeight": 178
             },
             {
               "type": 1,
