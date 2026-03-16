@@ -196,7 +196,7 @@ public class RobotContainer {
                     () -> Constants.ShooterConstants.kShootRPM.getAsDouble(),
                     intake::hasFuel),
                 ManipulationCommands.shootFuelSim(drive, shooter, intake)));
-    controller.povUp().toggleOnTrue(ManipulationCommands.holdIntake(intake));
+    controller.a().toggleOnTrue(ManipulationCommands.holdIntake(intake));
   }
 
   /**
