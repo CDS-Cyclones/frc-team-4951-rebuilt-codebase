@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.AutoAimShootCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ManipulationCommands;
 import frc.robot.commands.OrbitCommand;
@@ -102,7 +101,7 @@ public class RobotContainer {
                     "camera",
                     Constants.VisionConstants.botToCamTransformSim,
                     driveSimulation::getSimulatedDriveTrainPose));
-        intake = new Intake(new IntakeIOSim());
+        intake = new Intake(new IntakeIOSim(driveSimulation));
         shooter = new Shooter(new ShooterIOSim());
         break;
 
@@ -122,12 +121,20 @@ public class RobotContainer {
     }
 
     // Set up auto routines
-    NamedCommands.registerCommand("intakeStart", ManipulationCommands.toggleIntake(intake));
-    NamedCommands.registerCommand("intakeStop", ManipulationCommands.toggleIntake(intake));
+    NamedCommands.registerCommand("intakeStart", ManipulationCommands.startIntake(intake));
+    NamedCommands.registerCommand("intakeStop", ManipulationCommands.stopIntake(intake));
     NamedCommands.registerCommand(
         "shootFuelAuto",
-        ManipulationCommands.shootFuel(
-            shooter, () -> Constants.ShooterConstants.kAutoShootRPM.getAsDouble()));
+        Commands.parallel(
+            ManipulationCommands.shootFuel(
+                shooter,
+                () -> Constants.ShooterConstants.kAutoShootRPM.getAsDouble(),
+                intake::hasFuel),
+            ManipulationCommands.shootFuelSim(
+                drive,
+                shooter,
+                intake,
+                () -> Constants.ShooterConstants.kAutoShootRPM.getAsDouble())));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
@@ -183,9 +190,13 @@ public class RobotContainer {
     controller
         .rightBumper()
         .whileTrue(
-            new AutoAimShootCommand(
-                drive, shooter, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
-    controller.povUp().toggleOnTrue(ManipulationCommands.toggleIntake(intake));
+            Commands.parallel(
+                ManipulationCommands.shootFuel(
+                    shooter,
+                    () -> Constants.ShooterConstants.kShootRPM.getAsDouble(),
+                    intake::hasFuel),
+                ManipulationCommands.shootFuelSim(drive, shooter, intake)));
+    controller.a().toggleOnTrue(ManipulationCommands.holdIntake(intake));
   }
 
   /**
@@ -200,9 +211,10 @@ public class RobotContainer {
   public void resetSimulationField() {
     if (Constants.currentMode != Constants.Mode.SIM) return;
 
-    driveSimulation.setSimulationWorldPose(new Pose2d(3, 3, new Rotation2d()));
+    driveSimulation.setSimulationWorldPose(new Pose2d(7, 7, new Rotation2d()));
     drive.setPose(driveSimulation.getSimulatedDriveTrainPose());
     SimulatedArena.getInstance().resetFieldForAuto();
+    intake.resetSimulationState();
   }
 
   public void displaySimFieldToAdvantageScope() {

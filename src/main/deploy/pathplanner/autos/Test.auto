@@ -5,9 +5,34 @@
     "data": {
       "commands": [
         {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeStart"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Top to Mid"
+                }
+              }
+            ]
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Test through bottom"
+            "pathName": "Sim Mid to shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootFuelAuto"
           }
         }
       ]
