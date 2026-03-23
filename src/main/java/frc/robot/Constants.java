@@ -241,23 +241,6 @@ public final class Constants {
     public static final double HEADING_MAX_ACCELERATION = 20.0;
   }
 
-  public static final class AutoAimShootConstants {
-    private AutoAimShootConstants() {}
-
-    // hub-facing tag pair on each alliance side. Midpoint is used as target.
-    public static final int[] RED_TARGET_TAG_IDS = {9, 10};
-    public static final int[] BLUE_TARGET_TAG_IDS = {25, 26};
-
-
-    // TODO: Tune the distance->RPM shot map from real shooting data.
-    // Simple distance->RPM map (linear interpolation + clamping).
-    public static final double minShotDistanceMeters = 1.0;
-    public static final double maxShotDistanceMeters = 6.0;
-    public static final double minShotRpm = 3000.0;
-    public static final double maxShotRpm = 5200.0;
-
-    public static final double maxAimOmegaRadPerSec = 8.0;
-  }
 
   public static final class IntakeConstants {
     private IntakeConstants() {}
