@@ -248,12 +248,6 @@ public final class Constants {
     public static final int[] RED_TARGET_TAG_IDS = {9, 10};
     public static final int[] BLUE_TARGET_TAG_IDS = {25, 26};
 
-    // TODO: Tune auto-aim control responsiveness.
-    public static final double driveDeadband = 0.1;
-    public static final double aimKp = 5.0;
-    public static final double aimKd = 0.35;
-    public static final double aimMaxVelocityRadPerSec = 8.0;
-    public static final double aimMaxAccelerationRadPerSecSq = 20.0;
 
     // TODO: Tune the distance->RPM shot map from real shooting data.
     // Simple distance->RPM map (linear interpolation + clamping).
