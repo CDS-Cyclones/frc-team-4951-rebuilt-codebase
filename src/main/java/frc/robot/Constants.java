@@ -244,7 +244,7 @@ public final class Constants {
   public static final class IntakeConstants {
     private IntakeConstants() {}
     // TODO: Set final CAN ID
-    public static final int kCanId = 0;
+    public static final int kCanId = 20;
     public static final int kCurrentLimit = 40;
     // TODO: Tune intake speed for reliable pickup/retention.
     public static final double intakeSpeed = 0.8;
@@ -253,22 +253,25 @@ public final class Constants {
   public static final class ShooterConstants {
     private ShooterConstants() {}
     // TODO: Set final CAN IDs
-    public static final int kMainShooterCANId = 0;
-    public static final int kFollowerShooterCANId = 0;
+    public static final int kMainShooterCANId = 22;
+    public static final int kSecondaryShooterCANId = 23;
+    public static final int kKickerCANId = 21;
     public static final int kCurrentLimit = 80;
+    public static final int kKickerCurrentLimit = 40;
 
     // TODO: Tune this
     public static final TunableNum kShooterMainKp = new TunableNum("Shooter/kP", 0.0002);
     public static final TunableNum kShooterMainKi = new TunableNum("Shooter/kI", 0.0);
     public static final TunableNum kShooterMainKd = new TunableNum("Shooter/kD", 0.0);
 
-    //TODO: TUNE THIS
-    public static final TunableNum kShooterFollowerKp = new TunableNum("Shooter/kP", 0.0002);
-    public static final TunableNum kShooterFollowerKi = new TunableNum("Shooter/kI", 0.0);
-    public static final TunableNum kShooterFollowerKd = new TunableNum("Shooter/kD", 0.0);
+    // TODO: TUNE THIS
+    public static final TunableNum kShooterSecondaryKp = new TunableNum("Shooter/kP", 0.0002);
+    public static final TunableNum kShooterSecondaryKi = new TunableNum("Shooter/kI", 0.0);
+    public static final TunableNum kShooterSecondaryKd = new TunableNum("Shooter/kD", 0.0);
 
     // TODO: Tune actual shot RPM and "at speed" tolerance from real shots.
     public static final TunableNum kShootRPM = new TunableNum("Shooter/kShootRPM", 4000);
+    public static final double kKickerIndexPercent = 1.0;
     public static final double kVelocityToleranceRPM = 100.0;
     public static final TunableNum kAutoShootRPM = new TunableNum("Shooter/kAutoShootRPM", 4000);
     public static final double kSimLaunchPeriodSeconds = 0.20;
