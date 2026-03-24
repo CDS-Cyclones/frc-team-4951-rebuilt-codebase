@@ -22,22 +22,41 @@ import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 import org.littletonrobotics.junction.Logger;
 
 public class ManipulationCommands {
-
-  public static Command toggleIntake(Intake intake) {
-    return holdIntake(intake);
+  private static void runIntakeWithShooterFollower(Intake intake, Shooter shooter, double power) {
+    intake.run(power);
+    shooter.setFollowerPower(power);
   }
 
-  public static Command holdIntake(Intake intake) {
+  public static Command toggleIntake(Intake intake, Shooter shooter) {
+    return holdIntake(intake, shooter);
+  }
+
+  public static Command holdIntake(Intake intake, Shooter shooter) {
     return Commands.runEnd(
-        () -> intake.run(Constants.IntakeConstants.intakeSpeed), intake::stop, intake);
+        () -> runIntakeWithShooterFollower(intake, shooter, Constants.IntakeConstants.intakeSpeed),
+        () -> {
+          intake.stop();
+          shooter.stopFollower();
+        },
+        intake,
+        shooter);
   }
 
-  public static Command startIntake(Intake intake) {
-    return Commands.runOnce(() -> intake.run(Constants.IntakeConstants.intakeSpeed), intake);
+  public static Command startIntake(Intake intake, Shooter shooter) {
+    return Commands.runOnce(
+        () -> runIntakeWithShooterFollower(intake, shooter, Constants.IntakeConstants.intakeSpeed),
+        intake,
+        shooter);
   }
 
-  public static Command stopIntake(Intake intake) {
-    return Commands.runOnce(intake::stop, intake);
+  public static Command stopIntake(Intake intake, Shooter shooter) {
+    return Commands.runOnce(
+        () -> {
+          intake.stop();
+          shooter.stopFollower();
+        },
+        intake,
+        shooter);
   }
 
   public static Command shootFuel(Shooter shooter) {

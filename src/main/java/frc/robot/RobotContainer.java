@@ -121,15 +121,14 @@ public class RobotContainer {
     }
 
     // Set up auto routines
-    NamedCommands.registerCommand("intakeStart", ManipulationCommands.startIntake(intake));
-    NamedCommands.registerCommand("intakeStop", ManipulationCommands.stopIntake(intake));
+    NamedCommands.registerCommand("intakeStart", ManipulationCommands.startIntake(intake, shooter));
+    NamedCommands.registerCommand("intakeStop", ManipulationCommands.stopIntake(intake, shooter));
     NamedCommands.registerCommand(
         "shootFuelAuto",
         Commands.parallel(
             ManipulationCommands.shootFuel(
                 shooter,
-                () -> Constants.ShooterConstants.kAutoShootRPM.getAsDouble(),
-                intake::hasFuel),
+                () -> Constants.ShooterConstants.kAutoShootRPM.getAsDouble()),
             ManipulationCommands.shootFuelSim(
                 drive,
                 shooter,
@@ -193,10 +192,9 @@ public class RobotContainer {
             Commands.parallel(
                 ManipulationCommands.shootFuel(
                     shooter,
-                    () -> Constants.ShooterConstants.kShootRPM.getAsDouble(),
-                    intake::hasFuel),
+                    () -> Constants.ShooterConstants.kShootRPM.getAsDouble()),
                 ManipulationCommands.shootFuelSim(drive, shooter, intake)));
-    controller.a().toggleOnTrue(ManipulationCommands.holdIntake(intake));
+    controller.a().toggleOnTrue(ManipulationCommands.holdIntake(intake, shooter));
   }
 
   /**

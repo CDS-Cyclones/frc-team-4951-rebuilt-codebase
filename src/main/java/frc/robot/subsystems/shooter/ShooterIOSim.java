@@ -4,22 +4,22 @@ package frc.robot.subsystems.shooter;
 import edu.wpi.first.wpilibj.RobotBase;
 
 public class ShooterIOSim implements ShooterIO {
-  private double leftAppliedPower = 0.0;
-  private double rightAppliedPower = 0.0;
-  private double leftVelocityRPM = 0.0;
-  private double rightVelocityRPM = 0.0;
+  private double mainAppliedPower = 0.0;
+  private double followerAppliedPower = 0.0;
+  private double mainVelocityRPM = 0.0;
+  private double followerVelocityRPM = 0.0;
   private boolean wasRunning = false;
   private static final double kMaxRpm = 5000.0;
   private static final double kVelocityAlpha = 0.2;
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
-    inputs.leftAppliedOutput = leftAppliedPower;
-    inputs.rightAppliedOutput = rightAppliedPower;
-    inputs.leftVelocityRPM = leftVelocityRPM;
-    inputs.rightVelocityRPM = rightVelocityRPM;
+    inputs.mainAppliedOutput = mainAppliedPower;
+    inputs.followerAppliedOutput = followerAppliedPower;
+    inputs.mainVelocityRPM = mainVelocityRPM;
+    inputs.followerVelocityRPM = followerVelocityRPM;
 
-    boolean isRunning = Math.abs(leftVelocityRPM) > 10.0 || Math.abs(rightVelocityRPM) > 10.0;
+    boolean isRunning = Math.abs(mainVelocityRPM) > 10.0 || Math.abs(followerVelocityRPM) > 10.0;
 
     if (RobotBase.isSimulation() && isRunning != wasRunning) {
       System.out.println("Shooter " + (isRunning ? "ON" : "OFF"));
@@ -29,25 +29,37 @@ public class ShooterIOSim implements ShooterIO {
 
   @Override
   public void setPower(double power) {
-    leftAppliedPower = power;
-    rightAppliedPower = power;
-    leftVelocityRPM = power * kMaxRpm;
-    rightVelocityRPM = power * kMaxRpm;
+    mainAppliedPower = power;
+    followerAppliedPower = power;
+    mainVelocityRPM = power * kMaxRpm;
+    followerVelocityRPM = power * kMaxRpm;
   }
 
   @Override
-  public void setVelocityRPM(double leftRPM, double rightRPM) {
-    leftAppliedPower = leftRPM / kMaxRpm;
-    rightAppliedPower = rightRPM / kMaxRpm;
-    leftVelocityRPM += (leftRPM - leftVelocityRPM) * kVelocityAlpha;
-    rightVelocityRPM += (rightRPM - rightVelocityRPM) * kVelocityAlpha;
+  public void setFollowerPower(double power) {
+    followerAppliedPower = power;
+    followerVelocityRPM = power * kMaxRpm;
+  }
+
+  @Override
+  public void setVelocityRPM(double mainRPM, double followerRPM) {
+    mainAppliedPower = mainRPM / kMaxRpm;
+    followerAppliedPower = followerRPM / kMaxRpm;
+    mainVelocityRPM += (mainRPM - mainVelocityRPM) * kVelocityAlpha;
+    followerVelocityRPM += (followerRPM - followerVelocityRPM) * kVelocityAlpha;
   }
 
   @Override
   public void stop() {
-    leftAppliedPower = 0.0;
-    rightAppliedPower = 0.0;
-    leftVelocityRPM = 0.0;
-    rightVelocityRPM = 0.0;
+    mainAppliedPower = 0.0;
+    followerAppliedPower = 0.0;
+    mainVelocityRPM = 0.0;
+    followerVelocityRPM = 0.0;
+  }
+
+  @Override
+  public void stopFollower() {
+    followerAppliedPower = 0.0;
+    followerVelocityRPM = 0.0;
   }
 }

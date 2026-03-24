@@ -13,52 +13,78 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 public class ShooterIOSparkMax implements ShooterIO {
-  private final SparkMax leftMotor = new SparkMax(kLeftShooterCANId, MotorType.kBrushless);
-  private final SparkMax rightMotor = new SparkMax(kRightShooterCANId, MotorType.kBrushless);
-  private final SparkClosedLoopController leftController = leftMotor.getClosedLoopController();
-  private final SparkClosedLoopController rightController = rightMotor.getClosedLoopController();
+  private final SparkMax mainMotor = new SparkMax(kMainShooterCANId, MotorType.kBrushless);
+  private final SparkMax followerMotor = new SparkMax(kFollowerShooterCANId, MotorType.kBrushless);
+  private final SparkClosedLoopController mainController = mainMotor.getClosedLoopController();
+  private final SparkClosedLoopController followerController =
+      followerMotor.getClosedLoopController();
 
   public ShooterIOSparkMax() {
-    SparkMaxConfig config = new SparkMaxConfig();
-    config.smartCurrentLimit(kCurrentLimit);
-    config.voltageCompensation(12);
-    config.idleMode(IdleMode.kCoast);
-    config
+    SparkMaxConfig configMain = new SparkMaxConfig();
+    configMain.smartCurrentLimit(kCurrentLimit);
+    configMain.voltageCompensation(12);
+    configMain.idleMode(IdleMode.kCoast);
+    configMain
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pid(kShooterKp.getAsDouble(), kShooterKi.getAsDouble(), kShooterKd.getAsDouble());
+        .pid(
+            kShooterMainKp.getAsDouble(),
+            kShooterMainKi.getAsDouble(),
+            kShooterMainKd.getAsDouble());
 
-    // right config
-    rightMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    // main config
+    mainMotor.configure(configMain, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    // left config (inverted)
-    config.inverted(true);
-    leftMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    SparkMaxConfig configFollower = new SparkMaxConfig();
+    configFollower.smartCurrentLimit(kCurrentLimit);
+    configFollower.voltageCompensation(12);
+    configFollower.idleMode(IdleMode.kCoast);
+    configFollower.inverted(true);
+    configFollower
+        .closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .pid(
+            kShooterFollowerKp.getAsDouble(),
+            kShooterFollowerKi.getAsDouble(),
+            kShooterFollowerKd.getAsDouble());
+
+    followerMotor.configure(
+        configFollower, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
-    inputs.leftAppliedOutput = leftMotor.getAppliedOutput();
-    inputs.rightAppliedOutput = rightMotor.getAppliedOutput();
-    inputs.leftVelocityRPM = leftMotor.getEncoder().getVelocity();
-    inputs.rightVelocityRPM = rightMotor.getEncoder().getVelocity();
+    inputs.mainAppliedOutput = mainMotor.getAppliedOutput();
+    inputs.followerAppliedOutput = followerMotor.getAppliedOutput();
+    inputs.mainVelocityRPM = mainMotor.getEncoder().getVelocity();
+    inputs.followerVelocityRPM = followerMotor.getEncoder().getVelocity();
   }
 
   @Override
   public void setPower(double power) {
-    leftMotor.set(power);
-    rightMotor.set(power);
+    mainMotor.set(power);
+    followerMotor.set(power);
   }
 
   @Override
-  public void setVelocityRPM(double leftRPM, double rightRPM) {
-    leftController.setSetpoint(leftRPM, ControlType.kVelocity);
-    rightController.setSetpoint(rightRPM, ControlType.kVelocity);
+  public void setFollowerPower(double power) {
+    followerMotor.set(power);
+  }
+
+  @Override
+  public void setVelocityRPM(double mainRPM, double followerRPM) {
+    mainController.setSetpoint(mainRPM, ControlType.kVelocity);
+    followerController.setSetpoint(followerRPM, ControlType.kVelocity);
   }
 
   @Override
   public void stop() {
-    leftMotor.stopMotor();
-    rightMotor.stopMotor();
+    mainMotor.stopMotor();
+    followerMotor.stopMotor();
+  }
+
+  @Override
+  public void stopFollower() {
+    followerMotor.stopMotor();
   }
 }

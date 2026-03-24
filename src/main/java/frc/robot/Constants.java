@@ -133,7 +133,7 @@ public final class Constants {
 
     // PathPlanner configuration
     public static final double robotMassKg = 68;
-    public static final double robotMOI = 7.047;
+    public static final double robotMOI = 7.31266;
     public static final double wheelCOF =
         1.6; // https://www.chiefdelphi.com/t/wildstang-robotics-program-team-111-and-112-build-blog-2025/477716/36
 
@@ -241,7 +241,6 @@ public final class Constants {
     public static final double HEADING_MAX_ACCELERATION = 20.0;
   }
 
-
   public static final class IntakeConstants {
     private IntakeConstants() {}
     // TODO: Set final CAN ID
@@ -254,14 +253,20 @@ public final class Constants {
   public static final class ShooterConstants {
     private ShooterConstants() {}
     // TODO: Set final CAN IDs
-    public static final int kLeftShooterCANId = 0;
-    public static final int kRightShooterCANId = 0;
+    public static final int kMainShooterCANId = 0;
+    public static final int kFollowerShooterCANId = 0;
     public static final int kCurrentLimit = 80;
 
     // TODO: Tune this
-    public static final TunableNum kShooterKp = new TunableNum("Shooter/kP", 0.0002);
-    public static final TunableNum kShooterKi = new TunableNum("Shooter/kI", 0.0);
-    public static final TunableNum kShooterKd = new TunableNum("Shooter/kD", 0.0);
+    public static final TunableNum kShooterMainKp = new TunableNum("Shooter/kP", 0.0002);
+    public static final TunableNum kShooterMainKi = new TunableNum("Shooter/kI", 0.0);
+    public static final TunableNum kShooterMainKd = new TunableNum("Shooter/kD", 0.0);
+
+    //TODO: TUNE THIS
+    public static final TunableNum kShooterFollowerKp = new TunableNum("Shooter/kP", 0.0002);
+    public static final TunableNum kShooterFollowerKi = new TunableNum("Shooter/kI", 0.0);
+    public static final TunableNum kShooterFollowerKd = new TunableNum("Shooter/kD", 0.0);
+
     // TODO: Tune actual shot RPM and "at speed" tolerance from real shots.
     public static final TunableNum kShootRPM = new TunableNum("Shooter/kShootRPM", 4000);
     public static final double kVelocityToleranceRPM = 100.0;
