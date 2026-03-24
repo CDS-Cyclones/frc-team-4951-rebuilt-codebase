@@ -15,11 +15,18 @@ public interface ShooterIO {
 
   default void setPower(double power) {}
 
-  default void setFollowerPower(double power) {}
-
   default void stop() {}
+
+  default void setVelocityRPM(double mainRPM, double followerRPM) {}
+
+  default void setFollowerVelocityRPM(double followerRPM) {}
+
+  default void setMainVelocityRPM(double mainRPM){}
+
+  default void setFollowerMotorPower(double followerMotorPower){}
 
   default void stopFollower() {}
 
-  default void setVelocityRPM(double mainRPM, double followerRPM) {}
+  default void setFollowerPower(double power) {}
+
 }
