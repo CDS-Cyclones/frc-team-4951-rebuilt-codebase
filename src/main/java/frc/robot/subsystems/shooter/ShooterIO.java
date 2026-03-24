@@ -6,9 +6,9 @@ public interface ShooterIO {
   @AutoLog
   public static class ShooterIOInputs {
     public double mainAppliedOutput = 0.0;
-    public double followerAppliedOutput = 0.0;
+    public double secondaryAppliedOutput = 0.0;
     public double mainVelocityRPM = 0.0;
-    public double followerVelocityRPM = 0.0;
+    public double secondaryVelocityRPM = 0.0;
   }
 
   default void updateInputs(ShooterIOInputs inputs) {}
@@ -17,16 +17,11 @@ public interface ShooterIO {
 
   default void stop() {}
 
-  default void setVelocityRPM(double mainRPM, double followerRPM) {}
+  default void setVelocityRPM(double mainRPM, double secondaryRPM) {}
 
-  default void setFollowerVelocityRPM(double followerRPM) {}
+  default void setSecondaryVelocityRPM(double secondaryRPM) {}
 
-  default void setMainVelocityRPM(double mainRPM){}
+  default void setMainVelocityRPM(double mainRPM) {}
 
-  default void setFollowerMotorPower(double followerMotorPower){}
-
-  default void stopFollower() {}
-
-  default void setFollowerPower(double power) {}
-
+  default void setSecondaryPower(double power) {}
 }

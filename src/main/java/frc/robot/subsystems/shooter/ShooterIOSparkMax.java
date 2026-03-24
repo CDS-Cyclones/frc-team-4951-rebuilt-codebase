@@ -14,70 +14,83 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 public class ShooterIOSparkMax implements ShooterIO {
   private final SparkMax mainMotor = new SparkMax(kMainShooterCANId, MotorType.kBrushless);
-  private final SparkMax followerMotor = new SparkMax(kFollowerShooterCANId, MotorType.kBrushless);
+  private final SparkMax secondaryMotor =
+      new SparkMax(kSecondaryShooterCANId, MotorType.kBrushless);
   private final SparkClosedLoopController mainController = mainMotor.getClosedLoopController();
-  private final SparkClosedLoopController followerController =
-      followerMotor.getClosedLoopController();
+  private final SparkClosedLoopController secondaryController =
+      secondaryMotor.getClosedLoopController();
 
   public ShooterIOSparkMax() {
     SparkMaxConfig configMain = new SparkMaxConfig();
     configMain.smartCurrentLimit(kCurrentLimit);
     configMain.voltageCompensation(12);
-    configMain.idleMode(IdleMode.kCoast);
+    configMain.idleMode(IdleMode.kBrake);
     configMain
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pid(kShooterMainKp.getAsDouble(), kShooterMainKi.getAsDouble(), kShooterMainKd.getAsDouble());
+        .pid(
+            kShooterMainKp.getAsDouble(),
+            kShooterMainKi.getAsDouble(),
+            kShooterMainKd.getAsDouble());
 
     // main config
     mainMotor.configure(configMain, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        SparkMaxConfig configFollower = new SparkMaxConfig();
-    configFollower.smartCurrentLimit(kCurrentLimit);
-    configFollower.voltageCompensation(12);
-    configFollower.idleMode(IdleMode.kCoast);
-    configFollower.inverted(true);
-    configFollower
+    SparkMaxConfig configSecondary = new SparkMaxConfig();
+    configSecondary.smartCurrentLimit(kCurrentLimit);
+    configSecondary.voltageCompensation(12);
+    configSecondary.idleMode(IdleMode.kBrake);
+    configSecondary.inverted(true);
+    configSecondary
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pid(kShooterFollowerKp.getAsDouble(), kShooterFollowerKi.getAsDouble(), kShooterFollowerKd.getAsDouble());
+        .pid(
+            kShooterSecondaryKp.getAsDouble(),
+            kShooterSecondaryKi.getAsDouble(),
+            kShooterSecondaryKd.getAsDouble());
 
-    followerMotor.configure(configFollower, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    secondaryMotor.configure(
+        configSecondary, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
     inputs.mainAppliedOutput = mainMotor.getAppliedOutput();
-    inputs.followerAppliedOutput = followerMotor.getAppliedOutput();
+    inputs.secondaryAppliedOutput = secondaryMotor.getAppliedOutput();
     inputs.mainVelocityRPM = mainMotor.getEncoder().getVelocity();
-    inputs.followerVelocityRPM = followerMotor.getEncoder().getVelocity();
+    inputs.secondaryVelocityRPM = secondaryMotor.getEncoder().getVelocity();
   }
 
   @Override
   public void setPower(double power) {
     mainMotor.set(power);
-    followerMotor.set(power);
+    secondaryMotor.set(power);
   }
 
   @Override
-  public void setVelocityRPM(double mainRPM, double followerRPM) {
+  public void setVelocityRPM(double mainRPM, double secondaryRPM) {
     mainController.setSetpoint(mainRPM, ControlType.kVelocity);
-    followerController.setSetpoint(followerRPM, ControlType.kVelocity);
+    secondaryController.setSetpoint(secondaryRPM, ControlType.kVelocity);
   }
 
   @Override
-  public void setFollowerVelocityRPM(double followerRPM){
-    followerController.setSetpoint(followerRPM, ControlType.kVelocity);
-  }
-
-  @Override
-  public void setMainVelocityRPM(double mainRPM){
+  public void setMainVelocityRPM(double mainRPM) {
     mainController.setSetpoint(mainRPM, ControlType.kVelocity);
-    }
+  }
+
+  @Override
+  public void setSecondaryVelocityRPM(double secondaryRPM) {
+    secondaryController.setSetpoint(secondaryRPM, ControlType.kVelocity);
+  }
+
+  @Override
+  public void setSecondaryPower(double power) {
+    secondaryMotor.set(power);
+  }
 
   @Override
   public void stop() {
     mainMotor.stopMotor();
-    followerMotor.stopMotor();
+    secondaryMotor.stopMotor();
   }
 }

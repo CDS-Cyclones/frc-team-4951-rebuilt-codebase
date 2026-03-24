@@ -14,6 +14,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.kicker.Kicker;
 import frc.robot.subsystems.shooter.Shooter;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -22,69 +23,79 @@ import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 import org.littletonrobotics.junction.Logger;
 
 public class ManipulationCommands {
-  private static void runIntakeWithShooterFollower(Intake intake, Shooter shooter, double power) {
+  private static void runIntakeWithKicker(Intake intake, Kicker kicker, double power) {
     intake.run(power);
-    shooter.setFollowerPower(power);
+    kicker.run(power);
   }
 
-  public static Command toggleIntake(Intake intake, Shooter shooter) {
-    return holdIntake(intake, shooter);
+  public static Command toggleIntake(Intake intake, Kicker kicker) {
+    return holdIntake(intake, kicker);
   }
 
-  public static Command holdIntake(Intake intake, Shooter shooter) {
+  public static Command holdIntake(Intake intake, Kicker kicker) {
     return Commands.runEnd(
-        () -> runIntakeWithShooterFollower(intake, shooter, Constants.IntakeConstants.intakeSpeed),
+        () -> runIntakeWithKicker(intake, kicker, Constants.IntakeConstants.intakeSpeed),
         () -> {
           intake.stop();
-          shooter.stopFollower();
+          kicker.stop();
         },
         intake,
-        shooter);
+        kicker);
   }
 
-  public static Command startIntake(Intake intake, Shooter shooter) {
+  public static Command startIntake(Intake intake, Kicker kicker) {
     return Commands.runOnce(
-        () -> runIntakeWithShooterFollower(intake, shooter, Constants.IntakeConstants.intakeSpeed),
+        () -> runIntakeWithKicker(intake, kicker, Constants.IntakeConstants.intakeSpeed),
         intake,
-        shooter);
+        kicker);
   }
 
-  public static Command stopIntake(Intake intake, Shooter shooter) {
+  public static Command stopIntake(Intake intake, Kicker kicker) {
     return Commands.runOnce(
         () -> {
           intake.stop();
-          shooter.stopFollower();
+          kicker.stop();
         },
         intake,
-        shooter);
+        kicker);
   }
 
-  public static Command shootFuel(Shooter shooter) {
-    return shootFuel(shooter, () -> Constants.ShooterConstants.kShootRPM.getAsDouble());
+  public static Command shootFuel(Shooter shooter, Kicker kicker) {
+    return shootFuel(shooter, kicker, () -> Constants.ShooterConstants.kShootRPM.getAsDouble());
   }
 
-  public static Command shootFuel(Shooter shooter, DoubleSupplier rpmSupplier) {
-    return shootFuel(shooter, rpmSupplier, () -> true);
+  public static Command shootFuel(Shooter shooter, Kicker kicker, DoubleSupplier rpmSupplier) {
+    return shootFuel(shooter, kicker, rpmSupplier, () -> true);
   }
 
   public static Command shootFuel(
-      Shooter shooter, DoubleSupplier rpmSupplier, BooleanSupplier canShootSupplier) {
+      Shooter shooter,
+      Kicker kicker,
+      DoubleSupplier rpmSupplier,
+      BooleanSupplier canShootSupplier) {
     return Commands.runEnd(
         () -> {
           if (!canShootSupplier.getAsBoolean()) {
             shooter.stop();
+            kicker.stop();
             return;
           }
 
           double rpm = rpmSupplier.getAsDouble();
           if (rpm > 0.0) {
             shooter.setVelocityRPM(rpm);
+            kicker.run(Constants.ShooterConstants.kKickerIndexPercent);
           } else {
             shooter.stop();
+            kicker.stop();
           }
         },
-        shooter::stop,
-        shooter);
+        () -> {
+          shooter.stop();
+          kicker.stop();
+        },
+        shooter,
+        kicker);
   }
 
   public static Command shootFuelSim(Drive drive, Shooter shooter) {

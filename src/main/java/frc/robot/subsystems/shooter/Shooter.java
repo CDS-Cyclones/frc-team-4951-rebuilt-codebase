@@ -8,22 +8,22 @@ public class Shooter extends SubsystemBase {
   private final ShooterIO io;
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
   private double mainSetpointRPM = 0.0;
-  private double followerSetpointRPM = 0.0;
+  private double secondarySetpointRPM = 0.0;
 
   public void setVelocityRPM(double rpm) {
     setVelocityRPM(rpm, rpm);
   }
 
-  public void setVelocityRPM(double mainRPM, double followerRPM) {
+  public void setVelocityRPM(double mainRPM, double secondaryRPM) {
     mainSetpointRPM = mainRPM;
-    followerSetpointRPM = followerRPM;
-    io.setVelocityRPM(mainRPM, followerRPM);
+    secondarySetpointRPM = secondaryRPM;
+    io.setVelocityRPM(mainRPM, secondaryRPM);
   }
 
   public boolean isAtSpeed() {
     double tol = Constants.ShooterConstants.kVelocityToleranceRPM;
     return Math.abs(inputs.mainVelocityRPM - mainSetpointRPM) < tol
-        && Math.abs(inputs.followerVelocityRPM - followerSetpointRPM) < tol;
+        && Math.abs(inputs.secondaryVelocityRPM - secondarySetpointRPM) < tol;
   }
 
   public Shooter(ShooterIO io) {
@@ -34,16 +34,8 @@ public class Shooter extends SubsystemBase {
     io.setPower(power);
   }
 
-  public void setFollowerPower(double power) {
-    io.setFollowerPower(power);
-  }
-
   public void stop() {
     io.stop();
-  }
-
-  public void stopFollower() {
-    io.stopFollower();
   }
 
   @Override

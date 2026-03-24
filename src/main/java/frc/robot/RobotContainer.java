@@ -24,6 +24,10 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOSparkMax;
+import frc.robot.subsystems.kicker.Kicker;
+import frc.robot.subsystems.kicker.KickerIO;
+import frc.robot.subsystems.kicker.KickerIOSim;
+import frc.robot.subsystems.kicker.KickerIOSparkMax;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
@@ -36,6 +40,7 @@ import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import frc.robot.commands.TestCommands;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -49,12 +54,14 @@ public class RobotContainer {
   private final Drive drive;
   private final Vision vision;
   private final Intake intake;
+  private final Kicker kicker;
   private final Shooter shooter;
 
   private SwerveDriveSimulation driveSimulation = null;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandXboxController testController = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -76,6 +83,7 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new VisionIOLimelight(Constants.VisionConstants.camera0Name, drive::getRotation));
         intake = new Intake(new IntakeIOSparkMax());
+        kicker = new Kicker(new KickerIOSparkMax());
         shooter = new Shooter(new ShooterIOSparkMax());
         break;
 
@@ -102,6 +110,7 @@ public class RobotContainer {
                     Constants.VisionConstants.botToCamTransformSim,
                     driveSimulation::getSimulatedDriveTrainPose));
         intake = new Intake(new IntakeIOSim(driveSimulation));
+        kicker = new Kicker(new KickerIOSim());
         shooter = new Shooter(new ShooterIOSim());
         break;
 
@@ -116,19 +125,19 @@ public class RobotContainer {
                 new ModuleIO() {});
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         intake = new Intake(new IntakeIO() {});
+        kicker = new Kicker(new KickerIO() {});
         shooter = new Shooter(new ShooterIO() {});
         break;
     }
 
     // Set up auto routines
-    NamedCommands.registerCommand("intakeStart", ManipulationCommands.startIntake(intake, shooter));
-    NamedCommands.registerCommand("intakeStop", ManipulationCommands.stopIntake(intake, shooter));
+    NamedCommands.registerCommand("intakeStart", ManipulationCommands.startIntake(intake, kicker));
+    NamedCommands.registerCommand("intakeStop", ManipulationCommands.stopIntake(intake, kicker));
     NamedCommands.registerCommand(
         "shootFuelAuto",
         Commands.parallel(
             ManipulationCommands.shootFuel(
-                shooter,
-                () -> Constants.ShooterConstants.kAutoShootRPM.getAsDouble()),
+                shooter, kicker, () -> Constants.ShooterConstants.kAutoShootRPM.getAsDouble()),
             ManipulationCommands.shootFuelSim(
                 drive,
                 shooter,
@@ -163,13 +172,19 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////// MAIN CONTROLLER ///////////////////////////////////////
+    /// ///////////////////////////////////////////////////////////////////////////////////////
+    
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> -controller.getLeftY() * 0.75,
+            () -> -controller.getLeftX() * 0.75,
+            () -> -controller.getRightX() * 0.75));
 
     // Switch to X pattern when X button is pressed
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -184,17 +199,34 @@ public class RobotContainer {
             : () ->
                 drive.setPose(
                     new Pose2d(drive.getPose().getTranslation(), new Rotation2d())); // zero gyro
+
+            
     controller.start().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
+
+    //Orbit hub when left bumper is held
     controller.leftBumper().whileTrue(new OrbitCommand(drive, () -> controller.getLeftX()));
+
+    // Shoot in place when right bumper is held
     controller
         .rightBumper()
         .whileTrue(
             Commands.parallel(
                 ManipulationCommands.shootFuel(
-                    shooter,
-                    () -> Constants.ShooterConstants.kShootRPM.getAsDouble()),
+                    shooter, kicker, () -> Constants.ShooterConstants.kShootRPM.getAsDouble()),
                 ManipulationCommands.shootFuelSim(drive, shooter, intake)));
-    controller.a().toggleOnTrue(ManipulationCommands.holdIntake(intake, shooter));
+
+    // Toggle Intake with A button
+    controller.a().toggleOnTrue(ManipulationCommands.toggleIntake(intake, kicker));
+
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    /// ///////////////////////////////// TEST CONTROLLER ///////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    
+    testController.a().whileTrue(TestCommands.holdIntake(intake, 0.25));
+    testController.b().whileTrue(TestCommands.holdKicker(kicker, 0.25));
+    testController.x().whileTrue(TestCommands.holdShooter(shooter, 0.25));
   }
 
   /**
