@@ -307,6 +307,21 @@ public class Drive extends SubsystemBase {
     }
   }
 
+  /** Zeroes the gyro so the robot's current heading becomes forward. */
+  public void zeroYaw() {
+    odometryLock.lock();
+    try {
+      gyroIO.zeroYaw();
+      rawGyroRotation = Rotation2d.kZero;
+      poseEstimator.resetPosition(
+          Rotation2d.kZero,
+          getModulePositions(),
+          new Pose2d(getPose().getTranslation(), Rotation2d.kZero));
+    } finally {
+      odometryLock.unlock();
+    }
+  }
+
   /** Adds a new timestamped vision measurement. */
   public void addVisionMeasurement(
       Pose2d visionRobotPoseMeters,
