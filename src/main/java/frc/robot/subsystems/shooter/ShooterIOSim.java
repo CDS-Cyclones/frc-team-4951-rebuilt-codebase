@@ -43,6 +43,7 @@ public class ShooterIOSim implements ShooterIO {
 
   @Override
   public void setVelocityRPM(double mainRPM, double secondaryRPM) {
+    secondaryRPM = mainRPM;
     mainAppliedPower = mainRPM / kMaxRpm;
     secondaryAppliedPower = secondaryRPM / kMaxRpm;
     mainVelocityRPM += (mainRPM - mainVelocityRPM) * kVelocityAlpha;

@@ -243,6 +243,7 @@ public final class Constants {
 
   public static final class IntakeConstants {
     private IntakeConstants() {}
+
     public static final int kCanId = 20;
     public static final int kCurrentLimit = 40;
     public static final double intakeSpeed = 0.8;
@@ -250,6 +251,7 @@ public final class Constants {
 
   public static final class ShooterConstants {
     private ShooterConstants() {}
+
     public static final int kMainShooterCANId = 22;
     public static final int kSecondaryShooterCANId = 23;
     public static final int kKickerCANId = 21;
@@ -260,17 +262,14 @@ public final class Constants {
     public static final TunableNum kShooterMainKp = new TunableNum("Shooter/kP", 0.0002);
     public static final TunableNum kShooterMainKi = new TunableNum("Shooter/kI", 0.0);
     public static final TunableNum kShooterMainKd = new TunableNum("Shooter/kD", 0.0);
-
-    // TODO: TUNE THIS
-    public static final TunableNum kShooterSecondaryKp = new TunableNum("Shooter/kP", 0.0002);
-    public static final TunableNum kShooterSecondaryKi = new TunableNum("Shooter/kI", 0.0);
-    public static final TunableNum kShooterSecondaryKd = new TunableNum("Shooter/kD", 0.0);
+    public static final TunableNum kShooterMainKs = new TunableNum("Shooter/kS", 0.0);
+    public static final TunableNum kShooterMainKv = new TunableNum("Shooter/kV", 0.0);
 
     // TODO: Tune actual shot RPM and "at speed" tolerance from real shots.
-    public static final TunableNum kShootRPM = new TunableNum("Shooter/kShootRPM", 4000);
+    public static final TunableNum kShootRPM = new TunableNum("Shooter/kShootRPM", 200);
     public static final double kKickerIndexPercent = 1.0;
     public static final double kVelocityToleranceRPM = 100.0;
-    public static final TunableNum kAutoShootRPM = new TunableNum("Shooter/kAutoShootRPM", 4000);
+    public static final TunableNum kAutoShootRPM = new TunableNum("Shooter/kAutoShootRPM", 200);
     public static final double kSimLaunchPeriodSeconds = 0.20;
     public static final double kSimLaunchHeightMeters = Units.inchesToMeters(24.0);
     public static final TunableNum kSimReferenceRPM =

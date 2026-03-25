@@ -82,7 +82,7 @@ public class ManipulationCommands {
           }
 
           double rpm = rpmSupplier.getAsDouble();
-          if (rpm > 0.0) {
+          if (shooter.isAtSpeed()) {
             shooter.setVelocityRPM(rpm);
             kicker.run(Constants.ShooterConstants.kKickerIndexPercent);
           } else {

@@ -16,8 +16,8 @@ public class Shooter extends SubsystemBase {
 
   public void setVelocityRPM(double mainRPM, double secondaryRPM) {
     mainSetpointRPM = mainRPM;
-    secondarySetpointRPM = secondaryRPM;
-    io.setVelocityRPM(mainRPM, secondaryRPM);
+    secondarySetpointRPM = mainRPM;
+    io.setVelocityRPM(mainRPM, mainRPM);
   }
 
   public boolean isAtSpeed() {
