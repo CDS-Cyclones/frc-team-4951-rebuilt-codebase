@@ -222,7 +222,7 @@ public class RobotContainer {
 
     testController.a().whileTrue(TestCommands.holdIntake(intake, 0.25));
     testController.b().whileTrue(TestCommands.holdKicker(kicker, 0.25));
-    testController.x().whileTrue(TestCommands.holdShooter(shooter, 0.25));
+    testController.x().whileTrue(TestCommands.holdShooter(shooter, 0.75));
   }
 
   /**

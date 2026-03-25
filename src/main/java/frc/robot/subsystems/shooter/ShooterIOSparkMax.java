@@ -25,6 +25,7 @@ public class ShooterIOSparkMax implements ShooterIO {
     configMain.smartCurrentLimit(kCurrentLimit);
     configMain.voltageCompensation(12);
     configMain.idleMode(IdleMode.kBrake);
+    configMain.inverted(true);
     configMain
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)

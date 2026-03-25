@@ -19,7 +19,7 @@ public class KickerIOSparkMax implements KickerIO {
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(Constants.ShooterConstants.kKickerCurrentLimit)
         .voltageCompensation(12.0)
-        .inverted(true);
+        .inverted(false);
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
