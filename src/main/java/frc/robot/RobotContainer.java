@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ManipulationCommands;
 import frc.robot.commands.OrbitCommand;
+import frc.robot.commands.TestCommands;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
@@ -40,7 +41,6 @@ import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import frc.robot.commands.TestCommands;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -173,11 +173,10 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-
     ////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////// MAIN CONTROLLER ///////////////////////////////////////
     /// ///////////////////////////////////////////////////////////////////////////////////////
-    
+
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
@@ -200,10 +199,9 @@ public class RobotContainer {
                 drive.setPose(
                     new Pose2d(drive.getPose().getTranslation(), new Rotation2d())); // zero gyro
 
-            
     controller.start().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
 
-    //Orbit hub when left bumper is held
+    // Orbit hub when left bumper is held
     controller.leftBumper().whileTrue(new OrbitCommand(drive, () -> controller.getLeftX()));
 
     // Shoot in place when right bumper is held
@@ -218,12 +216,10 @@ public class RobotContainer {
     // Toggle Intake with A button
     controller.a().toggleOnTrue(ManipulationCommands.toggleIntake(intake, kicker));
 
-
-
     ////////////////////////////////////////////////////////////////////////////////////////////
     /// ///////////////////////////////// TEST CONTROLLER ///////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////
-    
+
     testController.a().whileTrue(TestCommands.holdIntake(intake, 0.25));
     testController.b().whileTrue(TestCommands.holdKicker(kicker, 0.25));
     testController.x().whileTrue(TestCommands.holdShooter(shooter, 0.25));

@@ -243,16 +243,13 @@ public final class Constants {
 
   public static final class IntakeConstants {
     private IntakeConstants() {}
-    // TODO: Set final CAN ID
     public static final int kCanId = 20;
     public static final int kCurrentLimit = 40;
-    // TODO: Tune intake speed for reliable pickup/retention.
     public static final double intakeSpeed = 0.8;
   }
 
   public static final class ShooterConstants {
     private ShooterConstants() {}
-    // TODO: Set final CAN IDs
     public static final int kMainShooterCANId = 22;
     public static final int kSecondaryShooterCANId = 23;
     public static final int kKickerCANId = 21;
