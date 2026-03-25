@@ -220,9 +220,18 @@ public class RobotContainer {
     /// ///////////////////////////////// TEST CONTROLLER ///////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////
 
-    testController.a().whileTrue(TestCommands.holdIntake(intake, 0.25));
-    testController.b().whileTrue(TestCommands.holdKicker(kicker, 0.25));
-    testController.x().whileTrue(TestCommands.holdShooter(shooter, 0.75));
+    testController.a().whileTrue(TestCommands.holdIntake(intake, 0.55));
+    testController.b().whileTrue(TestCommands.holdKicker(kicker, 0.55));
+    testController
+        .x()
+        .whileTrue(
+            TestCommands.holdShooter(
+                shooter, Constants.ShooterConstants.kShooterOpenLoopDutyCycle.getAsDouble()));
+    testController
+        .y()
+        .whileTrue(
+            TestCommands.holdShooterVelocity(
+                shooter, () -> Constants.ShooterConstants.kShootRPM.getAsDouble()));
   }
 
   /**

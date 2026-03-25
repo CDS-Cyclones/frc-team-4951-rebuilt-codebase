@@ -21,26 +21,15 @@ public class ShooterIOSparkMax implements ShooterIO {
   private final SparkClosedLoopController mainController = mainMotor.getClosedLoopController();
 
   public ShooterIOSparkMax() {
-    SparkMaxConfig configMain = new SparkMaxConfig();
-    configMain.smartCurrentLimit(kCurrentLimit);
-    configMain.voltageCompensation(12);
-    configMain.idleMode(IdleMode.kBrake);
-    configMain.inverted(true);
-    configMain
-        .closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pid(
-            kShooterMainKp.getAsDouble(),
-            kShooterMainKi.getAsDouble(),
-            kShooterMainKd.getAsDouble());
-
-    // main config
-    mainMotor.configure(configMain, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    configureMainMotor(ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    kShooterMainKp.onChange(this::updateClosedLoopGains);
+    kShooterMainKi.onChange(this::updateClosedLoopGains);
+    kShooterMainKd.onChange(this::updateClosedLoopGains);
 
     SparkMaxConfig configSecondary = new SparkMaxConfig();
     configSecondary.smartCurrentLimit(kCurrentLimit);
     configSecondary.voltageCompensation(12);
-    configSecondary.idleMode(IdleMode.kBrake);
+    configSecondary.idleMode(IdleMode.kCoast);
     configSecondary.follow(mainMotor, true);
 
     secondaryMotor.configure(
@@ -58,6 +47,7 @@ public class ShooterIOSparkMax implements ShooterIO {
   @Override
   public void setPower(double power) {
     mainMotor.set(power);
+    secondaryMotor.set(power);
   }
 
   @Override
@@ -83,6 +73,27 @@ public class ShooterIOSparkMax implements ShooterIO {
   @Override
   public void stop() {
     mainMotor.stopMotor();
+  }
+
+  private void configureMainMotor(ResetMode resetMode, PersistMode persistMode) {
+    SparkMaxConfig configMain = new SparkMaxConfig();
+    configMain.smartCurrentLimit(kCurrentLimit);
+    configMain.voltageCompensation(12);
+    configMain.idleMode(IdleMode.kCoast);
+    configMain.inverted(true);
+    configMain
+        .closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .pid(
+            kShooterMainKp.getAsDouble(),
+            kShooterMainKi.getAsDouble(),
+            kShooterMainKd.getAsDouble());
+
+    mainMotor.configure(configMain, resetMode, persistMode);
+  }
+
+  private void updateClosedLoopGains() {
+    configureMainMotor(ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
   private void applyVelocitySetpoint(double rpm) {

@@ -16,7 +16,7 @@ public class KickerIOSparkMax implements KickerIO {
     motor = new SparkMax(Constants.ShooterConstants.kKickerCANId, MotorType.kBrushless);
     config
         .inverted(false)
-        .idleMode(IdleMode.kBrake)
+        .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(Constants.ShooterConstants.kKickerCurrentLimit)
         .voltageCompensation(12.0)
         .inverted(false);
