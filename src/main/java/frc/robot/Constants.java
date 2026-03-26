@@ -261,16 +261,16 @@ public final class Constants {
     public static final double kKickerPercentage = 0.8;
 
     // TODO: Tune this
-    public static final TunableNum kShooterMainKp = new TunableNum("Shooter/kP", 0.0003);
+    public static final TunableNum kShooterMainKp = new TunableNum("Shooter/kP", 0.00023);
     public static final TunableNum kShooterMainKi = new TunableNum("Shooter/kI", 0.0);
     public static final TunableNum kShooterMainKd = new TunableNum("Shooter/kD", 0.0);
     public static final TunableNum kShooterMainKs = new TunableNum("Shooter/kS", 0.1);
-    public static final TunableNum kShooterMainKv = new TunableNum("Shooter/kV", 0.0020);
+    public static final TunableNum kShooterMainKv = new TunableNum("Shooter/kV", 0.00202);
     public static final TunableNum kShooterOpenLoopDutyCycle =
         new TunableNum("Shooter/OpenLoopDutyCycle", 0.55);
 
     // TODO: Tune actual shot RPM and "at speed" tolerance from real shots.
-    public static final TunableNum kShootRPM = new TunableNum("Shooter/kShootRPM", 5000);
+    public static final TunableNum kShootRPM = new TunableNum("Shooter/kShootRPM", 3200);
     public static final double kKickerIndexPercent = 1.0;
     public static final double kVelocityToleranceRPM = 100.0;
     public static final TunableNum kAutoShootRPM = new TunableNum("Shooter/kAutoShootRPM", 3000);
