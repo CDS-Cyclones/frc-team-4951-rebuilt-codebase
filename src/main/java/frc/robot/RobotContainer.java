@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -135,14 +136,13 @@ public class RobotContainer {
     NamedCommands.registerCommand("intakeStop", ManipulationCommands.stopIntake(intake, kicker));
     NamedCommands.registerCommand(
         "shootFuelAuto",
-        Commands.parallel(
-            ManipulationCommands.shootFuel(
-                shooter, kicker, () -> Constants.ShooterConstants.kAutoShootRPM.getAsDouble()),
-            ManipulationCommands.shootFuelSim(
-                drive,
-                shooter,
-                intake,
-                () -> Constants.ShooterConstants.kAutoShootRPM.getAsDouble())));
+        ManipulationCommands.shootFuel(
+            drive,
+            intake,
+            shooter,
+            kicker,
+            () -> Constants.ShooterConstants.kAutoShootRPM.getAsDouble(),
+            () -> true));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
@@ -181,12 +181,9 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY() * 0.75,
-            () -> -controller.getLeftX() * 0.75,
-            () -> -controller.getRightX() * 0.75));
-
-    // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+            () -> -controller.getLeftY(),
+            () -> -controller.getLeftX(),
+            () -> -controller.getRightX()));
 
     final Runnable resetGyro =
         Constants.currentMode == Constants.Mode.SIM
@@ -203,16 +200,12 @@ public class RobotContainer {
     controller.leftBumper().whileTrue(new OrbitCommand(drive, () -> controller.getLeftX()));
 
     // Shoot in place when right bumper is held
-    controller
-        .rightBumper()
-        .whileTrue(
-            Commands.parallel(
-                ManipulationCommands.shootFuel(
-                    shooter, kicker, () -> Constants.ShooterConstants.kShootRPM.getAsDouble()),
-                ManipulationCommands.shootFuelSim(drive, shooter, intake)));
+    controller.rightBumper().whileTrue(ManipulationCommands.shootFuel(intake, shooter, kicker));
 
     // Toggle Intake with A button
     controller.a().toggleOnTrue(ManipulationCommands.toggleIntake(intake, kicker));
+
+    controller.leftTrigger().whileTrue(DriveCommands.joystickDriveAtAngle(drive,() -> -controller.getLeftX(), () -> -controller.getLeftY(), () -> new Rotation2d(Units.degreesToRadians(20))));
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     /// ///////////////////////////////// TEST CONTROLLER ///////////////////////////////////////
@@ -220,6 +213,7 @@ public class RobotContainer {
 
     testController.a().whileTrue(TestCommands.holdIntake(intake, 0.55));
     testController.b().whileTrue(TestCommands.holdKicker(kicker, 0.55));
+    testController.povUp().whileTrue(TestCommands.holdKicker(kicker, -0.55));
     testController
         .x()
         .whileTrue(

@@ -25,7 +25,7 @@ import org.littletonrobotics.junction.Logger;
 public class ManipulationCommands {
   private static void runIntakeWithKicker(Intake intake, Kicker kicker, double power) {
     intake.run(power);
-    kicker.run(power);
+    kicker.run(-1.0 * power);
   }
 
   public static Command toggleIntake(Intake intake, Kicker kicker) {
@@ -60,15 +60,121 @@ public class ManipulationCommands {
         kicker);
   }
 
-  public static Command shootFuel(Shooter shooter, Kicker kicker) {
-    return shootFuel(shooter, kicker, () -> Constants.ShooterConstants.kShootRPM.getAsDouble());
+  public static Command shootFuel(Intake intake, Shooter shooter, Kicker kicker) {
+    return createRealShootCommand(
+        intake,
+        shooter,
+        kicker,
+        () -> Constants.ShooterConstants.kShootRPM.getAsDouble(),
+        () -> true);
   }
 
-  public static Command shootFuel(Shooter shooter, Kicker kicker, DoubleSupplier rpmSupplier) {
-    return shootFuel(shooter, kicker, rpmSupplier, () -> true);
+  public static Command passFuel(Intake intake, Shooter shooter, Kicker kicker) {
+    return createRealShootCommand(
+        intake,
+        shooter,
+        kicker,
+        () -> Constants.ShooterConstants.kPassRPM.getAsDouble(),
+        () -> true);
+  }
+
+  public static Command shootFuel(Drive drive, Intake intake, Shooter shooter, Kicker kicker) {
+    return shootFuel(
+        drive,
+        intake,
+        shooter,
+        kicker,
+        () -> Constants.ShooterConstants.kShootRPM.getAsDouble(),
+        () -> true);
+  }
+
+  public static Command passFuel(Drive drive, Intake intake, Shooter shooter, Kicker kicker) {
+    return shootFuel(
+        drive,
+        intake,
+        shooter,
+        kicker,
+        () -> Constants.ShooterConstants.kPassRPM.getAsDouble(),
+        () -> true);
   }
 
   public static Command shootFuel(
+      Drive drive,
+      Intake intake,
+      Shooter shooter,
+      Kicker kicker,
+      DoubleSupplier rpmSupplier,
+      BooleanSupplier canShootSupplier) {
+    Command realShootCommand =
+        createRealShootCommand(intake, shooter, kicker, rpmSupplier, canShootSupplier);
+
+    if (Constants.currentMode != Mode.SIM) {
+      return realShootCommand;
+    }
+
+    Timer launchTimer = new Timer();
+    Command simShootCommand =
+        Commands.runEnd(
+            () -> {
+              if (!launchTimer.isRunning()) {
+                launchTimer.start();
+              }
+
+              double rpm = rpmSupplier.getAsDouble();
+              if (rpm <= 0.0 || !shooter.isAtSpeed() || !intake.hasFuel()) {
+                launchTimer.restart();
+                return;
+              }
+
+              if (!launchTimer.advanceIfElapsed(
+                  Constants.ShooterConstants.kSimLaunchPeriodSeconds)) {
+                return;
+              }
+
+              if (!intake.consumeFuel()) {
+                launchTimer.restart();
+                return;
+              }
+
+              Pose3d[] emptyTrajectory = new Pose3d[] {};
+              Rotation2d heading = drive.getRotation();
+              double simReferenceRpm = Constants.ShooterConstants.kSimReferenceRPM.getAsDouble();
+              double launchSpeedScale = simReferenceRpm > 1e-6 ? rpm / simReferenceRpm : 0.0;
+              double launchSpeedMetersPerSecond =
+                  Constants.ShooterConstants.kSimLaunchVelocityMetersPerSecond.getAsDouble()
+                      * launchSpeedScale;
+
+              var projectile =
+                  new RebuiltFuelOnFly(
+                          drive.getPose().getTranslation(),
+                          new Translation2d(
+                              Constants.ShooterConstants.kSimLaunchForwardOffsetMeters, 0.0),
+                          drive.getRobotRelativeSpeeds(),
+                          heading,
+                          Meters.of(Constants.ShooterConstants.kSimLaunchHeightMeters),
+                          MetersPerSecond.of(launchSpeedMetersPerSecond),
+                          Degrees.of(
+                              Constants.ShooterConstants.kSimLaunchAngleDegrees.getAsDouble()))
+                      .withProjectileTrajectoryDisplayCallBack(
+                          trajectory ->
+                              Logger.recordOutput(
+                                  "FieldSimulation/FuelShotTrajectory",
+                                  trajectory.toArray(Pose3d[]::new)),
+                          trajectory ->
+                              Logger.recordOutput(
+                                  "FieldSimulation/FuelShotTrajectory",
+                                  trajectory.toArray(Pose3d[]::new)));
+
+              Logger.recordOutput("FieldSimulation/FuelShotTrajectory", emptyTrajectory);
+              SimulatedArena.getInstance().addGamePieceProjectile(projectile);
+            },
+            () -> Logger.recordOutput("FieldSimulation/FuelShotTrajectory", new Pose3d[] {}));
+
+    return Commands.parallel(realShootCommand, simShootCommand);
+  }
+
+  private static Command createRealShootCommand(
+      Intake intake,
       Shooter shooter,
       Kicker kicker,
       DoubleSupplier rpmSupplier,
@@ -76,97 +182,23 @@ public class ManipulationCommands {
     return Commands.runEnd(
         () -> {
           if (!canShootSupplier.getAsBoolean()) {
+            intake.stop();
             shooter.stop();
             kicker.stop();
             return;
           }
 
-          double rpm = rpmSupplier.getAsDouble();
-          if (shooter.isAtSpeed()) {
-            shooter.setVelocityRPM(rpm);
-            kicker.run(Constants.ShooterConstants.kKickerIndexPercent);
-          } else {
-            shooter.stop();
-            kicker.stop();
-          }
+          shooter.setVelocityRPM(rpmSupplier.getAsDouble());
+          intake.run(Constants.IntakeConstants.kShootingSpeed);
+          kicker.run(Constants.ShooterConstants.kKickerPercentage);
         },
         () -> {
+          intake.stop();
           shooter.stop();
           kicker.stop();
         },
+        intake,
         shooter,
         kicker);
-  }
-
-  public static Command shootFuelSim(Drive drive, Shooter shooter) {
-    return Commands.none();
-  }
-
-  public static Command shootFuelSim(Drive drive, Shooter shooter, Intake intake) {
-    return shootFuelSim(
-        drive, shooter, intake, () -> Constants.ShooterConstants.kShootRPM.getAsDouble());
-  }
-
-  public static Command shootFuelSim(
-      Drive drive, Shooter shooter, Intake intake, DoubleSupplier rpmSupplier) {
-    if (Constants.currentMode != Mode.SIM) {
-      return Commands.none();
-    }
-
-    Timer launchTimer = new Timer();
-    return Commands.runEnd(
-        () -> {
-          if (!launchTimer.isRunning()) {
-            launchTimer.start();
-          }
-
-          double rpm = rpmSupplier.getAsDouble();
-          if (rpm <= 0.0 || !shooter.isAtSpeed() || !intake.hasFuel()) {
-            launchTimer.restart();
-            return;
-          }
-
-          if (!launchTimer.advanceIfElapsed(Constants.ShooterConstants.kSimLaunchPeriodSeconds)) {
-            return;
-          }
-
-          if (!intake.consumeFuel()) {
-            launchTimer.restart();
-            return;
-          }
-
-          Pose3d[] emptyTrajectory = new Pose3d[] {};
-          Rotation2d heading = drive.getRotation();
-          double simReferenceRpm = Constants.ShooterConstants.kSimReferenceRPM.getAsDouble();
-          double launchSpeedScale = simReferenceRpm > 1e-6 ? rpm / simReferenceRpm : 0.0;
-          double launchSpeedMetersPerSecond =
-              Constants.ShooterConstants.kSimLaunchVelocityMetersPerSecond.getAsDouble()
-                  * launchSpeedScale;
-
-          var projectile =
-              new RebuiltFuelOnFly(
-                      drive.getPose().getTranslation(),
-                      new Translation2d(
-                          Constants.ShooterConstants.kSimLaunchForwardOffsetMeters, 0.0),
-                      drive.getRobotRelativeSpeeds(),
-                      heading,
-                      Meters.of(Constants.ShooterConstants.kSimLaunchHeightMeters),
-                      MetersPerSecond.of(launchSpeedMetersPerSecond),
-                      Degrees.of(Constants.ShooterConstants.kSimLaunchAngleDegrees.getAsDouble()))
-                  .withProjectileTrajectoryDisplayCallBack(
-                      trajectory ->
-                          Logger.recordOutput(
-                              "FieldSimulation/FuelShotTrajectory",
-                              trajectory.toArray(Pose3d[]::new)),
-                      trajectory -> {
-                        Logger.recordOutput(
-                            "FieldSimulation/FuelShotTrajectory",
-                            trajectory.toArray(Pose3d[]::new));
-                      });
-
-          Logger.recordOutput("FieldSimulation/FuelShotTrajectory", emptyTrajectory);
-          SimulatedArena.getInstance().addGamePieceProjectile(projectile);
-        },
-        () -> Logger.recordOutput("FieldSimulation/FuelShotTrajectory", new Pose3d[] {}));
   }
 }

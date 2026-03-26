@@ -247,6 +247,7 @@ public final class Constants {
     public static final int kCanId = 20;
     public static final int kCurrentLimit = 40;
     public static final double intakeSpeed = 0.8;
+    public static final double kShootingSpeed = 0.8;
   }
 
   public static final class ShooterConstants {
@@ -257,6 +258,7 @@ public final class Constants {
     public static final int kKickerCANId = 21;
     public static final int kCurrentLimit = 80;
     public static final int kKickerCurrentLimit = 40;
+    public static final double kKickerPercentage = 0.8;
 
     // TODO: Tune this
     public static final TunableNum kShooterMainKp = new TunableNum("Shooter/kP", 0.0005);
@@ -272,6 +274,7 @@ public final class Constants {
     public static final double kKickerIndexPercent = 1.0;
     public static final double kVelocityToleranceRPM = 100.0;
     public static final TunableNum kAutoShootRPM = new TunableNum("Shooter/kAutoShootRPM", 2000);
+    public static final TunableNum kPassRPM = new TunableNum("Shooter/kPassRPM", 10000);
 
     public static final double kSimLaunchPeriodSeconds = 0.20;
     public static final double kSimLaunchHeightMeters = Units.inchesToMeters(24.0);
