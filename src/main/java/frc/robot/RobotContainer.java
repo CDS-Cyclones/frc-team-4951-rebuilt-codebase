@@ -205,7 +205,14 @@ public class RobotContainer {
     // Toggle Intake with A button
     controller.a().toggleOnTrue(ManipulationCommands.toggleIntake(intake, kicker));
 
-    controller.leftTrigger().whileTrue(DriveCommands.joystickDriveAtAngle(drive,() -> -controller.getLeftX(), () -> -controller.getLeftY(), () -> new Rotation2d(Units.degreesToRadians(20))));
+    controller
+        .leftTrigger()
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                drive,
+                () -> -controller.getLeftX(),
+                () -> -controller.getLeftY(),
+                () -> new Rotation2d(Units.degreesToRadians(20))));
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     /// ///////////////////////////////// TEST CONTROLLER ///////////////////////////////////////
