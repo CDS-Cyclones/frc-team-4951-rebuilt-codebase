@@ -17,10 +17,14 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.ClimbCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ManipulationCommands;
 import frc.robot.commands.OrbitCommand;
 import frc.robot.commands.TestCommands;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIO;
+import frc.robot.subsystems.climber.ClimberIOSparkMax;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
@@ -57,6 +61,7 @@ public class RobotContainer {
   private final Intake intake;
   private final Kicker kicker;
   private final Shooter shooter;
+  private final Climber climber;
 
   private SwerveDriveSimulation driveSimulation = null;
 
@@ -86,6 +91,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSparkMax());
         kicker = new Kicker(new KickerIOSparkMax());
         shooter = new Shooter(new ShooterIOSparkMax());
+        climber = new Climber(new ClimberIOSparkMax());
         break;
 
       case SIM:
@@ -113,6 +119,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSim(driveSimulation));
         kicker = new Kicker(new KickerIOSim());
         shooter = new Shooter(new ShooterIOSim());
+        climber = new Climber(new ClimberIO() {});
         break;
 
       default:
@@ -128,6 +135,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIO() {});
         kicker = new Kicker(new KickerIO() {});
         shooter = new Shooter(new ShooterIO() {});
+        climber = new Climber(new ClimberIO() {});
         break;
     }
 
@@ -214,6 +222,8 @@ public class RobotContainer {
                 () -> -controller.getLeftX(),
                 () -> new Rotation2d(Units.degreesToRadians(20))));
 
+    controller.povUp().whileTrue((ClimbCommands.climbUp(climber)));
+    controller.povDown().whileTrue((ClimbCommands.climbDown(climber)));
     ////////////////////////////////////////////////////////////////////////////////////////////
     /// ///////////////////////////////// TEST CONTROLLER ///////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////

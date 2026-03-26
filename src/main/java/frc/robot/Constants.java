@@ -250,6 +250,13 @@ public final class Constants {
     public static final double kShootingSpeed = 0.8;
   }
 
+  public static final class ClimberConstants {
+    private ClimberConstants() {}
+
+    public static final int kCanId = 24;
+    public static final int kCurrentStallLimit = 40;
+  }
+
   public static final class ShooterConstants {
     private ShooterConstants() {}
 
@@ -260,7 +267,6 @@ public final class Constants {
     public static final int kKickerCurrentLimit = 40;
     public static final double kKickerPercentage = 0.8;
 
-    // TODO: Tune this
     public static final TunableNum kShooterMainKp = new TunableNum("Shooter/kP", 0.00023);
     public static final TunableNum kShooterMainKi = new TunableNum("Shooter/kI", 0.0);
     public static final TunableNum kShooterMainKd = new TunableNum("Shooter/kD", 0.0);
@@ -269,7 +275,6 @@ public final class Constants {
     public static final TunableNum kShooterOpenLoopDutyCycle =
         new TunableNum("Shooter/OpenLoopDutyCycle", 0.55);
 
-    // TODO: Tune actual shot RPM and "at speed" tolerance from real shots.
     public static final TunableNum kShootRPM = new TunableNum("Shooter/kShootRPM", 3350);
     public static final double k4mShootRPM = 3350;
     public static final double k2mShootRPM = 2825;

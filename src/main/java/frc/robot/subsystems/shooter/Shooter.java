@@ -8,6 +8,8 @@ public class Shooter extends SubsystemBase {
   private final ShooterIO io;
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
   private double mainSetpointRPM = 0.0;
+
+  @SuppressWarnings("unused")
   private double secondarySetpointRPM = 0.0;
 
   public void setVelocityRPM(double rpm) {
