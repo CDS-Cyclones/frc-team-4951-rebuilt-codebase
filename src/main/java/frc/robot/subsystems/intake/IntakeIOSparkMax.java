@@ -16,7 +16,7 @@ public class IntakeIOSparkMax implements IntakeIO {
   public IntakeIOSparkMax() {
     motor = new SparkMax(Constants.IntakeConstants.kCanId, MotorType.kBrushless);
 
-    config.inverted(true).idleMode(IdleMode.kBrake).smartCurrentLimit(40).voltageCompensation(12.0);
+    config.inverted(true).idleMode(IdleMode.kCoast).smartCurrentLimit(40).voltageCompensation(12.0);
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }

@@ -246,7 +246,7 @@ public final class Constants {
 
     public static final int kCanId = 20;
     public static final int kCurrentLimit = 40;
-    public static final double intakeSpeed = 0.8;
+    public static final double intakeSpeed = 0.50;
     public static final double kShootingSpeed = 0.8;
   }
 
@@ -270,7 +270,10 @@ public final class Constants {
         new TunableNum("Shooter/OpenLoopDutyCycle", 0.55);
 
     // TODO: Tune actual shot RPM and "at speed" tolerance from real shots.
-    public static final TunableNum kShootRPM = new TunableNum("Shooter/kShootRPM", 3200);
+    public static final TunableNum kShootRPM = new TunableNum("Shooter/kShootRPM", 3350);
+    public static final double k4mShootRPM = 3350;
+    public static final double k2mShootRPM = 2825;
+    public static final double k1mShootRPM = 2500;
     public static final double kKickerIndexPercent = 1.0;
     public static final double kVelocityToleranceRPM = 100.0;
     public static final TunableNum kAutoShootRPM = new TunableNum("Shooter/kAutoShootRPM", 3000);

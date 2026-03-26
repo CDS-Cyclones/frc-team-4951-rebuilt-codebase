@@ -189,8 +189,13 @@ public class ManipulationCommands {
           }
 
           shooter.setVelocityRPM(rpmSupplier.getAsDouble());
-          intake.run(Constants.IntakeConstants.kShootingSpeed);
-          kicker.run(Constants.ShooterConstants.kKickerPercentage);
+          if (shooter.isMainAtSpeed()) {
+            intake.run(Constants.IntakeConstants.kShootingSpeed);
+            kicker.run(Constants.ShooterConstants.kKickerPercentage);
+          } else {
+            intake.stop();
+            kicker.stop();
+          }
         },
         () -> {
           intake.stop();

@@ -16,14 +16,17 @@ public class Shooter extends SubsystemBase {
 
   public void setVelocityRPM(double mainRPM, double secondaryRPM) {
     mainSetpointRPM = mainRPM;
-    secondarySetpointRPM = mainRPM;
-    io.setVelocityRPM(mainRPM, mainRPM);
+    secondarySetpointRPM = secondaryRPM;
+    io.setVelocityRPM(mainRPM, secondaryRPM);
   }
 
   public boolean isAtSpeed() {
+    return isMainAtSpeed();
+  }
+
+  public boolean isMainAtSpeed() {
     double tol = Constants.ShooterConstants.kVelocityToleranceRPM;
-    return Math.abs(inputs.mainVelocityRPM - mainSetpointRPM) < tol
-        && Math.abs(inputs.secondaryVelocityRPM - secondarySetpointRPM) < tol;
+    return Math.abs(inputs.mainVelocityRPM - mainSetpointRPM) < tol;
   }
 
   public Shooter(ShooterIO io) {

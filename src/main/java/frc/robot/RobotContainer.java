@@ -201,7 +201,7 @@ public class RobotContainer {
 
     // Shoot in place when right bumper is held
     controller.rightBumper().whileTrue(ManipulationCommands.shootFuel(intake, shooter, kicker));
-
+    controller.rightTrigger().whileTrue(ManipulationCommands.passFuel(intake, shooter, kicker));
     // Toggle Intake with A button
     controller.a().toggleOnTrue(ManipulationCommands.toggleIntake(intake, kicker));
 
@@ -210,8 +210,8 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -controller.getLeftX(),
                 () -> -controller.getLeftY(),
+                () -> -controller.getLeftX(),
                 () -> new Rotation2d(Units.degreesToRadians(20))));
 
     ////////////////////////////////////////////////////////////////////////////////////////////
