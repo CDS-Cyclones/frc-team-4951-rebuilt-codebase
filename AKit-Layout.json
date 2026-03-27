@@ -14,23 +14,16 @@
             "/RealOutputs/SwerveStates",
             "/RealOutputs/SwerveChassisSpeeds",
             "/RealOutputs/Odometry",
-            "/AdvantageKit/RealOutputs",
-            "/AdvantageKit/RealOutputs/Odometry/Robot",
-            "/AdvantageKit/Drive/Module3",
-            "/AdvantageKit/RealOutputs/SwerveStates/Measured/0",
-            "/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized/0",
-            "/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized/0/angle",
-            "/AdvantageKit/RealOutputs/SwerveStates/Measured",
-            "/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized",
-            "/AdvantageKit/Drive/Module0",
-            "/SmartDashboard/VisionSystemSim-main/Sim Field",
             "/AdvantageKit",
-            "/AdvantageKit/RealOutputs/FieldSimulation",
-            "/PathPlanner"
+            "/AdvantageKit/Drive",
+            "/AdvantageKit/Drive/Module1/TurnPosition",
+            "/AdvantageKit/Drive/Module0/TurnPosition",
+            "/AdvantageKit/RealOutputs",
+            "/AdvantageKit/Intake"
           ]
         },
         "tabs": {
-          "selected": 2,
+          "selected": 5,
           "tabs": [
             {
               "type": 0,
@@ -47,48 +40,48 @@
                 "sources": [
                   {
                     "type": "states",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveStates/Measured",
+                    "logKey": "/RealOutputs/SwerveStates/Measured",
                     "logType": "SwerveModuleState[]",
                     "visible": true,
                     "options": {
-                      "color": "#0000ff",
+                      "color": "#ff0000",
                       "arrangement": "0,1,2,3"
                     }
                   },
                   {
                     "type": "states",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized",
+                    "logKey": "/RealOutputs/SwerveStates/SetpointsOptimized",
                     "logType": "SwerveModuleState[]",
                     "visible": true,
                     "options": {
-                      "color": "#00ff00",
+                      "color": "#00ffff",
                       "arrangement": "0,1,2,3"
                     }
                   },
                   {
+                    "type": "chassisSpeeds",
+                    "logKey": "/RealOutputs/SwerveChassisSpeeds/Measured",
+                    "logType": "ChassisSpeeds",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff0000"
+                    }
+                  },
+                  {
+                    "type": "chassisSpeeds",
+                    "logKey": "/RealOutputs/SwerveChassisSpeeds/Setpoints",
+                    "logType": "ChassisSpeeds",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ffff"
+                    }
+                  },
+                  {
                     "type": "rotation",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/Odometry/Robot/rotation",
+                    "logKey": "/RealOutputs/Odometry/Robot/rotation",
                     "logType": "Rotation2d",
                     "visible": true,
                     "options": {}
-                  },
-                  {
-                    "type": "chassisSpeeds",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveChassisSpeeds/Measured",
-                    "logType": "ChassisSpeeds",
-                    "visible": true,
-                    "options": {
-                      "color": "#ff8c00"
-                    }
-                  },
-                  {
-                    "type": "chassisSpeeds",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveChassisSpeeds/Setpoints",
-                    "logType": "ChassisSpeeds",
-                    "visible": true,
-                    "options": {
-                      "color": "#ffff00"
-                    }
                   }
                 ],
                 "maxSpeed": 5,
@@ -98,7 +91,7 @@
               },
               "controllerUUID": "prdx7t2eedan6n46dxrjfu7eisf16f9o",
               "renderer": null,
-              "controlsHeight": 319
+              "controlsHeight": 200
             },
             {
               "type": 3,
@@ -111,56 +104,8 @@
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
-                      "model": "Crab Bot",
-                      "color": "#00ff00"
-                    }
-                  },
-                  {
-                    "type": "swerveStates",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveStates/Measured",
-                    "logType": "SwerveModuleState[]",
-                    "visible": true,
-                    "options": {
-                      "color": "#ff0000",
-                      "arrangement": "0,1,2,3"
-                    }
-                  },
-                  {
-                    "type": "robot",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/RobotPosition",
-                    "logType": "Pose2d",
-                    "visible": true,
-                    "options": {
-                      "model": "Crab Bot"
-                    }
-                  },
-                  {
-                    "type": "gamePiece",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/FuelPositions",
-                    "logType": "Pose3d[]",
-                    "visible": true,
-                    "options": {
-                      "variant": "Fuel"
-                    }
-                  },
-                  {
-                    "type": "trajectory",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/FuelShotTrajectory",
-                    "logType": "Pose3d[]",
-                    "visible": true,
-                    "options": {
-                      "color": "#00ff00",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "ghost",
-                    "logKey": "NT:/PathPlanner/targetPose",
-                    "logType": "Pose2d",
-                    "visible": true,
-                    "options": {
                       "model": "2026 KitBot",
-                      "color": "#ff0000"
+                      "color": "#00ff00"
                     }
                   }
                 ],
@@ -171,17 +116,17 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  -10.1080911188332,
-                  5.402132724135396,
-                  -2.027578232091496
+                  -10.001365439528868,
+                  1.5009676990992118,
+                  8.556912586345465
                 ],
                 "cameraTarget": [
-                  -3.603980380911472,
-                  1.2294014686606989,
-                  0.6194190050902505
+                  0,
+                  0.5,
+                  0
                 ]
               },
-              "controlsHeight": 178
+              "controlsHeight": 200
             },
             {
               "type": 1,
@@ -204,7 +149,7 @@
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#c0b487",
+                      "color": "#e5b31b",
                       "size": "normal"
                     }
                   },
@@ -214,7 +159,7 @@
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#858584",
+                      "color": "#af2437",
                       "size": "normal"
                     }
                   },
@@ -224,17 +169,7 @@
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#3b875a",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/Drive/Gyro/YawPosition/value",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#e5b31b",
+                      "color": "#c0b487",
                       "size": "normal"
                     }
                   }
@@ -279,7 +214,7 @@
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#e5b31b",
+                      "color": "#c0b487",
                       "size": "normal"
                     }
                   },
@@ -289,7 +224,7 @@
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#af2437",
+                      "color": "#e5b31b",
                       "size": "normal"
                     }
                   },
@@ -299,7 +234,7 @@
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#80588e",
+                      "color": "#af2437",
                       "size": "normal"
                     }
                   }
@@ -321,7 +256,62 @@
               },
               "controllerUUID": "7jj1f83nsv59dd2ou11ls3ccz5tq1293",
               "renderer": null,
-              "controlsHeight": 309
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "Shooter Graph",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/Shooter/MainVelocityRPM",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/Kicker/VelocityRPM",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/Intake/VelocityRPM",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "1rq3v5rskpvduw7pzu9rlukj4d7cvh7q",
+              "renderer": null,
+              "controlsHeight": 200
             },
             {
               "type": 1,
@@ -330,21 +320,21 @@
                 "leftSources": [
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveStates/Measured/0/angle/value",
+                    "logKey": "/RealOutputs/SwerveStates/Measured/0/angle/value",
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#af2437",
+                      "color": "#2b66a2",
                       "size": "normal"
                     }
                   },
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized/0/angle/value",
+                    "logKey": "/RealOutputs/SwerveStates/SetpointsOptimized/0/angle/value",
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#2b66a2",
+                      "color": "#e5b31b",
                       "size": "normal"
                     }
                   }
@@ -375,21 +365,21 @@
                 "leftSources": [
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveStates/Measured/0/speed",
+                    "logKey": "/RealOutputs/SwerveStates/Measured/0/speed",
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#af2437",
+                      "color": "#2b66a2",
                       "size": "normal"
                     }
                   },
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized/0/speed",
+                    "logKey": "/RealOutputs/SwerveStates/SetpointsOptimized/0/speed",
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#80588e",
+                      "color": "#e5b31b",
                       "size": "normal"
                     }
                   }
@@ -420,31 +410,21 @@
                 "leftSources": [
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveChassisSpeeds/Measured/vx",
+                    "logKey": "/RealOutputs/SwerveChassisSpeeds/Measured/vx",
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#af2437",
+                      "color": "#2b66a2",
                       "size": "normal"
                     }
                   },
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveChassisSpeeds/Measured/vy",
+                    "logKey": "/RealOutputs/SwerveChassisSpeeds/Measured/vy",
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#80588e",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveChassisSpeeds/Measured/omega",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#e48b32",
+                      "color": "#e5b31b",
                       "size": "normal"
                     }
                   }
@@ -475,11 +455,11 @@
                 "leftSources": [
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/Drive/Module0/DriveCurrentAmps",
+                    "logKey": "/Drive/Module0/DriveCurrentAmps",
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#af2437",
+                      "color": "#2b66a2",
                       "size": "normal"
                     }
                   }

@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.Constants.Mode;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.intake.Intake;
@@ -28,7 +27,8 @@ public class ManipulationCommands {
     intake.run(power);
     kicker.run(-1.0 * power);
   }
-      //TODO: Replace () -> true on .onlyIf conditions with the actual supplier (Robot.isHubActive) at competition, when we actually have FMS data lol
+  // TODO: Replace () -> true on .onlyIf conditions with the actual supplier (Robot.isHubActive) at
+  // competition, when we actually have FMS data lol
 
   public static Command toggleIntake(Intake intake, Kicker kicker) {
     return holdIntake(intake, kicker);
@@ -64,11 +64,12 @@ public class ManipulationCommands {
 
   public static Command shootFuel(Intake intake, Shooter shooter, Kicker kicker) {
     return createRealShootCommand(
-        intake,
-        shooter,
-        kicker,
-        () -> Constants.ShooterConstants.kShootRPM.getAsDouble(),
-        () -> true).onlyIf(() -> true);
+            intake,
+            shooter,
+            kicker,
+            () -> Constants.ShooterConstants.kShootRPM.getAsDouble(),
+            () -> true)
+        .onlyIf(() -> true);
   }
 
   public static Command passFuel(Intake intake, Shooter shooter, Kicker kicker) {
@@ -82,22 +83,24 @@ public class ManipulationCommands {
 
   public static Command shootFuel(Drive drive, Intake intake, Shooter shooter, Kicker kicker) {
     return shootFuel(
-        drive,
-        intake,
-        shooter,
-        kicker,
-        () -> Constants.ShooterConstants.kShootRPM.getAsDouble(),
-        () -> true).onlyIf(() -> true);
+            drive,
+            intake,
+            shooter,
+            kicker,
+            () -> Constants.ShooterConstants.kShootRPM.getAsDouble(),
+            () -> true)
+        .onlyIf(() -> true);
   }
 
   public static Command passFuel(Drive drive, Intake intake, Shooter shooter, Kicker kicker) {
     return shootFuel(
-        drive,
-        intake,
-        shooter,
-        kicker,
-        () -> Constants.ShooterConstants.kPassRPM.getAsDouble(),
-        () -> true).onlyIf(() -> true);
+            drive,
+            intake,
+            shooter,
+            kicker,
+            () -> Constants.ShooterConstants.kPassRPM.getAsDouble(),
+            () -> true)
+        .onlyIf(() -> true);
   }
 
   public static Command shootFuel(
@@ -108,7 +111,8 @@ public class ManipulationCommands {
       DoubleSupplier rpmSupplier,
       BooleanSupplier canShootSupplier) {
     Command realShootCommand =
-        createRealShootCommand(intake, shooter, kicker, rpmSupplier, canShootSupplier).onlyIf(() -> true);
+        createRealShootCommand(intake, shooter, kicker, rpmSupplier, canShootSupplier)
+            .onlyIf(() -> true);
 
     if (Constants.currentMode != Mode.SIM) {
       return realShootCommand;
