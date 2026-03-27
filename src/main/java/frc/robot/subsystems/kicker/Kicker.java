@@ -34,4 +34,8 @@ public class Kicker extends SubsystemBase {
   public boolean isActive() {
     return active;
   }
+
+  public double getVelocityRPM() {
+    return inputs.velocityRPM;
+  }
 }

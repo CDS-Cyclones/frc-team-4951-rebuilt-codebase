@@ -35,6 +35,10 @@ public class Intake extends SubsystemBase {
     return active;
   }
 
+  public double getVelocityRPM() {
+    return inputs.velocityRPM;
+  }
+
   public int getFuelCount() {
     return io.getFuelCount();
   }

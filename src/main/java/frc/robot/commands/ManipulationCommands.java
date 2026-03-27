@@ -23,6 +23,8 @@ import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 import org.littletonrobotics.junction.Logger;
 
 public class ManipulationCommands {
+
+
   private static void runIntakeWithKicker(Intake intake, Kicker kicker, double power) {
     intake.run(power);
     kicker.run(-1.0 * power);
@@ -35,14 +37,63 @@ public class ManipulationCommands {
   }
 
   public static Command holdIntake(Intake intake, Kicker kicker) {
-    return Commands.runEnd(
-        () -> runIntakeWithKicker(intake, kicker, Constants.IntakeConstants.intakeSpeed),
-        () -> {
-          intake.stop();
-          kicker.stop();
-        },
-        intake,
-        kicker);
+    return new Command() {
+      private final Timer unjamTimer = new Timer();
+      private boolean intakeArmed = false;
+      private boolean kickerArmed = false;
+
+      {
+        addRequirements(intake, kicker);
+      }
+
+      @Override
+      public void initialize() {
+        unjamTimer.stop();
+        unjamTimer.reset();
+        intakeArmed = false;
+        kickerArmed = false;
+      }
+
+      @Override
+      public void execute() {
+        if (unjamTimer.isRunning()) {
+          if (unjamTimer.hasElapsed(Constants.IntakeConstants.kUnjamDurationSeconds)) {
+            unjamTimer.stop();
+            unjamTimer.reset();
+            intakeArmed = false;
+            kickerArmed = false;
+          } else {
+            runIntakeWithKicker(intake, kicker, -Constants.IntakeConstants.intakeSpeed);
+            return;
+          }
+        }
+
+        double intakeVelocityRpm = Math.abs(intake.getVelocityRPM());
+        double kickerVelocityRpm = Math.abs(kicker.getVelocityRPM());
+
+        intakeArmed |= intakeVelocityRpm >= Constants.IntakeConstants.kJamDetectionRpm;
+        kickerArmed |= kickerVelocityRpm >= Constants.IntakeConstants.kJamDetectionRpm;
+
+        boolean intakeJammed = intakeArmed && intakeVelocityRpm < Constants.IntakeConstants.kJamDetectionRpm;
+        boolean kickerJammed = kickerArmed && kickerVelocityRpm < Constants.IntakeConstants.kJamDetectionRpm;
+        if (intakeJammed || kickerJammed) {
+          unjamTimer.restart();
+          runIntakeWithKicker(intake, kicker, -Constants.IntakeConstants.intakeSpeed);
+          intakeArmed = false;
+          kickerArmed = false;
+          return;
+        }
+
+        runIntakeWithKicker(intake, kicker, Constants.IntakeConstants.intakeSpeed);
+      }
+
+      @Override
+      public void end(boolean interrupted) {
+        unjamTimer.stop();
+        intake.stop();
+        kicker.stop();
+      }
+    };
   }
 
   public static Command startIntake(Intake intake, Kicker kicker) {
