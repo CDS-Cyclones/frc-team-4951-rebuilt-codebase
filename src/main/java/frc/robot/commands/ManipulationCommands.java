@@ -24,7 +24,6 @@ import org.littletonrobotics.junction.Logger;
 
 public class ManipulationCommands {
 
-
   private static void runIntakeWithKicker(Intake intake, Kicker kicker, double power) {
     intake.run(power);
     kicker.run(-1.0 * power);
@@ -74,8 +73,10 @@ public class ManipulationCommands {
         intakeArmed |= intakeVelocityRpm >= Constants.IntakeConstants.kJamDetectionRpm;
         kickerArmed |= kickerVelocityRpm >= Constants.IntakeConstants.kJamDetectionRpm;
 
-        boolean intakeJammed = intakeArmed && intakeVelocityRpm < Constants.IntakeConstants.kJamDetectionRpm;
-        boolean kickerJammed = kickerArmed && kickerVelocityRpm < Constants.IntakeConstants.kJamDetectionRpm;
+        boolean intakeJammed =
+            intakeArmed && intakeVelocityRpm < Constants.IntakeConstants.kJamDetectionRpm;
+        boolean kickerJammed =
+            kickerArmed && kickerVelocityRpm < Constants.IntakeConstants.kJamDetectionRpm;
         if (intakeJammed || kickerJammed) {
           unjamTimer.restart();
           runIntakeWithKicker(intake, kicker, -Constants.IntakeConstants.intakeSpeed);

@@ -248,6 +248,8 @@ public final class Constants {
     public static final int kCurrentLimit = 40;
     public static final double intakeSpeed = 0.50;
     public static final double kShootingSpeed = 0.8;
+    public static final double kJamDetectionRpm = 3500.0;
+    public static final double kUnjamDurationSeconds = 0.8;
   }
 
   public static final class ClimberConstants {
