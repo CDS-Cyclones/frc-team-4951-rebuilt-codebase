@@ -17,7 +17,7 @@ public class ClimberIOSparkMax implements ClimberIO {
     motor = new SparkMax(Constants.ClimberConstants.kCanId, MotorType.kBrushless);
 
     config
-        .inverted(false)
+        .inverted(true)
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(Constants.ClimberConstants.kCurrentStallLimit)
         .voltageCompensation(12.0);

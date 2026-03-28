@@ -53,7 +53,7 @@ public final class Constants {
   public static final class DriveConstants {
     private DriveConstants() {}
 
-    public static final double maxSpeedMetersPerSec = 4.8;
+    public static final double maxSpeedMetersPerSec = 3.0;
     public static final double odometryFrequency = 100.0; // Hz
     public static final double trackWidth = Units.inchesToMeters(25.5);
     public static final double wheelBase = Units.inchesToMeters(24.25);
@@ -132,8 +132,8 @@ public final class Constants {
     public static final double turnPIDMaxInput = 2 * Math.PI; // Radians
 
     // PathPlanner configuration
-    public static final double robotMassKg = 68;
-    public static final double robotMOI = 7.31266;
+    public static final double robotMassKg = 40.28;
+    public static final double robotMOI = 4.154939;
     public static final double wheelCOF =
         1.6; // https://www.chiefdelphi.com/t/wildstang-robotics-program-team-111-and-112-build-blog-2025/477716/36
 

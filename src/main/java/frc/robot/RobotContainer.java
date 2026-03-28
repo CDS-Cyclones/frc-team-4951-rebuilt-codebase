@@ -149,7 +149,7 @@ public class RobotContainer {
             intake,
             shooter,
             kicker,
-            () -> Constants.ShooterConstants.kAutoShootRPM.getAsDouble(),
+            () -> Constants.ShooterConstants.k1mShootRPM,
             () -> true));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -189,9 +189,9 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> -controller.getLeftY() * 0.75,
+            () -> -controller.getLeftX() * 0.75,
+            () -> -controller.getRightX() * 0.75));
 
     final Runnable resetGyro =
         Constants.currentMode == Constants.Mode.SIM
