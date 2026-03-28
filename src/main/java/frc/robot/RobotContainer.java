@@ -161,6 +161,7 @@ public class RobotContainer {
         "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
     autoChooser.addOption(
         "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+    autoChooser.addOption("DRIVE BACKWARDS AND SHOOT" , DriveCommands.joystickDrive(drive,() -> -0.5, () -> 0.0, () -> 0.0).withTimeout(1.5).andThen(ManipulationCommands.shootFuel(intake, shooter, kicker)));
     // autoChooser.addOption(
     //     "Drive SysId (Quasistatic Forward)",
     //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -194,7 +195,7 @@ public class RobotContainer {
             drive,
             () -> -controller.getLeftY() * 0.75,
             () -> -controller.getLeftX() * 0.75,
-            () -> -controller.getRightX() * 0.45));
+            () -> -controller.getRightX() * 0.65));
 
     final Runnable resetGyro =
         Constants.currentMode == Constants.Mode.SIM

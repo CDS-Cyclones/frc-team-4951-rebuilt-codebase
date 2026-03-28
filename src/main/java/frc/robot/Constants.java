@@ -100,10 +100,10 @@ public final class Constants {
         (2 * Math.PI) / 60.0 / driveMotorReduction; // Rotor RPM -> Wheel Rad/Sec
 
     // Drive PID configuration
-    public static final TunableNum driveKp = new TunableNum("Drive/drive/p", 0.0);
+    public static final TunableNum driveKp = new TunableNum("Drive/drive/p", 0.05);
     public static final TunableNum driveKd = new TunableNum("Drive/drive/d", 0.0);
     // TODO: Run FeedForward Characterization
-    public static final double driveKs = 0.0;
+    public static final double driveKs = 0.2;
     public static final double driveKv = 0.1;
     public static final double driveSimP = 0.05;
     public static final double driveSimD = 0.0;

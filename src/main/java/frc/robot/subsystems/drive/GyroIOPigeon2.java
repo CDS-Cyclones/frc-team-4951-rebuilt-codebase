@@ -21,7 +21,6 @@ import java.util.Queue;
 
 /** IO implementation for Pigeon 2. */
 public class GyroIOPigeon2 implements GyroIO {
-  private static final Rotation2d GYRO_OFFSET = Rotation2d.fromDegrees(180.0);
   private final Pigeon2 pigeon = new Pigeon2(Constants.DriveConstants.pigeonCanId);
   private final StatusSignal<Angle> yaw = pigeon.getYaw();
   private final Queue<Double> yawPositionQueue;
@@ -44,14 +43,14 @@ public class GyroIOPigeon2 implements GyroIO {
   @Override
   public void updateInputs(GyroIOInputs inputs) {
     inputs.connected = BaseStatusSignal.refreshAll(yaw, yawVelocity).equals(StatusCode.OK);
-    inputs.yawPosition = Rotation2d.fromDegrees(yaw.getValueAsDouble()).plus(GYRO_OFFSET);
+    inputs.yawPosition = Rotation2d.fromDegrees(yaw.getValueAsDouble());
     inputs.yawVelocityRadPerSec = Units.degreesToRadians(yawVelocity.getValueAsDouble());
 
     inputs.odometryYawTimestamps =
         yawTimestampQueue.stream().mapToDouble((Double value) -> value).toArray();
     inputs.odometryYawPositions =
         yawPositionQueue.stream()
-            .map((Double value) -> Rotation2d.fromDegrees(value).plus(GYRO_OFFSET))
+            .map((Double value) -> Rotation2d.fromDegrees(value))
             .toArray(Rotation2d[]::new);
     yawTimestampQueue.clear();
     yawPositionQueue.clear();
@@ -59,6 +58,6 @@ public class GyroIOPigeon2 implements GyroIO {
 
   @Override
   public void zeroYaw() {
-    pigeon.setYaw(180.0);
+    pigeon.setYaw(0.0);
   }
 }
