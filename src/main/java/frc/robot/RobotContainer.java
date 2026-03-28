@@ -67,7 +67,8 @@ public class RobotContainer {
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
-  private final CommandXboxController testController = new CommandXboxController(1);
+  private final CommandXboxController operatorController = new CommandXboxController(1);
+  private final CommandXboxController testController = new CommandXboxController(2);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -142,7 +143,8 @@ public class RobotContainer {
     // Set up auto routines
     NamedCommands.registerCommand("intakeStart", ManipulationCommands.startIntake(intake, kicker));
     NamedCommands.registerCommand("intakeStop", ManipulationCommands.stopIntake(intake, kicker));
-    NamedCommands.registerCommand("climbUp", ClimbCommands.climbUpFor(climber, Constants.ClimberConstants.kSecondsToClimb));
+    NamedCommands.registerCommand(
+        "climbUp", ClimbCommands.climbUpFor(climber, Constants.ClimberConstants.kSecondsToClimb));
     NamedCommands.registerCommand(
         "shootFuelAuto",
         ManipulationCommands.shootFuel(
@@ -192,7 +194,7 @@ public class RobotContainer {
             drive,
             () -> -controller.getLeftY() * 0.75,
             () -> -controller.getLeftX() * 0.75,
-            () -> -controller.getRightX() * 0.75));
+            () -> -controller.getRightX() * 0.45));
 
     final Runnable resetGyro =
         Constants.currentMode == Constants.Mode.SIM
@@ -221,10 +223,12 @@ public class RobotContainer {
                 drive,
                 () -> -controller.getLeftY(),
                 () -> -controller.getLeftX(),
-                () -> new Rotation2d(Units.degreesToRadians(20))));
+                () -> new Rotation2d(Units.degreesToRadians(65))));
 
     controller.povUp().whileTrue((ClimbCommands.climbUp(climber)));
     controller.povDown().whileTrue((ClimbCommands.climbDown(climber)));
+    operatorController.povUp().whileTrue((ClimbCommands.climbUp(climber)));
+    operatorController.povUp().whileTrue((ClimbCommands.climbDown(climber)));
     ////////////////////////////////////////////////////////////////////////////////////////////
     /// ///////////////////////////////// TEST CONTROLLER ///////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////

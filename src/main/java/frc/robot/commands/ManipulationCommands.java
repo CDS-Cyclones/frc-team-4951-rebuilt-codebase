@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.Constants.Mode;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.intake.Intake;
@@ -121,7 +122,7 @@ public class ManipulationCommands {
             kicker,
             () -> Constants.ShooterConstants.kShootRPM.getAsDouble(),
             () -> true)
-        .onlyIf(() -> true);
+        .onlyIf(() -> Robot.isHubActive());
   }
 
   public static Command passFuel(Intake intake, Shooter shooter, Kicker kicker) {
@@ -130,7 +131,7 @@ public class ManipulationCommands {
         shooter,
         kicker,
         () -> Constants.ShooterConstants.kPassRPM.getAsDouble(),
-        () -> true);
+        () -> Robot.isHubActive());
   }
 
   public static Command shootFuel(Drive drive, Intake intake, Shooter shooter, Kicker kicker) {
@@ -141,7 +142,7 @@ public class ManipulationCommands {
             kicker,
             () -> Constants.ShooterConstants.kShootRPM.getAsDouble(),
             () -> true)
-        .onlyIf(() -> true);
+        .onlyIf(() -> Robot.isHubActive());
   }
 
   public static Command passFuel(Drive drive, Intake intake, Shooter shooter, Kicker kicker) {
@@ -164,7 +165,7 @@ public class ManipulationCommands {
       BooleanSupplier canShootSupplier) {
     Command realShootCommand =
         createRealShootCommand(intake, shooter, kicker, rpmSupplier, canShootSupplier)
-            .onlyIf(() -> true);
+            .onlyIf(() -> Robot.isHubActive());
 
     if (Constants.currentMode != Mode.SIM) {
       return realShootCommand;
