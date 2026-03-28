@@ -161,7 +161,12 @@ public class RobotContainer {
         "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
     autoChooser.addOption(
         "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    autoChooser.addOption("DRIVE BACKWARDS AND SHOOT" , DriveCommands.joystickDrive(drive,() -> -0.5, () -> 0.0, () -> 0.0).withTimeout(1.5).andThen(ManipulationCommands.shootFuel(intake, shooter, kicker)));
+    autoChooser.addOption(
+        "DRIVE BACKWARDS AND SHOOT",
+        DriveCommands.joystickDrive(drive, () -> -0.5, () -> 0.0, () -> 0.0)
+            .withTimeout(1.24)
+            .andThen(Commands.runOnce(drive::stop, drive))
+            .andThen(ManipulationCommands.shootFuel(intake, shooter, kicker)));
     // autoChooser.addOption(
     //     "Drive SysId (Quasistatic Forward)",
     //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -228,6 +233,7 @@ public class RobotContainer {
 
     controller.povUp().whileTrue((ClimbCommands.climbUp(climber)));
     controller.povDown().whileTrue((ClimbCommands.climbDown(climber)));
+    controller.povLeft().whileTrue((ManipulationCommands.outtake(intake, kicker)));
     operatorController.povUp().whileTrue((ClimbCommands.climbUp(climber)));
     operatorController.povUp().whileTrue((ClimbCommands.climbDown(climber)));
     ////////////////////////////////////////////////////////////////////////////////////////////

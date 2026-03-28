@@ -25,9 +25,10 @@ import org.littletonrobotics.junction.Logger;
 
 public class ManipulationCommands {
 
-  private static void runIntakeWithKicker(Intake intake, Kicker kicker, double power) {
-    intake.run(power);
-    kicker.run(-1.0 * power);
+  private static void runIntakeWithKicker(
+      Intake intake, Kicker kicker, double intakePower, double kickerPower) {
+    intake.run(intakePower);
+    kicker.run(kickerPower);
   }
   // TODO: Replace () -> true on .onlyIf conditions with the actual supplier (Robot.isHubActive) at
   // competition, when we actually have FMS data lol
@@ -37,70 +38,45 @@ public class ManipulationCommands {
   }
 
   public static Command holdIntake(Intake intake, Kicker kicker) {
-    return new Command() {
-      private final Timer unjamTimer = new Timer();
-      private boolean intakeArmed = false;
-      private boolean kickerArmed = false;
-
-      {
-        addRequirements(intake, kicker);
-      }
-
-      @Override
-      public void initialize() {
-        unjamTimer.stop();
-        unjamTimer.reset();
-        intakeArmed = false;
-        kickerArmed = false;
-      }
-
-      @Override
-      public void execute() {
-        if (unjamTimer.isRunning()) {
-          if (unjamTimer.hasElapsed(Constants.IntakeConstants.kUnjamDurationSeconds)) {
-            unjamTimer.stop();
-            unjamTimer.reset();
-            intakeArmed = false;
-            kickerArmed = false;
-          } else {
-            runIntakeWithKicker(intake, kicker, -Constants.IntakeConstants.intakeSpeed);
-            return;
-          }
-        }
-
-        double intakeVelocityRpm = Math.abs(intake.getVelocityRPM());
-        double kickerVelocityRpm = Math.abs(kicker.getVelocityRPM());
-
-        intakeArmed |= intakeVelocityRpm >= Constants.IntakeConstants.kJamDetectionRpm;
-        kickerArmed |= kickerVelocityRpm >= Constants.IntakeConstants.kJamDetectionRpm;
-
-        boolean intakeJammed =
-            intakeArmed && intakeVelocityRpm < Constants.IntakeConstants.kJamDetectionRpm;
-        boolean kickerJammed =
-            kickerArmed && kickerVelocityRpm < Constants.IntakeConstants.kJamDetectionRpm;
-        if (intakeJammed || kickerJammed) {
-          unjamTimer.restart();
-          runIntakeWithKicker(intake, kicker, -Constants.IntakeConstants.intakeSpeed);
-          intakeArmed = false;
-          kickerArmed = false;
-          return;
-        }
-
-        runIntakeWithKicker(intake, kicker, Constants.IntakeConstants.intakeSpeed);
-      }
-
-      @Override
-      public void end(boolean interrupted) {
-        unjamTimer.stop();
-        intake.stop();
-        kicker.stop();
-      }
-    };
+    return Commands.runEnd(
+        () ->
+            runIntakeWithKicker(
+                intake,
+                kicker,
+                Constants.IntakeConstants.intakeSpeed,
+                Constants.IntakeConstants.kickerIntakeSpeed),
+        () -> {
+          intake.stop();
+          kicker.stop();
+        },
+        intake,
+        kicker);
   }
 
   public static Command startIntake(Intake intake, Kicker kicker) {
     return Commands.runOnce(
-        () -> runIntakeWithKicker(intake, kicker, Constants.IntakeConstants.intakeSpeed),
+        () ->
+            runIntakeWithKicker(
+                intake,
+                kicker,
+                Constants.IntakeConstants.intakeSpeed,
+                Constants.IntakeConstants.kickerIntakeSpeed),
+        intake,
+        kicker);
+  }
+
+  public static Command outtake(Intake intake, Kicker kicker) {
+    return Commands.runEnd(
+        () ->
+            runIntakeWithKicker(
+                intake,
+                kicker,
+                Constants.IntakeConstants.outtakeSpeed,
+                Constants.IntakeConstants.kickerOuttakeSpeed),
+        () -> {
+          intake.stop();
+          kicker.stop();
+        },
         intake,
         kicker);
   }
@@ -117,11 +93,7 @@ public class ManipulationCommands {
 
   public static Command shootFuel(Intake intake, Shooter shooter, Kicker kicker) {
     return createRealShootCommand(
-            intake,
-            shooter,
-            kicker,
-            () -> Constants.ShooterConstants.kShootRPM.getAsDouble(),
-            () -> true)
+            intake, shooter, kicker, () -> Constants.ShooterConstants.k1mShootRPM, () -> true)
         .onlyIf(() -> Robot.isHubActive());
   }
 

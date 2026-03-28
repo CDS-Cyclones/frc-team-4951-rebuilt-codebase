@@ -40,8 +40,8 @@ public class ShooterIOSparkMax implements ShooterIO {
   public void updateInputs(ShooterIOInputs inputs) {
     inputs.mainAppliedOutput = mainMotor.getAppliedOutput();
     inputs.secondaryAppliedOutput = secondaryMotor.getAppliedOutput();
-    inputs.mainVelocityRPM = mainMotor.getEncoder().getVelocity();
-    inputs.secondaryVelocityRPM = secondaryMotor.getEncoder().getVelocity();
+    inputs.mainVelocityRPM = -mainMotor.getEncoder().getVelocity();
+    inputs.secondaryVelocityRPM = -secondaryMotor.getEncoder().getVelocity();
   }
 
   @Override
