@@ -100,7 +100,6 @@ public final class Constants {
         (2 * Math.PI) / 60.0 / driveMotorReduction; // Rotor RPM -> Wheel Rad/Sec
 
     // Drive PID configuration
-    // TODO: Tune
     public static final TunableNum driveKp = new TunableNum("Drive/drive/p", 0.0);
     public static final TunableNum driveKd = new TunableNum("Drive/drive/d", 0.0);
     // TODO: Run FeedForward Characterization
@@ -257,6 +256,7 @@ public final class Constants {
 
     public static final int kCanId = 24;
     public static final int kCurrentStallLimit = 40;
+    public static final double kSecondsToClimb = 4.0;
   }
 
   public static final class ShooterConstants {
@@ -283,7 +283,7 @@ public final class Constants {
     public static final double k1mShootRPM = 2500;
     public static final double kKickerIndexPercent = 1.0;
     public static final double kVelocityToleranceRPM = 100.0;
-    public static final TunableNum kAutoShootRPM = new TunableNum("Shooter/kAutoShootRPM", 3000);
+    public static final TunableNum kAutoShootRPM = new TunableNum("Shooter/kAutoShootRPM", 2500);
     public static final TunableNum kPassRPM = new TunableNum("Shooter/kPassRPM", 8000);
 
     public static final double kSimLaunchPeriodSeconds = 0.20;

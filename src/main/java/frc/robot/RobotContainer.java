@@ -142,6 +142,7 @@ public class RobotContainer {
     // Set up auto routines
     NamedCommands.registerCommand("intakeStart", ManipulationCommands.startIntake(intake, kicker));
     NamedCommands.registerCommand("intakeStop", ManipulationCommands.stopIntake(intake, kicker));
+    NamedCommands.registerCommand("climbUp", ClimbCommands.climbUpFor(climber, Constants.ClimberConstants.kSecondsToClimb));
     NamedCommands.registerCommand(
         "shootFuelAuto",
         ManipulationCommands.shootFuel(
@@ -149,7 +150,7 @@ public class RobotContainer {
             intake,
             shooter,
             kicker,
-            () -> Constants.ShooterConstants.k1mShootRPM,
+            () -> Constants.ShooterConstants.kAutoShootRPM.getAsDouble(),
             () -> true));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
