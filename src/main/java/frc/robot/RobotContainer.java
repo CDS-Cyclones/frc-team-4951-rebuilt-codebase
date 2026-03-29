@@ -167,6 +167,25 @@ public class RobotContainer {
             .withTimeout(1.50)
             .andThen(Commands.runOnce(drive::stop, drive))
             .andThen(ManipulationCommands.shootFuel(intake, shooter, kicker)));
+
+    autoChooser.addOption(
+        "DRIVE BACKWARDS, SHOOT, CLIMB",
+        DriveCommands.joystickDrive(drive, () -> -0.5, () -> 0.0, () -> 0.0)
+            .withTimeout(1.50)
+            .andThen(Commands.runOnce(drive::stop, drive))
+            .andThen(ManipulationCommands.shootFuel(intake, shooter, kicker))
+            .withTimeout(12)
+            .andThen(
+                DriveCommands.joystickDrive(drive, () -> -0.5, () -> 0.0, () -> 0.0)
+                    .withTimeout(3.0)
+                    .andThen(drive::stop, drive)
+                    .andThen(
+                        ClimbCommands.climbDownFor(
+                            climber, 6.0))
+                            .andThen(
+                        ClimbCommands.climbUpFor(
+                            climber, Constants.ClimberConstants.kSecondsToClimb))));
+
     // autoChooser.addOption(
     //     "Drive SysId (Quasistatic Forward)",
     //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -234,8 +253,6 @@ public class RobotContainer {
     controller.povUp().whileTrue((ClimbCommands.climbUp(climber)));
     controller.povDown().whileTrue((ClimbCommands.climbDown(climber)));
     controller.povLeft().whileTrue((ManipulationCommands.outtake(intake, kicker)));
-    operatorController.povUp().whileTrue((ClimbCommands.climbUpFor(climber, 2.0)));
-    operatorController.povDown().whileTrue((ClimbCommands.climbDownFor(climber, 2.0)));
     ////////////////////////////////////////////////////////////////////////////////////////////
     /// ///////////////////////////////// TEST CONTROLLER ///////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////
