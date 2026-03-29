@@ -16,10 +16,10 @@ public class ClimbCommands {
   }
 
   public static Command climbUpFor(Climber climber, double seconds) {
-    return climbUp(climber).withTimeout(seconds);
+    return climbUp(climber).withTimeout(seconds).andThen(() -> climber.run(0.0));
   }
 
   public static Command climbDownFor(Climber climber, double seconds) {
-    return climbDown(climber).withTimeout(seconds);
+    return climbDown(climber).withTimeout(seconds).andThen(() -> climber.run(0.0));
   }
 }

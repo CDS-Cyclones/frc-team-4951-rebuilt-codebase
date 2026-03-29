@@ -164,7 +164,7 @@ public class RobotContainer {
     autoChooser.addOption(
         "DRIVE BACKWARDS AND SHOOT",
         DriveCommands.joystickDrive(drive, () -> -0.5, () -> 0.0, () -> 0.0)
-            .withTimeout(1.24)
+            .withTimeout(1.50)
             .andThen(Commands.runOnce(drive::stop, drive))
             .andThen(ManipulationCommands.shootFuel(intake, shooter, kicker)));
     // autoChooser.addOption(
@@ -234,8 +234,8 @@ public class RobotContainer {
     controller.povUp().whileTrue((ClimbCommands.climbUp(climber)));
     controller.povDown().whileTrue((ClimbCommands.climbDown(climber)));
     controller.povLeft().whileTrue((ManipulationCommands.outtake(intake, kicker)));
-    operatorController.povUp().whileTrue((ClimbCommands.climbUp(climber)));
-    operatorController.povUp().whileTrue((ClimbCommands.climbDown(climber)));
+    operatorController.povUp().whileTrue((ClimbCommands.climbUpFor(climber, 2.0)));
+    operatorController.povDown().whileTrue((ClimbCommands.climbDownFor(climber, 2.0)));
     ////////////////////////////////////////////////////////////////////////////////////////////
     /// ///////////////////////////////// TEST CONTROLLER ///////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -260,6 +260,10 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
+  public void resetPoseForAlliance() {
+    drive.resetPoseForAlliance();
+  }
+
   public Command getAutonomousCommand() {
     return autoChooser.get();
   }

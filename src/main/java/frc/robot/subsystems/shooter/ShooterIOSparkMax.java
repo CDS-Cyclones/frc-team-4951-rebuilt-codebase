@@ -80,7 +80,7 @@ public class ShooterIOSparkMax implements ShooterIO {
     configMain.smartCurrentLimit(kCurrentLimit);
     configMain.voltageCompensation(12);
     configMain.idleMode(IdleMode.kCoast);
-    configMain.inverted(true);
+    configMain.inverted(false);
     configMain
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -97,9 +97,10 @@ public class ShooterIOSparkMax implements ShooterIO {
   }
 
   private void applyVelocitySetpoint(double rpm) {
+    double negRpm = -rpm;
     double ffVolts =
-        kShooterMainKs.getAsDouble() * Math.signum(rpm) + kShooterMainKv.getAsDouble() * rpm;
+        kShooterMainKs.getAsDouble() * Math.signum(rpm) + kShooterMainKv.getAsDouble() * negRpm;
     mainController.setSetpoint(
-        rpm, ControlType.kVelocity, ClosedLoopSlot.kSlot0, ffVolts, ArbFFUnits.kVoltage);
+        negRpm, ControlType.kVelocity, ClosedLoopSlot.kSlot0, ffVolts, ArbFFUnits.kVoltage);
   }
 }

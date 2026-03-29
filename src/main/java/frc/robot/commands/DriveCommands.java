@@ -152,6 +152,56 @@ public class DriveCommands {
   }
 
   /**
+   * Drives the robot straight backward (robot-relative) at the given speed for the given duration.
+   *
+   * @param drive The drive subsystem.
+   * @param speedMetersPerSec Backward speed in meters per second (positive = backward).
+   * @param seconds Duration in seconds.
+   */
+  public static Command backupForTime(Drive drive, double speedMetersPerSec, double seconds) {
+    return Commands.run(
+            () -> drive.runVelocity(new ChassisSpeeds(-Math.abs(speedMetersPerSec), 0.0, 0.0)),
+            drive)
+        .withTimeout(seconds)
+        .finallyDo(() -> drive.stop());
+  }
+
+  /**
+   * Drives the robot straight backward (robot-relative) at the given speed for the specified number
+   * of wheel revolutions.
+   *
+   * @param drive The drive subsystem.
+   * @param speedMetersPerSec Backward speed in meters per second (positive = backward).
+   * @param revolutions Number of wheel revolutions to travel.
+   */
+  public static Command backupForRevolutions(
+      Drive drive, double speedMetersPerSec, double revolutions) {
+    double targetRadians = revolutions * 2.0 * Math.PI;
+    double[] startPositions = new double[4];
+
+    return Commands.sequence(
+        Commands.runOnce(
+            () -> {
+              double[] positions = drive.getWheelRadiusCharacterizationPositions();
+              System.arraycopy(positions, 0, startPositions, 0, 4);
+            }),
+        Commands.run(
+                () -> drive.runVelocity(new ChassisSpeeds(-Math.abs(speedMetersPerSec), 0.0, 0.0)),
+                drive)
+            .until(
+                () -> {
+                  double[] current = drive.getWheelRadiusCharacterizationPositions();
+                  double avgDelta = 0.0;
+                  for (int i = 0; i < 4; i++) {
+                    avgDelta += Math.abs(current[i] - startPositions[i]);
+                  }
+                  avgDelta /= 4.0;
+                  return avgDelta >= targetRadians;
+                })
+            .finallyDo(() -> drive.stop()));
+  }
+
+  /**
    * Measures the velocity feedforward constants for the drive motors.
    *
    * <p>This command should only be used in voltage control mode.

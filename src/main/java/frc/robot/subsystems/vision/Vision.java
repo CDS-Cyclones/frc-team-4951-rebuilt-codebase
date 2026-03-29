@@ -57,6 +57,11 @@ public class Vision extends SubsystemBase {
     return inputs[cameraIndex].latestTargetObservation.tx();
   }
 
+  /** Returns the tag IDs currently visible to the specified camera. */
+  public int[] getVisibleTagIds(int cameraIndex) {
+    return inputs[cameraIndex].tagIds;
+  }
+
   @Override
   public void periodic() {
     for (int i = 0; i < io.length; i++) {
