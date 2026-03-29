@@ -257,7 +257,7 @@ public final class Constants {
 
     public static final int kCanId = 24;
     public static final int kCurrentStallLimit = 40;
-    public static final double kSecondsToClimb = 4.2;
+    public static final double kSecondsToClimb = 10;
   }
 
   public static final class ShooterConstants {
@@ -285,7 +285,7 @@ public final class Constants {
     public static final double kKickerIndexPercent = 1.0;
     public static final double kVelocityToleranceRPM = 100.0;
     public static final TunableNum kAutoShootRPM = new TunableNum("Shooter/kAutoShootRPM", 2500);
-    public static final TunableNum kPassRPM = new TunableNum("Shooter/kPassRPM", 4000);
+    public static final TunableNum kPassRPM = new TunableNum("Shooter/kPassRPM", 3250);
 
     public static final double kSimLaunchPeriodSeconds = 0.20;
     public static final double kSimLaunchHeightMeters = Units.inchesToMeters(24.0);

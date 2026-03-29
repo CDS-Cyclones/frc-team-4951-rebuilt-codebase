@@ -22,4 +22,8 @@ public class ClimbCommands {
   public static Command climbDownFor(Climber climber, double seconds) {
     return climbDown(climber).withTimeout(seconds).andThen(() -> climber.run(0.0));
   }
+
+  public static Command stopClimb(Climber climber) {
+    return Commands.runOnce(() -> climber.stop());
+  }
 }

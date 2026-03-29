@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ClimbCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ManipulationCommands;
-import frc.robot.commands.OrbitCommand;
 import frc.robot.commands.TestCommands;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -64,7 +63,7 @@ public class RobotContainer {
   private final Climber climber;
 
   private SwerveDriveSimulation driveSimulation = null;
-
+  private boolean invertStuff = false;
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
   private final CommandXboxController operatorController = new CommandXboxController(1);
@@ -166,25 +165,20 @@ public class RobotContainer {
         DriveCommands.joystickDrive(drive, () -> -0.5, () -> 0.0, () -> 0.0)
             .withTimeout(1.50)
             .andThen(Commands.runOnce(drive::stop, drive))
-            .andThen(ManipulationCommands.shootFuel(intake, shooter, kicker)));
+            .andThen(ManipulationCommands.shootFuelInAuto(intake, shooter, kicker)));
 
     autoChooser.addOption(
         "DRIVE BACKWARDS, SHOOT, CLIMB",
-        DriveCommands.joystickDrive(drive, () -> -0.5, () -> 0.0, () -> 0.0)
-            .withTimeout(1.50)
+        Commands.parallel(
+                DriveCommands.joystickDrive(drive, () -> 0.5, () -> 0.0, () -> 0.0)
+                    .withTimeout(5.0),
+                ClimbCommands.climbDownFor(climber, 4.25))
             .andThen(Commands.runOnce(drive::stop, drive))
-            .andThen(ManipulationCommands.shootFuel(intake, shooter, kicker))
-            .withTimeout(12)
+            .andThen(ClimbCommands.stopClimb(climber))
+            .andThen(ManipulationCommands.shootFuelInAuto(intake, shooter, kicker).withTimeout(3.5))
             .andThen(
-                DriveCommands.joystickDrive(drive, () -> -0.5, () -> 0.0, () -> 0.0)
-                    .withTimeout(3.0)
-                    .andThen(drive::stop, drive)
-                    .andThen(
-                        ClimbCommands.climbDownFor(
-                            climber, 6.0))
-                            .andThen(
-                        ClimbCommands.climbUpFor(
-                            climber, Constants.ClimberConstants.kSecondsToClimb))));
+                ClimbCommands.climbUpFor(climber, Constants.ClimberConstants.kSecondsToClimb)));
+    autoChooser.addOption("test climb", ClimbCommands.climbDownFor(climber, 4.25));
 
     // autoChooser.addOption(
     //     "Drive SysId (Quasistatic Forward)",
@@ -214,13 +208,19 @@ public class RobotContainer {
     /// ///////////////////////////////////////////////////////////////////////////////////////
 
     // Default command, normal field-relative drive
-    drive.setDefaultCommand(
+    final Command normalDriveCommand =
+        DriveCommands.joystickDrive(
+            drive,
+            () -> controller.getLeftY() * 0.75,
+            () -> controller.getLeftX() * 0.75,
+            () -> -controller.getRightX() * 0.75);
+    final Command invertedDriveCommand =
         DriveCommands.joystickDrive(
             drive,
             () -> -controller.getLeftY() * 0.75,
             () -> -controller.getLeftX() * 0.75,
-            () -> -controller.getRightX() * 0.65));
-
+            () -> -controller.getRightX() * 0.75);
+    drive.setDefaultCommand(normalDriveCommand);
     final Runnable resetGyro =
         Constants.currentMode == Constants.Mode.SIM
             ? () ->
@@ -233,11 +233,39 @@ public class RobotContainer {
     controller.start().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
 
     // Orbit hub when left bumper is held
-    controller.leftBumper().whileTrue(new OrbitCommand(drive, () -> controller.getLeftX()));
+    // controller.leftBumper().whileTrue(new OrbitCommand(drive, () -> controller.getLeftX()));
 
     // Shoot in place when right bumper is held
     controller.rightBumper().whileTrue(ManipulationCommands.shootFuel(intake, shooter, kicker));
     controller.rightTrigger().whileTrue(ManipulationCommands.passFuel(intake, shooter, kicker));
+    operatorController
+        .rightBumper()
+        .whileTrue(ManipulationCommands.shootFuel(intake, shooter, kicker));
+    operatorController
+        .rightTrigger()
+        .whileTrue(ManipulationCommands.passFuel(intake, shooter, kicker));
+    operatorController.povUp().whileTrue(ClimbCommands.climbUp(climber));
+    operatorController.povDown().whileTrue(ClimbCommands.climbDown(climber));
+    operatorController.a().toggleOnTrue(ManipulationCommands.toggleIntake(intake, kicker));
+    operatorController
+        .leftBumper()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  invertStuff = !invertStuff;
+                  drive.setDefaultCommand(invertStuff ? invertedDriveCommand : normalDriveCommand);
+                },
+                drive));
+
+    controller
+        .leftBumper()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  invertStuff = !invertStuff;
+                  drive.setDefaultCommand(invertStuff ? invertedDriveCommand : normalDriveCommand);
+                },
+                drive));
     // Toggle Intake with A button
     controller.a().toggleOnTrue(ManipulationCommands.toggleIntake(intake, kicker));
 

@@ -97,6 +97,12 @@ public class ManipulationCommands {
         .onlyIf(() -> Robot.isHubActive());
   }
 
+  public static Command shootFuelInAuto(Intake intake, Shooter shooter, Kicker kicker) {
+    return createRealShootCommand(
+            intake, shooter, kicker, () -> Constants.ShooterConstants.k4mShootRPM, () -> true)
+        .onlyIf(() -> Robot.isHubActive());
+  }
+
   public static Command passFuel(Intake intake, Shooter shooter, Kicker kicker) {
     return createRealShootCommand(
         intake,
