@@ -9,6 +9,7 @@ public class Kicker extends SubsystemBase {
   private final KickerIO io;
   private final KickerIOInputsAutoLogged inputs = new KickerIOInputsAutoLogged();
   private boolean active = false;
+  private double setpointRPM = 0.0;
 
   public Kicker(KickerIO io) {
     this.io = io;
@@ -29,6 +30,12 @@ public class Kicker extends SubsystemBase {
   public void stop() {
     active = false;
     io.stop();
+  }
+
+  public void setVelocityRPM(double RPM) {
+    setpointRPM = RPM;
+    active = Math.abs(RPM) > kActiveThreshold;
+    io.setVelocityRPM(setpointRPM);
   }
 
   public boolean isActive() {

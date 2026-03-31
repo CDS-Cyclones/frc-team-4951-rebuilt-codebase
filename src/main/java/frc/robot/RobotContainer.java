@@ -286,7 +286,11 @@ public class RobotContainer {
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     testController.a().whileTrue(TestCommands.holdIntake(intake, 0.55));
-    testController.b().whileTrue(TestCommands.holdKicker(kicker, 0.55));
+    testController
+        .b()
+        .whileTrue(
+            TestCommands.holdKickerVelocity(
+                kicker, () -> Constants.KickerConstants.kKickerShootRPM.getAsDouble()));
     testController.povUp().whileTrue(TestCommands.holdKicker(kicker, -0.55));
     testController
         .x()

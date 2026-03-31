@@ -29,6 +29,11 @@ public class TestCommands {
         () -> shooter.setVelocityRPM(rpmSupplier.getAsDouble()), shooter::stop, shooter);
   }
 
+  public static Command holdKickerVelocity(Kicker kicker, DoubleSupplier rpmSupplier) {
+    return Commands.runEnd(
+        () -> kicker.setVelocityRPM(rpmSupplier.getAsDouble()), kicker::stop, kicker);
+  }
+
   public static Command holdKicker(Kicker kicker) {
     return holdKicker(kicker, kDefaultTestPercent);
   }

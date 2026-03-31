@@ -265,10 +265,7 @@ public final class Constants {
 
     public static final int kMainShooterCANId = 22;
     public static final int kSecondaryShooterCANId = 23;
-    public static final int kKickerCANId = 21;
     public static final int kCurrentLimit = 80;
-    public static final int kKickerCurrentLimit = 40;
-    public static final double kKickerPercentage = 0.8;
 
     public static final TunableNum kShooterMainKp = new TunableNum("Shooter/kP", 0.00023);
     public static final TunableNum kShooterMainKi = new TunableNum("Shooter/kI", 0.0);
@@ -282,7 +279,6 @@ public final class Constants {
     public static final double k4mShootRPM = 3350;
     public static final double k2mShootRPM = 2825;
     public static final double k1mShootRPM = 2500;
-    public static final double kKickerIndexPercent = 1.0;
     public static final double kVelocityToleranceRPM = 100.0;
     public static final TunableNum kAutoShootRPM = new TunableNum("Shooter/kAutoShootRPM", 2500);
     public static final TunableNum kPassRPM = new TunableNum("Shooter/kPassRPM", 3250);
@@ -296,5 +292,21 @@ public final class Constants {
     public static final TunableNum kSimLaunchAngleDegrees =
         new TunableNum("Shooter/SimLaunchAngleDegrees", 65.0);
     public static final double kSimLaunchForwardOffsetMeters = Units.inchesToMeters(12.0);
+  }
+
+  public static final class KickerConstants {
+    private KickerConstants() {}
+
+    public static final int kKickerCANId = 21;
+    public static final int kKickerCurrentLimit = 40;
+    public static final double kKickerPercentage = 0.8;
+    public static final double kKickerIndexPercent = 1.0;
+
+    public static final TunableNum kKickerKp = new TunableNum("Kicker/kP", 0.00023);
+    public static final TunableNum kKickerKi = new TunableNum("Kicker/kI", 0.0);
+    public static final TunableNum kKickerKd = new TunableNum("Kicker/kD", 0.1);
+    public static final TunableNum kKickerKs = new TunableNum("Kicker/Ks", 0.1);
+    public static final TunableNum kKickerKv = new TunableNum("Kicker/Kv", 0.00202);
+    public static final TunableNum kKickerShootRPM = new TunableNum("Kicker/kickerRPM", 4000);
   }
 }

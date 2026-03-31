@@ -17,4 +17,6 @@ public interface KickerIO {
   default void stop() {
     setPercent(0.0);
   }
+
+  default void setVelocityRPM(double mainRPM) {}
 }
