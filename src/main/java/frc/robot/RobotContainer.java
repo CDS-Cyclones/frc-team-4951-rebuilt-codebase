@@ -292,16 +292,6 @@ public class RobotContainer {
             TestCommands.holdKickerVelocity(
                 kicker, () -> Constants.KickerConstants.kKickerShootRPM.getAsDouble()));
     testController.povUp().whileTrue(TestCommands.holdKicker(kicker, -0.55));
-    testController
-        .x()
-        .whileTrue(
-            TestCommands.holdShooter(
-                shooter, Constants.ShooterConstants.kShooterOpenLoopDutyCycle.getAsDouble()));
-    testController
-        .y()
-        .whileTrue(
-            TestCommands.holdShooterVelocity(
-                shooter, () -> Constants.ShooterConstants.kShootRPM.getAsDouble()));
   }
 
   /**

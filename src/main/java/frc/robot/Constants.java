@@ -258,6 +258,11 @@ public final class Constants {
     public static final int kCanId = 24;
     public static final int kCurrentStallLimit = 40;
     public static final double kSecondsToClimb = 10;
+    // TOOD: confirm these conversionfactors make sense lol (i )
+    public static final double absolutePositionConversionFactor = 360.0;
+    public static final double absoluteVelocityConversionFactor = 6.0;
+    public static final double relativePositionConversionFactor = 9.0;
+    public static final double relativeVelocityConversionFactor = 0.15;
   }
 
   public static final class ShooterConstants {
@@ -272,8 +277,6 @@ public final class Constants {
     public static final TunableNum kShooterMainKd = new TunableNum("Shooter/kD", 0.0);
     public static final TunableNum kShooterMainKs = new TunableNum("Shooter/kS", 0.1);
     public static final TunableNum kShooterMainKv = new TunableNum("Shooter/kV", 0.00202);
-    public static final TunableNum kShooterOpenLoopDutyCycle =
-        new TunableNum("Shooter/OpenLoopDutyCycle", 0.55);
 
     public static final TunableNum kShootRPM = new TunableNum("Shooter/kShootRPM", 3350);
     public static final double k4mShootRPM = 3350;

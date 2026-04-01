@@ -18,6 +18,14 @@ public class Climber extends SubsystemBase {
     Logger.processInputs("Climber", inputs);
   }
 
+  public double getAbsolutePositionDegrees() {
+    return inputs.absolutePositionDegrees;
+  }
+
+  public double getRelativePositionDegrees() {
+    return inputs.relativePositionDegrees;
+  }
+
   public void run(double percent) {
     io.setPercent(percent);
   }

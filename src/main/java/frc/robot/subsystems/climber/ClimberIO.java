@@ -10,6 +10,8 @@ public interface ClimberIO {
     public double currentAmps = 0.0;
     public double velocityRPM = 0.0;
     public int fuelCount = 0;
+    public double absolutePositionDegrees = 0.0;
+    public double relativePositionDegrees = 0.0;
   }
 
   default void updateInputs(ClimberIOInputs inputs) {}

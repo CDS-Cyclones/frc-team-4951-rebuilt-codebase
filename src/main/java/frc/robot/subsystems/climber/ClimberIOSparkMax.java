@@ -1,6 +1,8 @@
 package frc.robot.subsystems.climber;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -10,11 +12,13 @@ import frc.robot.Constants;
 
 public class ClimberIOSparkMax implements ClimberIO {
 
-  private final SparkMax motor;
+  private final SparkMax motor =
+      new SparkMax(Constants.ClimberConstants.kCanId, MotorType.kBrushless);
   private final SparkMaxConfig config = new SparkMaxConfig();
+  private final AbsoluteEncoder absoluteEncoder = motor.getAbsoluteEncoder();
+  private final RelativeEncoder relativeEncoder = motor.getEncoder();
 
   public ClimberIOSparkMax() {
-    motor = new SparkMax(Constants.ClimberConstants.kCanId, MotorType.kBrushless);
 
     config
         .inverted(true)
@@ -22,6 +26,16 @@ public class ClimberIOSparkMax implements ClimberIO {
         .smartCurrentLimit(Constants.ClimberConstants.kCurrentStallLimit)
         .voltageCompensation(12.0);
 
+    config
+        .absoluteEncoder
+        .positionConversionFactor(Constants.ClimberConstants.absolutePositionConversionFactor)
+        .velocityConversionFactor(Constants.ClimberConstants.absoluteVelocityConversionFactor)
+        .inverted(false);
+
+    config
+        .encoder
+        .positionConversionFactor(Constants.ClimberConstants.relativePositionConversionFactor)
+        .velocityConversionFactor(Constants.ClimberConstants.relativeVelocityConversionFactor);
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
@@ -29,7 +43,9 @@ public class ClimberIOSparkMax implements ClimberIO {
   public void updateInputs(ClimberIOInputs inputs) {
     inputs.appliedVolts = motor.getAppliedOutput() * motor.getBusVoltage();
     inputs.currentAmps = motor.getOutputCurrent();
-    inputs.velocityRPM = motor.getEncoder().getVelocity();
+    inputs.velocityRPM = relativeEncoder.getVelocity();
+    inputs.absolutePositionDegrees = absoluteEncoder.getPosition();
+    inputs.relativePositionDegrees = relativeEncoder.getPosition();
   }
 
   @Override
