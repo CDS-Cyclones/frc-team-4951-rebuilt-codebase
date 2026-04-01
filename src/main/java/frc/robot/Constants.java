@@ -258,11 +258,13 @@ public final class Constants {
     public static final int kCanId = 24;
     public static final int kCurrentStallLimit = 40;
     public static final double kSecondsToClimb = 10;
-    // TOOD: confirm these conversionfactors make sense lol (i )
-    public static final double absolutePositionConversionFactor = 360.0;
-    public static final double absoluteVelocityConversionFactor = 6.0;
-    public static final double relativePositionConversionFactor = 9.0;
-    public static final double relativeVelocityConversionFactor = 0.15;
+    //TODO: find the degree for climber to clear rung
+    public static final double kClearRung = 0.0;
+    // TOOD: confirm these conversionfactors make sense lol
+    public static final double kAbsolutePositionConversionFactor = 360.0;
+    public static final double kAbsoluteVelocityConversionFactor = 6.0;
+    public static final double kRelativePositionConversionFactor = 9.0;
+    public static final double kRelativeVelocityConversionFactor = 0.15;
   }
 
   public static final class ShooterConstants {

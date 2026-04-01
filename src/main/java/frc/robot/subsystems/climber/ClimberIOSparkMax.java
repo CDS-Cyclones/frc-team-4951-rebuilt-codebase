@@ -28,14 +28,14 @@ public class ClimberIOSparkMax implements ClimberIO {
 
     config
         .absoluteEncoder
-        .positionConversionFactor(Constants.ClimberConstants.absolutePositionConversionFactor)
-        .velocityConversionFactor(Constants.ClimberConstants.absoluteVelocityConversionFactor)
+        .positionConversionFactor(Constants.ClimberConstants.kAbsolutePositionConversionFactor)
+        .velocityConversionFactor(Constants.ClimberConstants.kAbsoluteVelocityConversionFactor)
         .inverted(false);
 
     config
         .encoder
-        .positionConversionFactor(Constants.ClimberConstants.relativePositionConversionFactor)
-        .velocityConversionFactor(Constants.ClimberConstants.relativeVelocityConversionFactor);
+        .positionConversionFactor(Constants.ClimberConstants.kRelativePositionConversionFactor)
+        .velocityConversionFactor(Constants.ClimberConstants.kRelativeVelocityConversionFactor);
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
