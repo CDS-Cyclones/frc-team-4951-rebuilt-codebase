@@ -87,7 +87,8 @@ public class RobotContainer {
         vision =
             new Vision(
                 drive::addVisionMeasurement,
-                new VisionIOLimelight(Constants.VisionConstants.camera0Name, drive::getRotation));
+                new VisionIOLimelight(Constants.VisionConstants.camera0Name, drive::getRotation),
+                new VisionIOLimelight(Constants.VisionConstants.camera1Name, drive::getRotation));
         intake = new Intake(new IntakeIOSparkMax());
         kicker = new Kicker(new KickerIOSparkMax());
         shooter = new Shooter(new ShooterIOSparkMax());

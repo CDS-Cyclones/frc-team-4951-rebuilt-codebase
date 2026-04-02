@@ -177,6 +177,7 @@ public final class Constants {
 
     // Camera names, must match names configured on coprocessor
     public static String camera0Name = "limelight";
+    public static String camera1Name = "limelight-rear";
 
     // Robot to camera transforms
     // (Not used by Limelight, configure in web UI instead)
@@ -258,7 +259,7 @@ public final class Constants {
     public static final int kCanId = 24;
     public static final int kCurrentStallLimit = 40;
     public static final double kSecondsToClimb = 10;
-    //TODO: find the degree for climber to clear rung
+    // TODO: find the degree for climber to clear rung
     public static final double kClearRung = 0.0;
     // TOOD: confirm these conversionfactors make sense lol
     public static final double kAbsolutePositionConversionFactor = 360.0;
