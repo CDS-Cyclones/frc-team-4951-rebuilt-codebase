@@ -62,6 +62,15 @@ public class Vision extends SubsystemBase {
     return inputs[cameraIndex].tagIds;
   }
 
+  /** Returns the total number of unique AprilTags visible across all cameras. */
+  public int getTotalVisibleTagCount() {
+    java.util.Set<Integer> seen = new java.util.HashSet<>();
+    for (var input : inputs) {
+      for (int id : input.tagIds) seen.add(id);
+    }
+    return seen.size();
+  }
+
   @Override
   public void periodic() {
     for (int i = 0; i < io.length; i++) {
