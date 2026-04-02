@@ -53,7 +53,7 @@ public final class Constants {
   public static final class DriveConstants {
     private DriveConstants() {}
 
-    public static final double maxSpeedMetersPerSec = 4.0;
+    public static final double maxSpeedMetersPerSec = 5.0;
     public static final double odometryFrequency = 100.0; // Hz
     public static final double trackWidth = Units.inchesToMeters(25.5);
     public static final double wheelBase = Units.inchesToMeters(24.25);

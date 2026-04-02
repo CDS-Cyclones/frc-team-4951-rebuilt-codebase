@@ -33,6 +33,8 @@ import java.util.function.Supplier;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
+  private static final double LINEAR_SLEW_RATE = 8.0; // normalized units/sec (0→1 in 0.125s)
+  private static final double ROTATIONAL_SLEW_RATE = 8.0; // normalized units/sec
   private static final double ANGLE_KP = 5.0;
   private static final double ANGLE_KD = 0.4;
   private static final double ANGLE_MAX_VELOCITY = 8.0;
@@ -66,6 +68,9 @@ public class DriveCommands {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier) {
+    SlewRateLimiter xLimiter = new SlewRateLimiter(LINEAR_SLEW_RATE);
+    SlewRateLimiter yLimiter = new SlewRateLimiter(LINEAR_SLEW_RATE);
+    SlewRateLimiter omegaLimiter = new SlewRateLimiter(ROTATIONAL_SLEW_RATE);
     return Commands.run(
         () -> {
           // Get linear velocity
@@ -78,12 +83,17 @@ public class DriveCommands {
           // Square rotation value for more precise control
           omega = Math.copySign(omega * omega, omega);
 
+          // Apply slew rate limiting for smooth acceleration
+          double limitedX = xLimiter.calculate(linearVelocity.getX());
+          double limitedY = yLimiter.calculate(linearVelocity.getY());
+          double limitedOmega = omegaLimiter.calculate(omega);
+
           // Convert to field relative speeds & send command
           ChassisSpeeds speeds =
               new ChassisSpeeds(
-                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                  omega * drive.getMaxAngularSpeedRadPerSec());
+                  limitedX * drive.getMaxLinearSpeedMetersPerSec(),
+                  limitedY * drive.getMaxLinearSpeedMetersPerSec(),
+                  limitedOmega * drive.getMaxAngularSpeedRadPerSec());
           boolean isFlipped =
               DriverStation.getAlliance().isPresent()
                   && DriverStation.getAlliance().get() == Alliance.Red;
