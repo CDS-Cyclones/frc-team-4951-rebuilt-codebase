@@ -107,8 +107,8 @@ public final class Constants {
     public static final TunableNum driveKp = new TunableNum("Drive/drive/p", 0.01);
     public static final TunableNum driveKd = new TunableNum("Drive/drive/d", 0.02);
     // TODO: Run FeedForward Characterization
-    public static final double driveKs = 0.2;
-    public static final double driveKv = 0.1;
+    public static final TunableNum driveKs = new TunableNum("Drive/drive/kS", 0.2);
+    public static final TunableNum driveKv = new TunableNum("Drive/drive/kV", 0.1);
     public static final double driveSimP = 0.05;
     public static final double driveSimD = 0.0;
     public static final double driveSimKs = 0.0;
@@ -133,6 +133,10 @@ public final class Constants {
     public static final double turnSimD = 0.2;
     public static final double turnPIDMinInput = 0; // Radians
     public static final double turnPIDMaxInput = 2 * Math.PI; // Radians
+
+    // PathPlanner PID configuration
+    public static final TunableNum ppTranslationKp = new TunableNum("Drive/PP/translationKp", 5.0);
+    public static final TunableNum ppRotationKp = new TunableNum("Drive/PP/rotationKp", 5.0);
 
     // PathPlanner configuration
     public static final double robotMassKg = 40.28;
@@ -250,11 +254,13 @@ public final class Constants {
 
     public static final int kCanId = 20;
     public static final int kCurrentLimit = 40;
-    public static final double intakeSpeed = 0.60;
-    public static final double kickerIntakeSpeed = -0.80;
-    public static final double outtakeSpeed = -0.60;
-    public static final double kickerOuttakeSpeed = 0.60;
-    public static final double kShootingSpeed = 0.8;
+    public static final TunableNum intakeSpeed = new TunableNum("Intake/intakeSpeed", 0.60);
+    public static final TunableNum kickerIntakeSpeed =
+        new TunableNum("Intake/kickerIntakeSpeed", -0.80);
+    public static final TunableNum outtakeSpeed = new TunableNum("Intake/outtakeSpeed", -0.60);
+    public static final TunableNum kickerOuttakeSpeed =
+        new TunableNum("Intake/kickerOuttakeSpeed", 0.60);
+    public static final TunableNum kShootingSpeed = new TunableNum("Intake/shootingSpeed", 0.8);
   }
 
   public static final class ClimberConstants {
@@ -262,9 +268,9 @@ public final class Constants {
 
     public static final int kCanId = 24;
     public static final int kCurrentStallLimit = 40;
-    public static final double kSecondsToClimb = 10;
-    // TODO: find the degree for climber to clear rung
-    public static final double kClearRung = 0.0;
+    public static final TunableNum kSecondsToClimb = new TunableNum("Climber/secondsToClimb", 10);
+    public static final TunableNum kClearRung = new TunableNum("Climber/clearRungDegrees", 0.0);
+    public static final TunableNum kClimbPercent = new TunableNum("Climber/climbPercent", 0.8);
     // TOOD: confirm these conversionfactors make sense lol
     public static final double kAbsolutePositionConversionFactor = 360.0;
     public static final double kAbsoluteVelocityConversionFactor = 6.0;
@@ -286,10 +292,11 @@ public final class Constants {
     public static final TunableNum kShooterMainKv = new TunableNum("Shooter/kV", 0.00202);
 
     public static final TunableNum kShootRPM = new TunableNum("Shooter/kShootRPM", 3350);
-    public static final double k4mShootRPM = 3350;
-    public static final double k2mShootRPM = 2825;
-    public static final double k1mShootRPM = 2500;
-    public static final double kVelocityToleranceRPM = 100.0;
+    public static final TunableNum k4mShootRPM = new TunableNum("Shooter/k4mRPM", 3350);
+    public static final TunableNum k2mShootRPM = new TunableNum("Shooter/k2mRPM", 2825);
+    public static final TunableNum k1mShootRPM = new TunableNum("Shooter/k1mRPM", 2500);
+    public static final TunableNum kVelocityToleranceRPM =
+        new TunableNum("Shooter/velocityToleranceRPM", 100.0);
     public static final TunableNum kAutoShootRPM = new TunableNum("Shooter/kAutoShootRPM", 2500);
     public static final TunableNum kPassRPM = new TunableNum("Shooter/kPassRPM", 3250);
 
@@ -309,8 +316,10 @@ public final class Constants {
 
     public static final int kKickerCANId = 21;
     public static final int kKickerCurrentLimit = 40;
-    public static final double kKickerPercentage = 0.8;
-    public static final double kKickerIndexPercent = 1.0;
+    public static final TunableNum kKickerPercentage =
+        new TunableNum("Kicker/kickerPercentage", 0.8);
+    public static final TunableNum kKickerIndexPercent =
+        new TunableNum("Kicker/kickerIndexPercent", 1.0);
 
     public static final TunableNum kKickerKp = new TunableNum("Kicker/kP", 0.00023);
     public static final TunableNum kKickerKi = new TunableNum("Kicker/kI", 0.0);

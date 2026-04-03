@@ -6,19 +6,26 @@ import frc.robot.Constants;
 import frc.robot.subsystems.climber.Climber;
 
 public class ClimbCommands {
-  private static final double kClimbPercent = 0.8;
-
   public static Command climbUp(Climber climber) {
-    return Commands.runEnd(() -> climber.run(kClimbPercent), climber::stop, climber);
+    return Commands.runEnd(
+        () -> climber.run(Constants.ClimberConstants.kClimbPercent.getAsDouble()),
+        climber::stop,
+        climber);
   }
 
   public static Command climbDown(Climber climber) {
-    return Commands.runEnd(() -> climber.run(-kClimbPercent), climber::stop, climber);
+    return Commands.runEnd(
+        () -> climber.run(-Constants.ClimberConstants.kClimbPercent.getAsDouble()),
+        climber::stop,
+        climber);
   }
 
   public static Command clearRung(Climber climber) {
     return climbDown(climber)
-        .until(() -> climber.getAbsolutePositionDegrees() >= Constants.ClimberConstants.kClearRung)
+        .until(
+            () ->
+                climber.getAbsolutePositionDegrees()
+                    >= Constants.ClimberConstants.kClearRung.getAsDouble())
         .andThen(climber::stop);
   }
 

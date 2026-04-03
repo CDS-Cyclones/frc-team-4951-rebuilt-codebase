@@ -17,6 +17,10 @@ import lombok.Setter;
 public class TunableValues {
   @Setter private static boolean tuningMode = true;
 
+  public static boolean isTuningMode() {
+    return tuningMode;
+  }
+
   public static class TunableNum implements DoubleSupplier {
     private final DoubleEntry entry;
     private double defaultValue;

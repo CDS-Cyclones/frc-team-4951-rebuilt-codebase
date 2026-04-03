@@ -43,8 +43,8 @@ public class ManipulationCommands {
             runIntakeWithKicker(
                 intake,
                 kicker,
-                Constants.IntakeConstants.intakeSpeed,
-                Constants.IntakeConstants.kickerIntakeSpeed),
+                Constants.IntakeConstants.intakeSpeed.getAsDouble(),
+                Constants.IntakeConstants.kickerIntakeSpeed.getAsDouble()),
         () -> {
           intake.stop();
           kicker.stop();
@@ -59,8 +59,8 @@ public class ManipulationCommands {
             runIntakeWithKicker(
                 intake,
                 kicker,
-                Constants.IntakeConstants.intakeSpeed,
-                Constants.IntakeConstants.kickerIntakeSpeed),
+                Constants.IntakeConstants.intakeSpeed.getAsDouble(),
+                Constants.IntakeConstants.kickerIntakeSpeed.getAsDouble()),
         intake,
         kicker);
   }
@@ -71,8 +71,8 @@ public class ManipulationCommands {
             runIntakeWithKicker(
                 intake,
                 kicker,
-                Constants.IntakeConstants.outtakeSpeed,
-                Constants.IntakeConstants.kickerOuttakeSpeed),
+                Constants.IntakeConstants.outtakeSpeed.getAsDouble(),
+                Constants.IntakeConstants.kickerOuttakeSpeed.getAsDouble()),
         () -> {
           intake.stop();
           kicker.stop();
@@ -93,13 +93,21 @@ public class ManipulationCommands {
 
   public static Command shootFuel(Intake intake, Shooter shooter, Kicker kicker) {
     return createRealShootCommand(
-            intake, shooter, kicker, () -> Constants.ShooterConstants.k2mShootRPM, () -> true)
+            intake,
+            shooter,
+            kicker,
+            () -> Constants.ShooterConstants.k2mShootRPM.getAsDouble(),
+            () -> true)
         .onlyIf(() -> Robot.isHubActive());
   }
 
   public static Command shootFuelInAuto(Intake intake, Shooter shooter, Kicker kicker) {
     return createRealShootCommand(
-            intake, shooter, kicker, () -> Constants.ShooterConstants.k4mShootRPM, () -> true)
+            intake,
+            shooter,
+            kicker,
+            () -> Constants.ShooterConstants.k4mShootRPM.getAsDouble(),
+            () -> true)
         .onlyIf(() -> Robot.isHubActive());
   }
 
@@ -227,8 +235,8 @@ public class ManipulationCommands {
 
           shooter.setVelocityRPM(rpmSupplier.getAsDouble());
           if (shooter.isMainAtSpeed()) {
-            intake.run(Constants.IntakeConstants.kShootingSpeed);
-            kicker.run(Constants.KickerConstants.kKickerPercentage);
+            intake.run(Constants.IntakeConstants.kShootingSpeed.getAsDouble());
+            kicker.run(Constants.KickerConstants.kKickerPercentage.getAsDouble());
           } else {
             intake.stop();
             kicker.stop();
