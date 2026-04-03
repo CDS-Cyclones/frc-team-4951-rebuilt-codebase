@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.FMSData;
+import frc.robot.util.TunableValues;
 import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -93,6 +94,7 @@ public class Robot extends LoggedRobot {
     // finished or interrupted commands, and running subsystem periodic() methods.
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
+    TunableValues.setTuningMode(!edu.wpi.first.wpilibj.DriverStation.isFMSAttached());
     CommandScheduler.getInstance().run();
     isHubActive = new FMSData().isHubActive();
     // Return to non-RT thread priority (do not modify the first argument)

@@ -232,8 +232,8 @@ public class ModuleIOSpark implements ModuleIO {
   @Override
   public void setDriveVelocity(double velocityRadPerSec) {
     double ffVolts =
-        Constants.DriveConstants.driveKs * Math.signum(velocityRadPerSec)
-            + Constants.DriveConstants.driveKv * velocityRadPerSec;
+        Constants.DriveConstants.driveKs.getAsDouble() * Math.signum(velocityRadPerSec)
+            + Constants.DriveConstants.driveKv.getAsDouble() * velocityRadPerSec;
     driveController.setSetpoint(
         velocityRadPerSec,
         ControlType.kVelocity,

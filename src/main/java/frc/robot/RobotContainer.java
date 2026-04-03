@@ -151,7 +151,9 @@ public class RobotContainer {
     NamedCommands.registerCommand("intakeStart", ManipulationCommands.startIntake(intake, kicker));
     NamedCommands.registerCommand("intakeStop", ManipulationCommands.stopIntake(intake, kicker));
     NamedCommands.registerCommand(
-        "climbUp", ClimbCommands.climbUpFor(climber, Constants.ClimberConstants.kSecondsToClimb));
+        "climbUp",
+        ClimbCommands.climbUpFor(
+            climber, Constants.ClimberConstants.kSecondsToClimb.getAsDouble()));
     NamedCommands.registerCommand(
         "shootFuelAuto",
         ManipulationCommands.shootFuel(
@@ -185,7 +187,8 @@ public class RobotContainer {
             .andThen(ClimbCommands.stopClimb(climber))
             .andThen(ManipulationCommands.shootFuelInAuto(intake, shooter, kicker).withTimeout(3.5))
             .andThen(
-                ClimbCommands.climbUpFor(climber, Constants.ClimberConstants.kSecondsToClimb)));
+                ClimbCommands.climbUpFor(
+                    climber, Constants.ClimberConstants.kSecondsToClimb.getAsDouble())));
     autoChooser.addOption("test climb", ClimbCommands.climbDownFor(climber, 4.25));
 
     // autoChooser.addOption(

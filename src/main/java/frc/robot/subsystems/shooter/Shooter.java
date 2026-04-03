@@ -31,7 +31,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean isMainAtSpeed() {
-    double tol = Constants.ShooterConstants.kVelocityToleranceRPM;
+    double tol = Constants.ShooterConstants.kVelocityToleranceRPM.getAsDouble();
     return Math.abs(inputs.mainVelocityRPM - mainSetpointRPM) < tol;
   }
 
