@@ -33,6 +33,7 @@ import frc.robot.subsystems.kicker.Kicker;
 import frc.robot.subsystems.kicker.KickerIO;
 import frc.robot.subsystems.kicker.KickerIOSim;
 import frc.robot.subsystems.kicker.KickerIOSparkMax;
+import frc.robot.subsystems.led.LEDSubsystem;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
@@ -61,6 +62,7 @@ public class RobotContainer {
   private final Kicker kicker;
   private final Shooter shooter;
   private final Climber climber;
+  private final LEDSubsystem leds;
 
   private SwerveDriveSimulation driveSimulation = null;
   private boolean invertStuff = false;
@@ -93,6 +95,7 @@ public class RobotContainer {
         kicker = new Kicker(new KickerIOSparkMax());
         shooter = new Shooter(new ShooterIOSparkMax());
         climber = new Climber(new ClimberIOSparkMax());
+        leds = new LEDSubsystem(shooter);
         break;
 
       case SIM:
@@ -121,6 +124,7 @@ public class RobotContainer {
         kicker = new Kicker(new KickerIOSim());
         shooter = new Shooter(new ShooterIOSim());
         climber = new Climber(new ClimberIO() {});
+        leds = new LEDSubsystem(shooter);
         break;
 
       default:
@@ -137,8 +141,11 @@ public class RobotContainer {
         kicker = new Kicker(new KickerIO() {});
         shooter = new Shooter(new ShooterIO() {});
         climber = new Climber(new ClimberIO() {});
+        leds = new LEDSubsystem(shooter);
         break;
     }
+
+    leds.setVisibleTagCountSupplier(vision::getTotalVisibleTagCount);
 
     // Set up auto routines
     NamedCommands.registerCommand("intakeStart", ManipulationCommands.startIntake(intake, kicker));

@@ -73,8 +73,12 @@ public final class Constants {
     public static final Rotation2d backLeftZeroRotation = new Rotation2d(-1.133);
     public static final Rotation2d backRightZeroRotation = new Rotation2d(1.536);
 
+    // CANivore bus name
+    public static final String canBusName = "canivore";
+
     // Device CAN IDs
     public static final int pigeonCanId = 60;
+    public static final int candleCanId = 40;
 
     public static final int frontLeftDriveCanId = 7;
     public static final int backLeftDriveCanId = 5;
