@@ -334,4 +334,10 @@ public class RobotContainer {
     Logger.recordOutput(
         "FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
   }
+
+  /** Publishes high-level manipulator activity flags to AdvantageKit/NT. */
+  public void logManipulatorActivity() {
+    Logger.recordOutput("Manipulator/IntakeOrKickerActive", intake.isActive() || kicker.isActive());
+    Logger.recordOutput("Manipulator/ShooterActive", shooter.isActive());
+  }
 }
