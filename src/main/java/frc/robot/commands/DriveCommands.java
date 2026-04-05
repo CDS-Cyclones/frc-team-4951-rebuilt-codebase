@@ -11,6 +11,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -22,8 +23,11 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.Constants;
+import frc.robot.Constants.DriveConstants.FieldPose;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.vision.Vision;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -45,6 +49,72 @@ public class DriveCommands {
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
   private DriveCommands() {}
+
+  public static Command driveToPose(
+      Drive drive, Vision vision, Supplier<FieldPose> desiredFieldPoseSupplier) {
+    return new FunctionalCommand(
+        () -> {
+          Constants.DriveConstants.angleController.enableContinuousInput(-Math.PI, Math.PI);
+          Constants.DriveConstants.angleController.reset();
+          Constants.DriveConstants.translationXController.reset();
+          Constants.DriveConstants.translationYController.reset();
+        },
+        () -> {
+          boolean isFlipped =
+              DriverStation.getAlliance().isPresent()
+                  && DriverStation.getAlliance().get() == Alliance.Red;
+          Pose3d pose = desiredFieldPoseSupplier.get().getDesiredPose();
+          double omega =
+              Constants.DriveConstants.angleController.calculate(
+                  drive.getRotation().getRadians(),
+                  desiredFieldPoseSupplier.get().getDesiredRotation2d().getRadians());
+          double velocityX =
+              Constants.DriveConstants.translationXController.calculate(
+                  drive.getPose().getTranslation().getX(), pose.getTranslation().getX());
+          double velocityY =
+              Constants.DriveConstants.translationYController.calculate(
+                  drive.getPose().getTranslation().getY(), pose.getTranslation().getY());
+
+          velocityX = MathUtil.applyDeadband(velocityX, 0.00);
+          velocityY = MathUtil.applyDeadband(velocityY, 0.00);
+          omega = MathUtil.applyDeadband(omega, 0.00);
+
+          // clamp
+          velocityX =
+              MathUtil.clamp(
+                  velocityX,
+                  -Constants.DriveConstants.driveToPoseMaxLinearSpeedMetersPerSec.getAsDouble(),
+                  Constants.DriveConstants.driveToPoseMaxLinearSpeedMetersPerSec.getAsDouble());
+          velocityY =
+              MathUtil.clamp(
+                  velocityY,
+                  -Constants.DriveConstants.driveToPoseMaxLinearSpeedMetersPerSec.getAsDouble(),
+                  Constants.DriveConstants.driveToPoseMaxLinearSpeedMetersPerSec.getAsDouble());
+          omega =
+              MathUtil.clamp(
+                  omega,
+                  -Constants.DriveConstants.driveToPoseMaxAngularSpeedRadPerSec.getAsDouble(),
+                  Constants.DriveConstants.driveToPoseMaxAngularSpeedRadPerSec.getAsDouble());
+
+          ChassisSpeeds speeds =
+              new ChassisSpeeds(
+                  isFlipped ? -velocityX : velocityX, isFlipped ? -velocityY : velocityY, omega);
+
+          drive.runVelocity(
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  speeds,
+                  isFlipped
+                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                      : drive.getRotation()));
+        },
+        interrupted -> drive.stopWithX(),
+        () ->
+            Constants.DriveConstants.angleController.atSetpoint()
+                && Constants.DriveConstants.translationXController.atSetpoint()
+                && Constants.DriveConstants.translationYController.atSetpoint(),
+        drive,
+        vision);
+  }
 
   private static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
     // Apply deadband

@@ -119,6 +119,10 @@ public class RobotContainer {
                 new VisionIOPhotonVisionSim(
                     "camera",
                     Constants.VisionConstants.botToCamTransformSim,
+                    driveSimulation::getSimulatedDriveTrainPose),
+                new VisionIOPhotonVisionSim(
+                    "camera-rear",
+                    Constants.VisionConstants.botToCamTransformSimRear,
                     driveSimulation::getSimulatedDriveTrainPose));
         intake = new Intake(new IntakeIOSim(driveSimulation));
         kicker = new Kicker(new KickerIOSim());

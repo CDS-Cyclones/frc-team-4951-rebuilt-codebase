@@ -13,6 +13,8 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -20,8 +22,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.util.TunableValues.TunableNum;
+import lombok.RequiredArgsConstructor;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
@@ -54,10 +59,133 @@ public final class Constants {
     private DriveConstants() {}
 
     public static final double maxSpeedMetersPerSec = 5.0;
+    public static final TunableNum driveToPoseMaxLinearSpeedMetersPerSec =
+        new TunableNum("Drive/DriveToPose/maxLinearSpeedMetersPerSec", 3.0);
+    public static final TunableNum driveToPoseMaxAngularSpeedRadPerSec =
+        new TunableNum("Drive/DriveToPose/maxAngularSpeedRadPerSec", 6.0);
     public static final double odometryFrequency = 100.0; // Hz
     public static final double trackWidth = Units.inchesToMeters(25.5);
     public static final double wheelBase = Units.inchesToMeters(24.25);
     public static final double driveBaseRadius = Math.hypot(trackWidth / 2.0, wheelBase / 2.0);
+
+    private static final double inFrontOfTag = Units.inchesToMeters(23);
+    private static final double rightOfTag = Units.inchesToMeters(6.6);
+    private static final double leftOfTag = -Units.inchesToMeters(7.15);
+    private static final double inFrontOfTagSim = Units.inchesToMeters(12);
+    /** An enum to represent all desired field poses of the robot. */
+    @RequiredArgsConstructor
+    public static enum FieldPose {
+      middleScore(25, 10, inFrontOfTag, rightOfTag, Units.degreesToRadians(0), false),
+      leftScore(25, 10, inFrontOfTag, leftOfTag, Units.degreesToRadians(60), false),
+      rightScore(25, 10, inFrontOfTag, rightOfTag, Units.degreesToRadians(-60), false),
+      climb(32, 15, inFrontOfTag, 0, Units.degreesToRadians(180), false);
+
+      private final int tagBlueId;
+      private final int tagRedId;
+      private final double away;
+      private final double side;
+      private final double rotation; // in radians
+      private final boolean orientationOnly;
+
+      /**
+       * Return ID of the tag the pose is relative to.
+       *
+       * @return The ID of the tag.
+       */
+      public int getTagId() {
+        return DriverStation.getAlliance().get() == Alliance.Red ? tagRedId : tagBlueId;
+      }
+
+      /**
+       * Return the pose of the tag the pose is relative to.
+       *
+       * @return {@link Pose3d} of the tag.
+       */
+      public Pose3d getTagPose() {
+        return Constants.VisionConstants.aprilTagLayout.getTagPose(getTagId()).get();
+      }
+
+      /**
+       * Return the desired pose of the robot. If orientationOnly is true, this will return null.
+       *
+       * @return {@link Pose3d} of the robot.
+       */
+      public Pose3d getDesiredPose() {
+        return getDesiredPose(false, false, false);
+      }
+
+      /**
+       * Return the desired pose of the robot. If orientationOnly is true, this will return null.
+       *
+       * @param ignoreForwards Whether to ignore the forwards offset.
+       * @param ignoreSideways Whether to ignore the sideways offset.
+       * @param ignoreRotation Whether to ignore the rotation.
+       * @return {@link Pose3d} of the robot.
+       */
+      public Pose3d getDesiredPose(
+          boolean ignoreForwards, boolean ignoreSideways, boolean ignoreRotation) {
+        Pose3d tagPose = getTagPose();
+        double tagAngle = tagPose.getRotation().toRotation2d().getRadians();
+        double tagX = tagPose.getTranslation().getX();
+        double tagY = tagPose.getTranslation().getY();
+
+        // Ensure the angle is between 0 and 2pi
+        if (tagAngle < 0) {
+          tagAngle = 2 * Math.PI + tagAngle;
+        }
+
+        double cos = Math.cos(tagAngle);
+        double sin = Math.sin(tagAngle);
+
+        double newX = tagX;
+        double newY = tagY;
+        Pose3d newPose;
+
+        switch (Constants.currentMode) {
+          case SIM:
+            newX += inFrontOfTagSim * cos;
+            newY += inFrontOfTagSim * sin;
+          default:
+            newX += away * cos;
+            newY += away * sin;
+        }
+
+        // now do transformation to the left or right of the tag
+        newX += side * -sin;
+        newY += side * cos;
+
+        newPose =
+            new Pose3d(
+                new Translation3d(ignoreForwards ? tagX : newX, ignoreForwards ? tagY : newY, 0),
+                new Rotation3d(0, 0, ignoreRotation ? tagAngle : tagAngle + rotation));
+
+        return newPose;
+      }
+
+      /**
+       * Return the desired rotation of the robot.
+       *
+       * @return {@link Rotation2d} of the robot.
+       */
+      public Rotation2d getDesiredRotation2d() {
+        return getDesiredPose().getRotation().toRotation2d();
+      }
+
+      /**
+       * Return whether the desired pose is orientation only meaning the robot should only rotate to
+       * the desired angle and not move.
+       *
+       * @return True if the desired pose is orientation only.
+       */
+      public boolean isOrientationOnly() {
+        return orientationOnly;
+      }
+
+      @Override
+      public String toString() {
+        return name();
+      }
+    }
 
     public static final Translation2d[] moduleTranslations =
         new Translation2d[] {
@@ -134,6 +262,15 @@ public final class Constants {
     public static final double turnPIDMinInput = 0; // Radians
     public static final double turnPIDMaxInput = 2 * Math.PI; // Radians
 
+    public static final PIDController angleController =
+        new PIDController(turnKp.getAsDouble(), 0.0, turnKd.getAsDouble());
+
+    public static final PIDController translationXController =
+        new PIDController(driveKp.getAsDouble(), 0.0, driveKd.getAsDouble());
+
+    public static final PIDController translationYController =
+        new PIDController(driveKp.getAsDouble(), 0.0, driveKd.getAsDouble());
+
     // PathPlanner configuration
     public static final double robotMassKg = 40.28;
     public static final double robotMOI = 4.154939;
@@ -197,6 +334,11 @@ public final class Constants {
         new Transform3d(
             new Translation3d(-.3, 0, 0), // X is forward in m, z is up in m
             new Rotation3d(0, 0, 0) // facing forward
+            );
+    public static Transform3d botToCamTransformSimRear =
+        new Transform3d(
+            new Translation3d(-.3, 0, 0), // X is forward in m, z is up in m
+            new Rotation3d(0, 0, 180) // facing backwards
             );
 
     // Standard deviation baselines, for 1 meter distance and 1 tag
