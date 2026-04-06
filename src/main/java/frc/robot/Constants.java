@@ -69,6 +69,7 @@ public final class Constants {
     public static final double driveBaseRadius = Math.hypot(trackWidth / 2.0, wheelBase / 2.0);
 
     private static final double inFrontOfTag = Units.inchesToMeters(78);
+    private static final double inFrontOfTagRightOffset = Units.inchesToMeters(10);
     private static final double rightOfTag = Units.inchesToMeters(60);
     private static final double leftOfTag = -Units.inchesToMeters(60);
     private static final double inFrontOfTagSim = Units.inchesToMeters(78);
@@ -76,7 +77,8 @@ public final class Constants {
     /** An enum to represent all desired field poses of the robot. */
     @RequiredArgsConstructor
     public static enum FieldPose {
-      middleScore(25, 10, inFrontOfTag, rightOfTag, Units.degreesToRadians(180), false),
+      middleScore(
+          25, 10, inFrontOfTag, inFrontOfTagRightOffset, Units.degreesToRadians(180), false),
       leftScore(25, 10, inFrontOfTag, leftOfTag, Units.degreesToRadians(150), false),
       rightScore(25, 10, inFrontOfTag, rightOfTag, Units.degreesToRadians(-150), false),
       climb(32, 16, inFrontOfTagClimb, 0, Units.degreesToRadians(0), false);
