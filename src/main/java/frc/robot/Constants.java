@@ -72,13 +72,14 @@ public final class Constants {
     private static final double rightOfTag = Units.inchesToMeters(60);
     private static final double leftOfTag = -Units.inchesToMeters(60);
     private static final double inFrontOfTagSim = Units.inchesToMeters(78);
+    private static final double inFrontOfTagClimb = Units.inchesToMeters(63);
     /** An enum to represent all desired field poses of the robot. */
     @RequiredArgsConstructor
     public static enum FieldPose {
       middleScore(25, 10, inFrontOfTag, rightOfTag, Units.degreesToRadians(180), false),
       leftScore(25, 10, inFrontOfTag, leftOfTag, Units.degreesToRadians(150), false),
       rightScore(25, 10, inFrontOfTag, rightOfTag, Units.degreesToRadians(-150), false),
-      climb(32, 15, inFrontOfTag, 0, Units.degreesToRadians(0), false);
+      climb(32, 16, inFrontOfTagClimb, 0, Units.degreesToRadians(0), false);
 
       private final int tagBlueId;
       private final int tagRedId;
@@ -143,8 +144,13 @@ public final class Constants {
 
         switch (Constants.currentMode) {
           case SIM:
-            newX += inFrontOfTagSim * cos;
-            newY += inFrontOfTagSim * sin;
+            if (this == climb) {
+              newX += away * cos;
+              newY += away * sin;
+            } else {
+              newX += inFrontOfTagSim * cos;
+              newY += inFrontOfTagSim * sin;
+            }
             break;
           default:
             newX += away * cos;
@@ -263,7 +269,7 @@ public final class Constants {
     public static final double turnPIDMinInput = 0; // Radians
     public static final double turnPIDMaxInput = 2 * Math.PI; // Radians
 
-    //TODO: THESE VALUES ARE SIM ONLY, CHANGE FOR REAL ROBOT
+    // TODO: THESE VALUES ARE SIM ONLY, CHANGE FOR REAL ROBOT
     public static final PIDController angleController = new PIDController(10, 0.0, 0.2);
 
     public static final PIDController translationXController =

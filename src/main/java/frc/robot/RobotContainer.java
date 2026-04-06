@@ -247,7 +247,7 @@ public class RobotContainer {
         .x()
         .whileTrue(
             DriveCommands.driveToPose(
-                drive, vision, () -> Constants.DriveConstants.FieldPose.rightScore));
+                drive, vision, () -> Constants.DriveConstants.FieldPose.climb));
     // Orbit hub when left bumper is held
     // controller.leftBumper().whileTrue(new OrbitCommand(drive, () -> controller.getLeftX()));
 
