@@ -243,7 +243,11 @@ public class RobotContainer {
             : drive::zeroYaw;
 
     controller.start().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
-
+    controller
+        .x()
+        .whileTrue(
+            DriveCommands.driveToPose(
+                drive, vision, () -> Constants.DriveConstants.FieldPose.rightScore));
     // Orbit hub when left bumper is held
     // controller.leftBumper().whileTrue(new OrbitCommand(drive, () -> controller.getLeftX()));
 

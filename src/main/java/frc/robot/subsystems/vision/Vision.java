@@ -149,27 +149,27 @@ public class Vision extends SubsystemBase {
           angularStdDev *= Constants.VisionConstants.cameraStdDevFactors[cameraIndex];
         }
 
-        // Send vision observation
-        System.out.println(
-            "Vision -> PoseEstimator camera="
-                + cameraIndex
-                + " pose="
-                + observation.pose().toPose2d()
-                + " timestamp="
-                + observation.timestamp()
-                + " tags="
-                + observation.tagCount()
-                + " avgTagDist="
-                + observation.averageTagDistance()
-                + " type="
-                + observation.type()
-                + " stdDevs=["
-                + linearStdDev
-                + ", "
-                + linearStdDev
-                + ", "
-                + angularStdDev
-                + "]");
+        // // Send vision observation
+        // System.out.println(
+        //     "Vision -> PoseEstimator camera="
+        //         + cameraIndex
+        //         + " pose="
+        //         + observation.pose().toPose2d()
+        //         + " timestamp="
+        //         + observation.timestamp()
+        //         + " tags="
+        //         + observation.tagCount()
+        //         + " avgTagDist="
+        //         + observation.averageTagDistance()
+        //         + " type="
+        //         + observation.type()
+        //         + " stdDevs=["
+        //         + linearStdDev
+        //         + ", "
+        //         + linearStdDev
+        //         + ", "
+        //         + angularStdDev
+        //         + "]");
 
         consumer.accept(
             observation.pose().toPose2d(),

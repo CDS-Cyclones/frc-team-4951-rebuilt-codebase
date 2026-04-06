@@ -68,17 +68,17 @@ public final class Constants {
     public static final double wheelBase = Units.inchesToMeters(24.25);
     public static final double driveBaseRadius = Math.hypot(trackWidth / 2.0, wheelBase / 2.0);
 
-    private static final double inFrontOfTag = Units.inchesToMeters(23);
-    private static final double rightOfTag = Units.inchesToMeters(6.6);
-    private static final double leftOfTag = -Units.inchesToMeters(7.15);
-    private static final double inFrontOfTagSim = Units.inchesToMeters(12);
+    private static final double inFrontOfTag = Units.inchesToMeters(78);
+    private static final double rightOfTag = Units.inchesToMeters(60);
+    private static final double leftOfTag = -Units.inchesToMeters(60);
+    private static final double inFrontOfTagSim = Units.inchesToMeters(78);
     /** An enum to represent all desired field poses of the robot. */
     @RequiredArgsConstructor
     public static enum FieldPose {
-      middleScore(25, 10, inFrontOfTag, rightOfTag, Units.degreesToRadians(0), false),
-      leftScore(25, 10, inFrontOfTag, leftOfTag, Units.degreesToRadians(60), false),
-      rightScore(25, 10, inFrontOfTag, rightOfTag, Units.degreesToRadians(-60), false),
-      climb(32, 15, inFrontOfTag, 0, Units.degreesToRadians(180), false);
+      middleScore(25, 10, inFrontOfTag, rightOfTag, Units.degreesToRadians(180), false),
+      leftScore(25, 10, inFrontOfTag, leftOfTag, Units.degreesToRadians(150), false),
+      rightScore(25, 10, inFrontOfTag, rightOfTag, Units.degreesToRadians(-150), false),
+      climb(32, 15, inFrontOfTag, 0, Units.degreesToRadians(0), false);
 
       private final int tagBlueId;
       private final int tagRedId;
@@ -145,6 +145,7 @@ public final class Constants {
           case SIM:
             newX += inFrontOfTagSim * cos;
             newY += inFrontOfTagSim * sin;
+            break;
           default:
             newX += away * cos;
             newY += away * sin;
@@ -262,14 +263,14 @@ public final class Constants {
     public static final double turnPIDMinInput = 0; // Radians
     public static final double turnPIDMaxInput = 2 * Math.PI; // Radians
 
-    public static final PIDController angleController =
-        new PIDController(turnKp.getAsDouble(), 0.0, turnKd.getAsDouble());
+    //TODO: THESE VALUES ARE SIM ONLY, CHANGE FOR REAL ROBOT
+    public static final PIDController angleController = new PIDController(10, 0.0, 0.2);
 
     public static final PIDController translationXController =
-        new PIDController(driveKp.getAsDouble(), 0.0, driveKd.getAsDouble());
+        new PIDController(10.00, 0.0, driveKd.getAsDouble());
 
     public static final PIDController translationYController =
-        new PIDController(driveKp.getAsDouble(), 0.0, driveKd.getAsDouble());
+        new PIDController(10.00, 0.0, driveKd.getAsDouble());
 
     // PathPlanner configuration
     public static final double robotMassKg = 40.28;
