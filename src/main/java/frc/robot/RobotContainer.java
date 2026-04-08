@@ -222,14 +222,14 @@ public class RobotContainer {
     final Command normalDriveCommand =
         DriveCommands.joystickDrive(
             drive,
-            () -> controller.getLeftY(),
-            () -> controller.getLeftX(),
+            () -> -controller.getLeftY(),
+            () -> -controller.getLeftX(),
             () -> -controller.getRightX());
     final Command invertedDriveCommand =
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
+            () -> controller.getLeftY(),
+            () -> controller.getLeftX(),
             () -> -controller.getRightX());
     drive.setDefaultCommand(normalDriveCommand);
     final Runnable resetGyro =

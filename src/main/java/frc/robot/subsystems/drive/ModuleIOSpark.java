@@ -99,6 +99,7 @@ public class ModuleIOSpark implements ModuleIO {
     driveConfig
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(Constants.DriveConstants.driveMotorCurrentLimit)
+        .inverted(true)
         .voltageCompensation(12.0);
     driveConfig
         .encoder
