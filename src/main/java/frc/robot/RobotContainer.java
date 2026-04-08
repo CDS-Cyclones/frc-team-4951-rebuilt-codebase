@@ -218,7 +218,6 @@ public class RobotContainer {
     /////////////////////////////////// DRIVER CONTROLLER ///////////////////////////////////////
     /// ///////////////////////////////////////////////////////////////////////////////////////
 
-    // Default command, normal field-relative drive
     final Command normalDriveCommand =
         DriveCommands.joystickDrive(
             drive,
@@ -243,12 +242,6 @@ public class RobotContainer {
 
     controller.start().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
     controller
-        .x()
-        .whileTrue(
-            DriveCommands.driveToPose(
-                drive, vision, () -> Constants.DriveConstants.FieldPose.leftScore));
-    // Shoot in place when right bumper is held
-    controller
         .leftBumper()
         .onTrue(
             Commands.runOnce(
@@ -257,6 +250,7 @@ public class RobotContainer {
                   drive.setDefaultCommand(invertStuff ? invertedDriveCommand : normalDriveCommand);
                 },
                 drive));
+    // drive to scoring poses when the triggers are held, using vision to correct heading and strafe as needed
     controller
         .leftTrigger()
         .whileTrue(
@@ -267,7 +261,7 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.driveToPose(
                 drive, vision, () -> Constants.DriveConstants.FieldPose.rightScore));
-    controller
+        controller
         .x()
         .whileTrue(
             DriveCommands.driveToPose(
