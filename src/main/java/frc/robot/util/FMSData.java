@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
 
 public class FMSData {
+  private static final double GRACE_WINDOW_SECONDS = 2.5;
+
   public boolean isHubActive() {
     Optional<Alliance> alliance = DriverStation.getAlliance();
     // If we have no alliance, we cannot be enabled, therefore no hub.
@@ -50,19 +52,24 @@ public class FMSData {
       return true;
     } else if (matchTime > 105) {
       // Shift 1
-      return shift1Active;
+      return shift1Active || isWithinGraceWindow(matchTime, 105, 130);
     } else if (matchTime > 80) {
       // Shift 2
-      return !shift1Active;
+      return !shift1Active || isWithinGraceWindow(matchTime, 80, 105);
     } else if (matchTime > 55) {
       // Shift 3
-      return shift1Active;
+      return shift1Active || isWithinGraceWindow(matchTime, 55, 80);
     } else if (matchTime > 30) {
       // Shift 4
-      return !shift1Active;
+      return !shift1Active || isWithinGraceWindow(matchTime, 30, 55);
     } else {
       // End game, hub always active.
       return true;
     }
+  }
+
+  private boolean isWithinGraceWindow(double matchTime, double lowerBound, double upperBound) {
+    return matchTime <= upperBound + GRACE_WINDOW_SECONDS
+        && matchTime >= lowerBound - GRACE_WINDOW_SECONDS;
   }
 }

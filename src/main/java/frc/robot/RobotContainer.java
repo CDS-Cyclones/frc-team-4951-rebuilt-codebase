@@ -11,7 +11,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -119,6 +118,10 @@ public class RobotContainer {
                 new VisionIOPhotonVisionSim(
                     "camera",
                     Constants.VisionConstants.botToCamTransformSim,
+                    driveSimulation::getSimulatedDriveTrainPose),
+                new VisionIOPhotonVisionSim(
+                    "camera-rear",
+                    Constants.VisionConstants.botToCamTransformSimRear,
                     driveSimulation::getSimulatedDriveTrainPose));
         intake = new Intake(new IntakeIOSim(driveSimulation));
         kicker = new Kicker(new KickerIOSim());
@@ -180,12 +183,12 @@ public class RobotContainer {
         Commands.parallel(
                 DriveCommands.joystickDrive(drive, () -> 0.5, () -> 0.0, () -> 0.0)
                     .withTimeout(5.0),
-                ClimbCommands.climbDownFor(climber, 4.25))
+                ClimbCommands.clearRung(climber)
             .andThen(Commands.runOnce(drive::stop, drive))
             .andThen(ClimbCommands.stopClimb(climber))
             .andThen(ManipulationCommands.shootFuelInAuto(intake, shooter, kicker).withTimeout(3.5))
             .andThen(
-                ClimbCommands.climbUpFor(climber, Constants.ClimberConstants.kSecondsToClimb)));
+                ClimbCommands.climbUpFor(climber, Constants.ClimberConstants.kSecondsToClimb))));
     autoChooser.addOption("test climb", ClimbCommands.climbDownFor(climber, 4.25));
 
     // autoChooser.addOption(
@@ -212,21 +215,20 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
     ////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////// MAIN CONTROLLER ///////////////////////////////////////
+    /////////////////////////////////// DRIVER CONTROLLER ///////////////////////////////////////
     /// ///////////////////////////////////////////////////////////////////////////////////////
 
-    // Default command, normal field-relative drive
     final Command normalDriveCommand =
-        DriveCommands.joystickDrive(
-            drive,
-            () -> controller.getLeftY(),
-            () -> controller.getLeftX(),
-            () -> -controller.getRightX());
-    final Command invertedDriveCommand =
         DriveCommands.joystickDrive(
             drive,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
+            () -> -controller.getRightX());
+    final Command invertedDriveCommand =
+        DriveCommands.joystickDrive(
+            drive,
+            () -> controller.getLeftY(),
+            () -> controller.getLeftX(),
             () -> -controller.getRightX());
     drive.setDefaultCommand(normalDriveCommand);
     final Runnable resetGyro =
@@ -239,60 +241,55 @@ public class RobotContainer {
             : drive::zeroYaw;
 
     controller.start().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
+    controller
+        .leftBumper()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  invertStuff = !invertStuff;
+                  drive.setDefaultCommand(invertStuff ? invertedDriveCommand : normalDriveCommand);
+                },
+                drive));
+    // drive to scoring poses when the triggers are held, using vision to correct heading and strafe as needed
+    controller
+        .leftTrigger()
+        .whileTrue(
+            DriveCommands.driveToPose(
+                drive, vision, () -> Constants.DriveConstants.FieldPose.leftScore));
+    controller
+        .rightTrigger()
+        .whileTrue(
+            DriveCommands.driveToPose(
+                drive, vision, () -> Constants.DriveConstants.FieldPose.rightScore));
+        controller
+        .x()
+        .whileTrue(
+            DriveCommands.driveToPose(
+                drive, vision, () -> Constants.DriveConstants.FieldPose.middleScore));
 
-    // Orbit hub when left bumper is held
-    // controller.leftBumper().whileTrue(new OrbitCommand(drive, () -> controller.getLeftX()));
+    controller.povUp().whileTrue((ClimbCommands.climbUp(climber)));
+    controller.povDown().whileTrue((ClimbCommands.climbDown(climber)));
+    controller.povLeft().whileTrue((ManipulationCommands.outtake(intake, kicker)));
 
-    // Shoot in place when right bumper is held
-    controller.rightBumper().whileTrue(ManipulationCommands.shootFuel(intake, shooter, kicker));
-    controller.rightTrigger().whileTrue(ManipulationCommands.passFuel(intake, shooter, kicker));
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    /// //////////////////////////////// OPERATOR CONTROLLER /////////////////////////////////////
+    /// /////////////////////////////////////////////////////////////////////////////////////////
     operatorController
-        .rightBumper()
+        .leftTrigger()
         .whileTrue(ManipulationCommands.shootFuel(intake, shooter, kicker));
     operatorController
         .rightTrigger()
         .whileTrue(ManipulationCommands.passFuel(intake, shooter, kicker));
     operatorController.povUp().whileTrue(ClimbCommands.climbUp(climber));
     operatorController.povDown().whileTrue(ClimbCommands.climbDown(climber));
+    operatorController.povLeft().onTrue(ClimbCommands.clearRung(climber));
     operatorController.a().toggleOnTrue(ManipulationCommands.toggleIntake(intake, kicker));
-    operatorController
-        .leftBumper()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  invertStuff = !invertStuff;
-                  drive.setDefaultCommand(invertStuff ? invertedDriveCommand : normalDriveCommand);
-                },
-                drive));
 
-    controller
-        .leftBumper()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  invertStuff = !invertStuff;
-                  drive.setDefaultCommand(invertStuff ? invertedDriveCommand : normalDriveCommand);
-                },
-                drive));
-    // Toggle Intake with A button
-    controller.a().toggleOnTrue(ManipulationCommands.toggleIntake(intake, kicker));
-
-    controller
-        .leftTrigger()
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
-                () -> new Rotation2d(Units.degreesToRadians(65))));
-
-    controller.povUp().whileTrue((ClimbCommands.climbUp(climber)));
-    controller.povDown().whileTrue((ClimbCommands.climbDown(climber)));
-    controller.povLeft().whileTrue((ManipulationCommands.outtake(intake, kicker)));
     ////////////////////////////////////////////////////////////////////////////////////////////
     /// ///////////////////////////////// TEST CONTROLLER ///////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////
-
+    testController.povUp().whileTrue(ClimbCommands.climbUpOverride(climber));
+    testController.povDown().whileTrue(ClimbCommands.climbDownOverride(climber));
     testController.a().whileTrue(TestCommands.holdIntake(intake, 0.55));
     testController
         .b()
@@ -329,5 +326,11 @@ public class RobotContainer {
 
     Logger.recordOutput(
         "FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
+  }
+
+  /** Publishes high-level manipulator activity flags to AdvantageKit/NT. */
+  public void logManipulatorActivity() {
+    Logger.recordOutput("Manipulator/IntakeOrKickerActive", intake.isActive() || kicker.isActive());
+    Logger.recordOutput("Manipulator/ShooterActive", shooter.isActive());
   }
 }

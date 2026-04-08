@@ -13,6 +13,15 @@ public class ClimbCommands {
   }
 
   public static Command climbDown(Climber climber) {
+    return Commands.runEnd(() -> climber.run(-kClimbPercent), climber::stop, climber)
+        .until(() -> climber.getAbsolutePositionDegrees() >= Constants.ClimberConstants.kClearRung);
+  }
+
+  public static Command climbUpOverride(Climber climber) {
+    return Commands.runEnd(() -> climber.run(kClimbPercent), climber::stop, climber);
+  }
+
+  public static Command climbDownOverride(Climber climber) {
     return Commands.runEnd(() -> climber.run(-kClimbPercent), climber::stop, climber);
   }
 
