@@ -183,12 +183,12 @@ public class RobotContainer {
         Commands.parallel(
                 DriveCommands.joystickDrive(drive, () -> 0.5, () -> 0.0, () -> 0.0)
                     .withTimeout(5.0),
-                ClimbCommands.climbDownFor(climber, 4.25))
+                ClimbCommands.clearRung(climber)
             .andThen(Commands.runOnce(drive::stop, drive))
             .andThen(ClimbCommands.stopClimb(climber))
             .andThen(ManipulationCommands.shootFuelInAuto(intake, shooter, kicker).withTimeout(3.5))
             .andThen(
-                ClimbCommands.climbUpFor(climber, Constants.ClimberConstants.kSecondsToClimb)));
+                ClimbCommands.climbUpFor(climber, Constants.ClimberConstants.kSecondsToClimb))));
     autoChooser.addOption("test climb", ClimbCommands.climbDownFor(climber, 4.25));
 
     // autoChooser.addOption(
@@ -288,12 +288,14 @@ public class RobotContainer {
         .whileTrue(ManipulationCommands.passFuel(intake, shooter, kicker));
     operatorController.povUp().whileTrue(ClimbCommands.climbUp(climber));
     operatorController.povDown().whileTrue(ClimbCommands.climbDown(climber));
+    operatorController.povLeft().onTrue(ClimbCommands.clearRung(climber));
     operatorController.a().toggleOnTrue(ManipulationCommands.toggleIntake(intake, kicker));
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     /// ///////////////////////////////// TEST CONTROLLER ///////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////
-
+    testController.povUp().whileTrue(ClimbCommands.climbUpOverride(climber));
+    testController.povDown().whileTrue(ClimbCommands.climbDownOverride(climber));
     testController.a().whileTrue(TestCommands.holdIntake(intake, 0.55));
     testController
         .b()
