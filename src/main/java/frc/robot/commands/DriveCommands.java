@@ -43,6 +43,7 @@ public class DriveCommands {
   private static final double ANGLE_KD = 0.4;
   private static final double ANGLE_MAX_VELOCITY = 8.0;
   private static final double ANGLE_MAX_ACCELERATION = 20.0;
+  private static final double DRIVE_TO_POSE_MAX_OMEGA_RAD_PER_SEC = 3.0;
   private static final double FF_START_DELAY = 2.0; // Secs
   private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
@@ -56,6 +57,8 @@ public class DriveCommands {
         () -> {
           Constants.DriveConstants.angleController.enableContinuousInput(-Math.PI, Math.PI);
           Constants.DriveConstants.angleController.reset();
+          Constants.DriveConstants.angleController.setTolerance(
+              Math.toRadians(2.0), Math.toRadians(20.0));
           Constants.DriveConstants.translationXController.reset();
           Constants.DriveConstants.translationYController.reset();
         },
@@ -92,9 +95,7 @@ public class DriveCommands {
                   Constants.DriveConstants.driveToPoseMaxLinearSpeedMetersPerSec.getAsDouble());
           omega =
               MathUtil.clamp(
-                  omega,
-                  -Constants.DriveConstants.driveToPoseMaxAngularSpeedRadPerSec.getAsDouble(),
-                  Constants.DriveConstants.driveToPoseMaxAngularSpeedRadPerSec.getAsDouble());
+                  omega, -DRIVE_TO_POSE_MAX_OMEGA_RAD_PER_SEC, DRIVE_TO_POSE_MAX_OMEGA_RAD_PER_SEC);
 
           ChassisSpeeds speeds =
               new ChassisSpeeds(

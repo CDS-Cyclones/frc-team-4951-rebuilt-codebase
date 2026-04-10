@@ -181,14 +181,15 @@ public class RobotContainer {
     autoChooser.addOption(
         "DRIVE BACKWARDS, SHOOT, CLIMB",
         Commands.parallel(
-                DriveCommands.joystickDrive(drive, () -> 0.5, () -> 0.0, () -> 0.0)
-                    .withTimeout(5.0),
-                ClimbCommands.clearRung(climber)
+                DriveCommands.joystickDrive(drive, () -> -0.5, () -> 0.0, () -> 0.0)
+                    .withTimeout(4.0),
+                ClimbCommands.clearRung(climber))
             .andThen(Commands.runOnce(drive::stop, drive))
             .andThen(ClimbCommands.stopClimb(climber))
             .andThen(ManipulationCommands.shootFuelInAuto(intake, shooter, kicker).withTimeout(3.5))
             .andThen(
-                ClimbCommands.climbUpFor(climber, Constants.ClimberConstants.kSecondsToClimb))));
+                ClimbCommands.climbUpFor(climber, Constants.ClimberConstants.kSecondsToClimb)));
+
     autoChooser.addOption("test climb", ClimbCommands.climbDownFor(climber, 4.25));
 
     // autoChooser.addOption(
@@ -250,7 +251,8 @@ public class RobotContainer {
                   drive.setDefaultCommand(invertStuff ? invertedDriveCommand : normalDriveCommand);
                 },
                 drive));
-    // drive to scoring poses when the triggers are held, using vision to correct heading and strafe as needed
+    // drive to scoring poses when the triggers are held, using vision to correct heading and strafe
+    // as needed
     controller
         .leftTrigger()
         .whileTrue(
@@ -261,7 +263,7 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.driveToPose(
                 drive, vision, () -> Constants.DriveConstants.FieldPose.rightScore));
-        controller
+    controller
         .x()
         .whileTrue(
             DriveCommands.driveToPose(
