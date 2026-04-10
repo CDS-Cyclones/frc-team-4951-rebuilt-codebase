@@ -14,6 +14,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.Robot;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.kicker.Kicker;
 import frc.robot.subsystems.shooter.Shooter;
@@ -89,6 +90,10 @@ public class ManipulationCommands {
         },
         intake,
         kicker);
+  }
+
+  public static Command runHopper(Hopper hopper) {
+    return Commands.runEnd(() -> hopper.run(0.5), hopper::stop, hopper);
   }
 
   public static Command shootFuel(Intake intake, Shooter shooter, Kicker kicker) {

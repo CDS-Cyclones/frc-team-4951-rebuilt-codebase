@@ -24,6 +24,9 @@ import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSparkMax;
 import frc.robot.subsystems.drive.*;
+import frc.robot.subsystems.hopper.Hopper;
+import frc.robot.subsystems.hopper.HopperIO;
+import frc.robot.subsystems.hopper.HopperIOSparkMax;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
@@ -59,6 +62,7 @@ public class RobotContainer {
   private final Vision vision;
   private final Intake intake;
   private final Kicker kicker;
+  private final Hopper hopper;
   private final Shooter shooter;
   private final Climber climber;
   private final LEDSubsystem leds;
@@ -92,6 +96,7 @@ public class RobotContainer {
                 new VisionIOLimelight(Constants.VisionConstants.camera1Name, drive::getRotation));
         intake = new Intake(new IntakeIOSparkMax());
         kicker = new Kicker(new KickerIOSparkMax());
+        hopper = new Hopper(new HopperIOSparkMax());
         shooter = new Shooter(new ShooterIOSparkMax());
         climber = new Climber(new ClimberIOSparkMax());
         leds = new LEDSubsystem(shooter);
@@ -125,6 +130,7 @@ public class RobotContainer {
                     driveSimulation::getSimulatedDriveTrainPose));
         intake = new Intake(new IntakeIOSim(driveSimulation));
         kicker = new Kicker(new KickerIOSim());
+        hopper = new Hopper(new HopperIO() {});
         shooter = new Shooter(new ShooterIOSim());
         climber = new Climber(new ClimberIO() {});
         leds = new LEDSubsystem(shooter);
@@ -142,6 +148,7 @@ public class RobotContainer {
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         intake = new Intake(new IntakeIO() {});
         kicker = new Kicker(new KickerIO() {});
+        hopper = new Hopper(new HopperIO() {});
         shooter = new Shooter(new ShooterIO() {});
         climber = new Climber(new ClimberIO() {});
         leds = new LEDSubsystem(shooter);

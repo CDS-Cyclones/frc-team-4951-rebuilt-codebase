@@ -418,6 +418,13 @@ public final class Constants {
     public static final double kRelativeVelocityConversionFactor = 0.15;
   }
 
+  public static final class HopperConstants {
+    private HopperConstants() {}
+
+    public static final int kCanID = 25;
+    public static final int kCurrentLimit = 40;
+  }
+
   public static final class ShooterConstants {
     private ShooterConstants() {}
 
