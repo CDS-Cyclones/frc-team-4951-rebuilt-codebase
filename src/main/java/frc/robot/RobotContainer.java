@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -156,6 +157,19 @@ public class RobotContainer {
     }
 
     leds.setVisibleTagCountSupplier(vision::getTotalVisibleTagCount);
+    leds.setInShootingRangeSupplier(
+        () -> {
+          int[] hubTagIds =
+              DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)
+                      == DriverStation.Alliance.Red
+                  ? Constants.VisionConstants.DISTANCE_TRACKING_RED_TAG_IDS
+                  : Constants.VisionConstants.DISTANCE_TRACKING_BLUE_TAG_IDS;
+          if (!vision.isFrontCameraTagVisible(hubTagIds)) return false;
+          double distance = vision.getFrontCameraHubTagDistance();
+          return distance > 0
+              && distance >= Constants.LEDConstants.shootingRangeMinMeters.get()
+              && distance <= Constants.LEDConstants.shootingRangeMaxMeters.get();
+        });
 
     // Set up auto routines
     NamedCommands.registerCommand("intakeStart", ManipulationCommands.startIntake(intake, kicker));

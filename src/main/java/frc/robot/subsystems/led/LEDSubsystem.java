@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.shooter.Shooter;
+import java.util.function.BooleanSupplier;
 import java.util.function.IntSupplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -21,6 +22,7 @@ public class LEDSubsystem extends SubsystemBase {
     DISABLED_ALLIANCE,
     AUTO_RUNNING,
     READY_TO_FIRE,
+    IN_SHOOTING_RANGE,
     SHOOTER_WARMING,
     END_GAME,
     DEFAULT_IDLE
@@ -40,6 +42,7 @@ public class LEDSubsystem extends SubsystemBase {
 
   private LEDState currentState = LEDState.DEFAULT_IDLE;
   private IntSupplier visibleTagCountSupplier = () -> 0;
+  private BooleanSupplier inShootingRangeSupplier = () -> false;
 
   public LEDSubsystem(Shooter shooter) {
     this.shooter = shooter;
@@ -49,6 +52,10 @@ public class LEDSubsystem extends SubsystemBase {
 
   public void setVisibleTagCountSupplier(IntSupplier supplier) {
     this.visibleTagCountSupplier = supplier;
+  }
+
+  public void setInShootingRangeSupplier(BooleanSupplier supplier) {
+    this.inShootingRangeSupplier = supplier;
   }
 
   @Override
@@ -68,6 +75,7 @@ public class LEDSubsystem extends SubsystemBase {
     if (DriverStation.isDisabled()) return LEDState.DISABLED_ALLIANCE;
     if (DriverStation.isAutonomousEnabled()) return LEDState.AUTO_RUNNING;
     if (shooter.isAtSpeed()) return LEDState.READY_TO_FIRE;
+    if (inShootingRangeSupplier.getAsBoolean()) return LEDState.IN_SHOOTING_RANGE;
     if (shooter.isActive()) return LEDState.SHOOTER_WARMING;
     double matchTime = DriverStation.getMatchTime();
     if (matchTime >= 0 && matchTime <= 30.0 && DriverStation.isTeleopEnabled())
@@ -96,6 +104,7 @@ public class LEDSubsystem extends SubsystemBase {
           case DISABLED_ALLIANCE -> isRed ? new RGBWColor(80, 0, 0) : new RGBWColor(0, 0, 80);
           case AUTO_RUNNING -> new RGBWColor(0, 200, 0);
           case READY_TO_FIRE -> new RGBWColor(0, 255, 0);
+          case IN_SHOOTING_RANGE -> new RGBWColor(0, 200, 0);
           case SHOOTER_WARMING -> {
             int b = (int) (80 + 175 * Math.abs(Math.sin(time * 2 * Math.PI)));
             yield new RGBWColor(0, b, 0);

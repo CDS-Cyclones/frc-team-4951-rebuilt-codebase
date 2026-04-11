@@ -16,6 +16,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
@@ -28,6 +29,13 @@ public class Vision extends SubsystemBase {
   private final VisionIO[] io;
   private final VisionIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
+  private double latestAverageTagDistance = -1.0;
+
+  /** Index of the front camera, used for hub distance reporting. */
+  private static final int FRONT_CAMERA_INDEX = 0;
+
+  /** Distance to hub tags as seen by the front camera only, or -1 if not visible. */
+  private double frontCameraHubTagDistance = -1.0;
 
   public Vision(VisionConsumer consumer, VisionIO... io) {
     this.consumer = consumer;
@@ -71,6 +79,50 @@ public class Vision extends SubsystemBase {
     return seen.size();
   }
 
+  /** Returns true if any of the specified tag IDs are currently visible across all cameras. */
+  public boolean isAnyTagVisible(int[] tagIds) {
+    for (var input : inputs) {
+      for (int visibleId : input.tagIds) {
+        for (int targetId : tagIds) {
+          if (visibleId == targetId) return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Returns true if the front camera can currently see any of the specified tag IDs. Use this
+   * instead of {@link #isAnyTagVisible} when you need to ensure only the front camera is considered
+   * (e.g. for distance-based indicators that should not be confused by rear-camera sightings).
+   */
+  public boolean isFrontCameraTagVisible(int[] tagIds) {
+    if (FRONT_CAMERA_INDEX >= inputs.length) return false;
+    for (int visibleId : inputs[FRONT_CAMERA_INDEX].tagIds) {
+      for (int targetId : tagIds) {
+        if (visibleId == targetId) return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Returns the average tag distance from the latest accepted pose observation, or -1 if no
+   * observations are available.
+   */
+  public double getLatestAverageTagDistance() {
+    return latestAverageTagDistance;
+  }
+
+  /**
+   * Returns the average hub-tag distance as seen by the front camera only, or -1 if the front
+   * camera does not currently see any alliance hub tags. Use this for driver-facing indicators that
+   * should not be affected by rear-camera observations.
+   */
+  public double getFrontCameraHubTagDistance() {
+    return frontCameraHubTagDistance;
+  }
+
   @Override
   public void periodic() {
     for (int i = 0; i < io.length; i++) {
@@ -83,6 +135,15 @@ public class Vision extends SubsystemBase {
     List<Pose3d> allRobotPoses = new LinkedList<>();
     List<Pose3d> allRobotPosesAccepted = new LinkedList<>();
     List<Pose3d> allRobotPosesRejected = new LinkedList<>();
+    double closestAcceptedDistance = -1.0;
+
+    // Track front-camera hub distance separately for driver indicators
+    int[] allianceHubTagIds =
+        DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)
+                == DriverStation.Alliance.Red
+            ? Constants.VisionConstants.DISTANCE_TRACKING_RED_TAG_IDS
+            : Constants.VisionConstants.DISTANCE_TRACKING_BLUE_TAG_IDS;
+    double frontHubDistance = -1.0;
 
     // Loop over cameras
     for (int cameraIndex = 0; cameraIndex < io.length; cameraIndex++) {
@@ -100,6 +161,20 @@ public class Vision extends SubsystemBase {
         var tagPose = Constants.VisionConstants.aprilTagLayout.getTagPose(tagId);
         if (tagPose.isPresent()) {
           tagPoses.add(tagPose.get());
+        }
+      }
+
+      // Check if this is the front camera and it sees alliance hub tags
+      boolean isFrontCameraWithHubTags = false;
+      if (cameraIndex == FRONT_CAMERA_INDEX) {
+        for (int visibleId : inputs[cameraIndex].tagIds) {
+          for (int hubId : allianceHubTagIds) {
+            if (visibleId == hubId) {
+              isFrontCameraWithHubTags = true;
+              break;
+            }
+          }
+          if (isFrontCameraWithHubTags) break;
         }
       }
 
@@ -171,6 +246,18 @@ public class Vision extends SubsystemBase {
         //         + angularStdDev
         //         + "]");
 
+        // Track closest accepted tag distance
+        if (closestAcceptedDistance < 0
+            || observation.averageTagDistance() < closestAcceptedDistance) {
+          closestAcceptedDistance = observation.averageTagDistance();
+        }
+
+        // Track front-camera hub distance for driver indicators
+        if (isFrontCameraWithHubTags
+            && (frontHubDistance < 0 || observation.averageTagDistance() < frontHubDistance)) {
+          frontHubDistance = observation.averageTagDistance();
+        }
+
         consumer.accept(
             observation.pose().toPose2d(),
             observation.timestamp(),
@@ -195,6 +282,9 @@ public class Vision extends SubsystemBase {
       allRobotPosesAccepted.addAll(robotPosesAccepted);
       allRobotPosesRejected.addAll(robotPosesRejected);
     }
+
+    latestAverageTagDistance = closestAcceptedDistance;
+    frontCameraHubTagDistance = frontHubDistance;
 
     // Log summary data
     Logger.recordOutput("Vision/Summary/TagPoses", allTagPoses.toArray(new Pose3d[0]));

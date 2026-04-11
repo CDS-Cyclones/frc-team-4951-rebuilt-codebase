@@ -363,6 +363,19 @@ public final class Constants {
     public static double linearStdDevMegatag2Factor = 0.5; // More stable than full 3D solve
     public static double angularStdDevMegatag2Factor =
         Double.POSITIVE_INFINITY; // No rotation data available
+
+    // Alliance hub AprilTag IDs used for front-camera distance tracking
+    public static final int[] DISTANCE_TRACKING_RED_TAG_IDS = {9, 10};
+    public static final int[] DISTANCE_TRACKING_BLUE_TAG_IDS = {25, 26};
+  }
+
+  public static final class LEDConstants {
+    private LEDConstants() {}
+
+    public static final TunableNum shootingRangeMinMeters =
+        new TunableNum("LED/ShootingRangeMin", 1.9);
+    public static final TunableNum shootingRangeMaxMeters =
+        new TunableNum("LED/ShootingRangeMax", 2.1);
   }
 
   public static final class OrbitConstants {
