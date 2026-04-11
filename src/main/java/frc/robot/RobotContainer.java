@@ -187,15 +187,19 @@ public class RobotContainer {
 
     autoChooser.addOption(
         "DRIVE BACKWARDS, SHOOT, CLIMB",
-        Commands.parallel(
+        Commands.sequence(
+            ClimbCommands.clearRung(climber),
+            Commands.parallel(
                 DriveCommands.joystickDrive(drive, () -> -0.5, () -> 0.0, () -> 0.0)
-                    .withTimeout(4.0),
-                ClimbCommands.clearRung(climber))
-            .andThen(Commands.runOnce(drive::stop, drive))
-            .andThen(ClimbCommands.stopClimb(climber))
-            .andThen(ManipulationCommands.shootFuelInAuto(intake, shooter, kicker).withTimeout(3.5))
-            .andThen(
-                ClimbCommands.climbUpFor(climber, Constants.ClimberConstants.kSecondsToClimb)));
+                    .withTimeout(4.0)
+                    .andThen(Commands.runOnce(drive::stop, drive))
+                    .andThen(ClimbCommands.stopClimb(climber))
+                    .andThen(
+                        ManipulationCommands.shootFuelInAuto(intake, shooter, kicker)
+                            .withTimeout(3.5))
+                    .andThen(
+                        ClimbCommands.climbUpFor(
+                            climber, Constants.ClimberConstants.kSecondsToClimb)))));
 
     autoChooser.addOption("test climb", ClimbCommands.climbDownFor(climber, 4.25));
 
@@ -293,6 +297,7 @@ public class RobotContainer {
     operatorController.povDown().whileTrue(ClimbCommands.climbDown(climber));
     operatorController.povLeft().onTrue(ClimbCommands.clearRung(climber));
     operatorController.a().toggleOnTrue(ManipulationCommands.toggleIntake(intake, kicker));
+    operatorController.b().toggleOnTrue(ManipulationCommands.outtake(intake, kicker));
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     /// ///////////////////////////////// TEST CONTROLLER ///////////////////////////////////////

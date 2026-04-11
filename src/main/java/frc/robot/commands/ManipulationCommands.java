@@ -98,7 +98,11 @@ public class ManipulationCommands {
 
   public static Command shootFuel(Intake intake, Shooter shooter, Kicker kicker) {
     return createRealShootCommand(
-            intake, shooter, kicker, () -> Constants.ShooterConstants.k2mShootRPM, () -> true)
+            intake,
+            shooter,
+            kicker,
+            () -> Constants.ShooterConstants.kShootRPM.getAsDouble(),
+            () -> true)
         .onlyIf(() -> true);
   }
 

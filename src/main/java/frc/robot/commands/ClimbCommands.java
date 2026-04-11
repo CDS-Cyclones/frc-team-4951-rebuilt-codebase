@@ -6,7 +6,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.climber.Climber;
 
 public class ClimbCommands {
-  private static final double kClimbPercent = 0.8;
+  private static final double kClimbPercent = 1;
 
   public static Command climbUp(Climber climber) {
     return Commands.runEnd(() -> climber.run(kClimbPercent), climber::stop, climber);

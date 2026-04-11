@@ -28,6 +28,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.BooleanPublisher;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -49,6 +51,8 @@ public class Drive extends SubsystemBase {
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
   private final SysIdRoutine sysId;
+  private final BooleanPublisher positionReadyShootPublisher =
+      NetworkTableInstance.getDefault().getBooleanTopic("positionReadyShoot").publish();
 
   private final Alert gyroDisconnectedAlert =
       new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
@@ -115,6 +119,8 @@ public class Drive extends SubsystemBase {
                 (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
+
+    positionReadyShootPublisher.set(false);
   }
 
   @Override
@@ -171,6 +177,26 @@ public class Drive extends SubsystemBase {
       // Apply update
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
     }
+
+    Pose2d robotPose = getPose();
+    boolean positionReadyShoot =
+        DriverStation.getAlliance()
+            .map(
+                alliance -> {
+                  double targetX =
+                      alliance == Alliance.Red
+                          ? Constants.DriveConstants.readyShootRedTranslation.getX()
+                          : Constants.DriveConstants.readyShootBlueTranslation.getX();
+                  double targetY =
+                      alliance == Alliance.Red
+                          ? Constants.DriveConstants.readyShootRedTranslation.getY()
+                          : Constants.DriveConstants.readyShootBlueTranslation.getY();
+                  return Math.hypot(robotPose.getX() - targetX, robotPose.getY() - targetY)
+                      <= Constants.DriveConstants.readyShootRadiusMeters;
+                })
+            .orElse(false);
+    positionReadyShootPublisher.set(positionReadyShoot);
+    Logger.recordOutput("Drive/PositionReadyShoot", positionReadyShoot);
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
