@@ -68,7 +68,7 @@ public final class Constants {
     public static final double wheelBase = Units.inchesToMeters(24.25);
     public static final double driveBaseRadius = Math.hypot(trackWidth / 2.0, wheelBase / 2.0);
     public static final Translation2d readyShootBlueTranslation = new Translation2d(3.621, 4.058);
-    public static final Translation2d readyShootRedTranslation = new Translation2d(13.0, 4.0);
+    public static final Translation2d readyShootRedTranslation = new Translation2d(15.0, 4.1);
     public static final double readyShootRadiusMeters = 1.5;
 
     private static final double inFrontOfTag = Units.inchesToMeters(60);
@@ -413,7 +413,7 @@ public final class Constants {
 
     public static final int kCanId = 24;
     public static final int kCurrentStallLimit = 40;
-    public static final double kSecondsToClimb = 3;
+    public static final double kSecondsToClimb = 3.5;
     public static final double kClearRung = 333.6;
     public static final double kAbsolutePositionConversionFactor = 360.0;
     public static final double kAbsoluteVelocityConversionFactor = 6.0;
@@ -425,7 +425,7 @@ public final class Constants {
     private HopperConstants() {}
 
     public static final int kCanID = 25;
-    public static final int kCurrentLimit = 40;
+    public static final int kCurrentLimit = 8;
   }
 
   public static final class ShooterConstants {
@@ -441,12 +441,12 @@ public final class Constants {
     public static final TunableNum kShooterMainKs = new TunableNum("Shooter/kS", 0.1);
     public static final TunableNum kShooterMainKv = new TunableNum("Shooter/kV", 0.00202);
 
-    public static final TunableNum kShootRPM = new TunableNum("Shooter/kShootRPM", 3350);
-    public static final double k4mShootRPM = 3350;
+    public static final TunableNum kShootRPM = new TunableNum("Shooter/kShootRPM", 2900);
+    public static final double k4mShootRPM = 3000;
     public static final double k2mShootRPM = 2825;
     public static final double k1mShootRPM = 2500;
     public static final double kVelocityToleranceRPM = 100.0;
-    public static final TunableNum kAutoShootRPM = new TunableNum("Shooter/kAutoShootRPM", 2100);
+    public static final TunableNum kAutoShootRPM = new TunableNum("Shooter/kAutoShootRPM", 2900);
     public static final TunableNum kPassRPM = new TunableNum("Shooter/kPassRPM", 3250);
 
     public static final double kSimLaunchPeriodSeconds = 0.20;

@@ -82,6 +82,11 @@ public class ManipulationCommands {
         kicker);
   }
 
+  public static Command outtake(Intake intake) {
+    return Commands.runEnd(
+        () -> intake.run(Constants.IntakeConstants.outtakeSpeed), () -> intake.stop(), intake);
+  }
+
   public static Command stopIntake(Intake intake, Kicker kicker) {
     return Commands.runOnce(
         () -> {
@@ -93,7 +98,32 @@ public class ManipulationCommands {
   }
 
   public static Command runHopper(Hopper hopper) {
-    return Commands.runEnd(() -> hopper.run(0.5), hopper::stop, hopper);
+    return Commands.runEnd(() -> hopper.run(0.05), hopper::stop, hopper);
+  }
+
+  public static Command pulseHopper(Hopper hopper) {
+    Timer pulseTimer = new Timer();
+    boolean[] forward = {true};
+    return Commands.runEnd(
+        () -> {
+          if (!pulseTimer.isRunning()) {
+            forward[0] = true;
+            pulseTimer.restart();
+            hopper.run(0.75);
+            return;
+          }
+
+          if (pulseTimer.hasElapsed(0.3)) {
+            forward[0] = !forward[0];
+            pulseTimer.restart();
+            hopper.run(forward[0] ? 0.75 : -0.75);
+          }
+        },
+        () -> {
+          pulseTimer.stop();
+          hopper.stop();
+        },
+        hopper);
   }
 
   public static Command shootFuel(Intake intake, Shooter shooter, Kicker kicker) {

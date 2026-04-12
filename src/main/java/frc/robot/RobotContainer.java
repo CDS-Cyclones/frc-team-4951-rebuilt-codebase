@@ -190,13 +190,14 @@ public class RobotContainer {
         Commands.sequence(
             ClimbCommands.clearRung(climber),
             Commands.parallel(
+                ManipulationCommands.pulseHopper(hopper),
                 DriveCommands.joystickDrive(drive, () -> -0.5, () -> 0.0, () -> 0.0)
                     .withTimeout(4.0)
                     .andThen(Commands.runOnce(drive::stop, drive))
                     .andThen(ClimbCommands.stopClimb(climber))
                     .andThen(
                         ManipulationCommands.shootFuelInAuto(intake, shooter, kicker)
-                            .withTimeout(3.5))
+                            .withTimeout(4.0))
                     .andThen(
                         ClimbCommands.climbUpFor(
                             climber, Constants.ClimberConstants.kSecondsToClimb)))));
@@ -280,8 +281,8 @@ public class RobotContainer {
             DriveCommands.driveToPose(
                 drive, vision, () -> Constants.DriveConstants.FieldPose.middleScore));
 
-    controller.povUp().whileTrue((ClimbCommands.climbUp(climber)));
-    controller.povDown().whileTrue((ClimbCommands.climbDown(climber)));
+    controller.povUp().whileTrue((ClimbCommands.climbUpOverride(climber)));
+    controller.povDown().whileTrue((ClimbCommands.climbDownOverride(climber)));
     controller.povLeft().whileTrue((ManipulationCommands.outtake(intake, kicker)));
 
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -298,6 +299,8 @@ public class RobotContainer {
     operatorController.povLeft().onTrue(ClimbCommands.clearRung(climber));
     operatorController.a().toggleOnTrue(ManipulationCommands.toggleIntake(intake, kicker));
     operatorController.b().toggleOnTrue(ManipulationCommands.outtake(intake, kicker));
+    operatorController.x().toggleOnTrue(ManipulationCommands.outtake(intake));
+    operatorController.y().toggleOnTrue(ManipulationCommands.pulseHopper(hopper));
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     /// ///////////////////////////////// TEST CONTROLLER ///////////////////////////////////////
