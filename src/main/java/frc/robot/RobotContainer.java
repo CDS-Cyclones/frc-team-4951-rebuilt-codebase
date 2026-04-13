@@ -169,6 +169,7 @@ public class RobotContainer {
             intake,
             shooter,
             kicker,
+            hopper,
             () -> Constants.ShooterConstants.kAutoShootRPM.getAsDouble(),
             () -> true));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -183,7 +184,7 @@ public class RobotContainer {
         DriveCommands.joystickDrive(drive, () -> -0.5, () -> 0.0, () -> 0.0)
             .withTimeout(1.50)
             .andThen(Commands.runOnce(drive::stop, drive))
-            .andThen(ManipulationCommands.shootFuelInAuto(intake, shooter, kicker)));
+            .andThen(ManipulationCommands.shootFuelInAuto(intake, shooter, kicker, hopper)));
 
     autoChooser.addOption(
         "DRIVE BACKWARDS, SHOOT, CLIMB",
@@ -196,7 +197,7 @@ public class RobotContainer {
                     .andThen(Commands.runOnce(drive::stop, drive))
                     .andThen(ClimbCommands.stopClimb(climber))
                     .andThen(
-                        ManipulationCommands.shootFuelInAuto(intake, shooter, kicker)
+                        ManipulationCommands.shootFuelInAuto(intake, shooter, kicker, hopper)
                             .withTimeout(4.0))
                     .andThen(
                         ClimbCommands.climbUpFor(
@@ -290,10 +291,10 @@ public class RobotContainer {
     /// /////////////////////////////////////////////////////////////////////////////////////////
     operatorController
         .leftTrigger()
-        .whileTrue(ManipulationCommands.shootFuel(intake, shooter, kicker));
+        .whileTrue(ManipulationCommands.shootFuel(intake, shooter, kicker, hopper));
     operatorController
         .rightTrigger()
-        .whileTrue(ManipulationCommands.passFuel(intake, shooter, kicker));
+        .whileTrue(ManipulationCommands.passFuel(intake, shooter, kicker, hopper));
     operatorController.povUp().whileTrue(ClimbCommands.climbUp(climber));
     operatorController.povDown().whileTrue(ClimbCommands.climbDown(climber));
     operatorController.povLeft().onTrue(ClimbCommands.clearRung(climber));

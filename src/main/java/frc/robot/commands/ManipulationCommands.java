@@ -126,48 +126,60 @@ public class ManipulationCommands {
         hopper);
   }
 
-  public static Command shootFuel(Intake intake, Shooter shooter, Kicker kicker) {
+  public static Command shootFuel(Intake intake, Shooter shooter, Kicker kicker, Hopper hopper) {
     return createRealShootCommand(
             intake,
             shooter,
             kicker,
+            hopper,
             () -> Constants.ShooterConstants.kShootRPM.getAsDouble(),
             () -> true)
         .onlyIf(() -> true);
   }
 
-  public static Command shootFuelInAuto(Intake intake, Shooter shooter, Kicker kicker) {
+  public static Command shootFuelInAuto(
+      Intake intake, Shooter shooter, Kicker kicker, Hopper hopper) {
     return createRealShootCommand(
-            intake, shooter, kicker, () -> Constants.ShooterConstants.k4mShootRPM, () -> true)
+            intake,
+            shooter,
+            kicker,
+            hopper,
+            () -> Constants.ShooterConstants.k4mShootRPM,
+            () -> true)
         .onlyIf(() -> Robot.isHubActive());
   }
 
-  public static Command passFuel(Intake intake, Shooter shooter, Kicker kicker) {
+  public static Command passFuel(Intake intake, Shooter shooter, Kicker kicker, Hopper hopper) {
     return createRealShootCommand(
         intake,
         shooter,
         kicker,
+        hopper,
         () -> Constants.ShooterConstants.kPassRPM.getAsDouble(),
         () -> true);
   }
 
-  public static Command shootFuel(Drive drive, Intake intake, Shooter shooter, Kicker kicker) {
+  public static Command shootFuel(
+      Drive drive, Intake intake, Shooter shooter, Kicker kicker, Hopper hopper) {
     return shootFuel(
             drive,
             intake,
             shooter,
             kicker,
+            hopper,
             () -> Constants.ShooterConstants.kShootRPM.getAsDouble(),
             () -> true)
         .onlyIf(() -> true);
   }
 
-  public static Command passFuel(Drive drive, Intake intake, Shooter shooter, Kicker kicker) {
+  public static Command passFuel(
+      Drive drive, Intake intake, Shooter shooter, Kicker kicker, Hopper hopper) {
     return shootFuel(
             drive,
             intake,
             shooter,
             kicker,
+            hopper,
             () -> Constants.ShooterConstants.kPassRPM.getAsDouble(),
             () -> true)
         .onlyIf(() -> true);
@@ -178,10 +190,11 @@ public class ManipulationCommands {
       Intake intake,
       Shooter shooter,
       Kicker kicker,
+      Hopper hopper,
       DoubleSupplier rpmSupplier,
       BooleanSupplier canShootSupplier) {
     Command realShootCommand =
-        createRealShootCommand(intake, shooter, kicker, rpmSupplier, canShootSupplier)
+        createRealShootCommand(intake, shooter, kicker, hopper, rpmSupplier, canShootSupplier)
             .onlyIf(() -> true);
 
     if (Constants.currentMode != Mode.SIM) {
@@ -253,14 +266,22 @@ public class ManipulationCommands {
       Intake intake,
       Shooter shooter,
       Kicker kicker,
+      Hopper hopper,
       DoubleSupplier rpmSupplier,
       BooleanSupplier canShootSupplier) {
+    Timer hopperPulseTimer = new Timer();
+    boolean[] hopperForward = {true};
+
     return Commands.runEnd(
         () -> {
           if (!canShootSupplier.getAsBoolean()) {
             intake.stop();
             shooter.stop();
             kicker.stop();
+            hopper.stop();
+            hopperPulseTimer.stop();
+            hopperPulseTimer.reset();
+            hopperForward[0] = true;
             return;
           }
 
@@ -268,18 +289,36 @@ public class ManipulationCommands {
           if (shooter.isMainAtSpeed()) {
             intake.run(Constants.IntakeConstants.kShootingSpeed);
             kicker.run(Constants.KickerConstants.kKickerPercentage);
+            if (!hopperPulseTimer.isRunning()) {
+              hopperForward[0] = true;
+              hopperPulseTimer.restart();
+              hopper.run(0.75);
+            } else if (hopperPulseTimer.hasElapsed(0.3)) {
+              hopperForward[0] = !hopperForward[0];
+              hopperPulseTimer.restart();
+              hopper.run(hopperForward[0] ? 0.75 : -0.75);
+            }
           } else {
             intake.stop();
             kicker.stop();
+            hopper.stop();
+            hopperPulseTimer.stop();
+            hopperPulseTimer.reset();
+            hopperForward[0] = true;
           }
         },
         () -> {
           intake.stop();
           shooter.stop();
           kicker.stop();
+          hopper.stop();
+          hopperPulseTimer.stop();
+          hopperPulseTimer.reset();
+          hopperForward[0] = true;
         },
         intake,
         shooter,
-        kicker);
+        kicker,
+        hopper);
   }
 }
