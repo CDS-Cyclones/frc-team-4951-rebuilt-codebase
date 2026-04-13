@@ -368,33 +368,6 @@ public final class Constants {
         Double.POSITIVE_INFINITY; // No rotation data available
   }
 
-  public static final class OrbitConstants {
-    private OrbitConstants() {}
-
-    // TODO: Tune all orbit behavior values to preference and field conditions.
-    // Tag ids for red and blue alliance.
-    public static final int[] RED_TAG_IDS = {9, 10};
-    public static final int[] BLUE_TAG_IDS = {25, 26};
-
-    // Driver input scales tangential motion around the orbit center.
-    public static final double JOYSTICK_DEADBAND = 0.1;
-    public static final double MAX_TANGENTIAL_SPEED_METERS_PER_SEC = 3.5;
-    public static final double RIGHT_OFFSET_METERS = Units.inchesToMeters(3.0);
-    // Target orbit radius.
-    public static final double TARGET_RADIUS_METERS = 2.0;
-    public static final double MIN_CONTROL_RADIUS_METERS = 0.2;
-    public static final double RADIUS_KP = 2.0;
-    public static final double MAX_RADIAL_SPEED_METERS_PER_SEC = 1.0;
-    // Heading control keeps the robot pointed at the tag midpoint while translating.
-    public static final double MAX_ANGULAR_SPEED_RAD_PER_SEC = 8.0;
-    public static final double HEADING_ERROR_SLOWDOWN_RADIANS = 0.6;
-    public static final double MIN_TRANSLATION_SCALE = 0.45;
-
-    public static final double HEADING_KP = 5.0;
-    public static final double HEADING_KD = 0.4;
-    public static final double HEADING_MAX_VELOCITY = 8.0;
-    public static final double HEADING_MAX_ACCELERATION = 20.0;
-  }
 
   public static final class IntakeConstants {
     private IntakeConstants() {}
