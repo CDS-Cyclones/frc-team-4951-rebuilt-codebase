@@ -67,9 +67,9 @@ public final class Constants {
     public static final double trackWidth = Units.inchesToMeters(25.5);
     public static final double wheelBase = Units.inchesToMeters(24.25);
     public static final double driveBaseRadius = Math.hypot(trackWidth / 2.0, wheelBase / 2.0);
-    public static final Translation2d readyShootBlueTranslation = new Translation2d(3.621, 4.058);
+    public static final Translation2d readyShootBlueTranslation = new Translation2d(1.477, 4.032);
     public static final Translation2d readyShootRedTranslation = new Translation2d(15.0, 4.1);
-    public static final double readyShootRadiusMeters = 1.5;
+    public static final double readyShootRadiusMeters = 0.5;
 
     private static final double inFrontOfTag = Units.inchesToMeters(60);
     private static final double inFrontOfTagRightOffset = Units.inchesToMeters(10);
@@ -367,7 +367,6 @@ public final class Constants {
     public static double angularStdDevMegatag2Factor =
         Double.POSITIVE_INFINITY; // No rotation data available
   }
-
 
   public static final class IntakeConstants {
     private IntakeConstants() {}

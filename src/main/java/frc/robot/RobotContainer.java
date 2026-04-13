@@ -190,18 +190,16 @@ public class RobotContainer {
         "DRIVE BACKWARDS, SHOOT, CLIMB",
         Commands.sequence(
             ClimbCommands.clearRung(climber),
-            Commands.parallel(
-                ManipulationCommands.pulseHopper(hopper),
-                DriveCommands.joystickDrive(drive, () -> -0.5, () -> 0.0, () -> 0.0)
-                    .withTimeout(4.0)
-                    .andThen(Commands.runOnce(drive::stop, drive))
-                    .andThen(ClimbCommands.stopClimb(climber))
-                    .andThen(
-                        ManipulationCommands.shootFuelInAuto(intake, shooter, kicker, hopper)
-                            .withTimeout(4.0))
-                    .andThen(
-                        ClimbCommands.climbUpFor(
-                            climber, Constants.ClimberConstants.kSecondsToClimb)))));
+            DriveCommands.joystickDrive(drive, () -> -0.5, () -> 0.0, () -> 0.0)
+                .withTimeout(4.0)
+                .andThen(Commands.runOnce(drive::stop, drive))
+                .andThen(ClimbCommands.stopClimb(climber))
+                .andThen(
+                    ManipulationCommands.shootFuelInAuto(intake, shooter, kicker, hopper)
+                        .withTimeout(4.0))
+                .andThen(
+                    ClimbCommands.climbUpFor(
+                        climber, Constants.ClimberConstants.kSecondsToClimb))));
 
     autoChooser.addOption("test climb", ClimbCommands.climbDownFor(climber, 4.25));
 
