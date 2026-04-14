@@ -68,7 +68,7 @@ public class RobotContainer {
   private final LEDSubsystem leds;
 
   private SwerveDriveSimulation driveSimulation = null;
-  private boolean invertStuff = false;
+  private boolean invertDrive = false;
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
   private final CommandXboxController operatorController = new CommandXboxController(1);
@@ -253,15 +253,16 @@ public class RobotContainer {
             : drive::zeroYaw;
 
     controller.start().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
-    controller
-        .leftBumper()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  invertStuff = !invertStuff;
-                  drive.setDefaultCommand(invertStuff ? invertedDriveCommand : normalDriveCommand);
-                },
-                drive));
+    
+    // controller
+    //     .leftBumper()
+    //     .onTrue(
+    //         Commands.runOnce(
+    //             () -> {
+    //               invertDrive = !invertDrive;
+    //               drive.setDefaultCommand(invertDrive ? invertedDriveCommand : normalDriveCommand);
+    //             },
+    //             drive));
     // drive to scoring poses when the triggers are held, using vision to correct heading and strafe
     // as needed
     controller
