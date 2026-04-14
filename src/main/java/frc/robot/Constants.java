@@ -69,6 +69,8 @@ public final class Constants {
     public static final double driveBaseRadius = Math.hypot(trackWidth / 2.0, wheelBase / 2.0);
     public static final Translation2d readyShootBlueTranslation = new Translation2d(1.477, 4.032);
     public static final Translation2d readyShootRedTranslation = new Translation2d(15.0, 4.1);
+    public static final Rotation2d readyShootRotation = new Rotation2d(Units.degreesToRadians(0));
+    public static final double readyShootRotationTolerance = Units.degreesToRadians(8);
     public static final double readyShootRadiusMeters = 0.5;
 
     private static final double inFrontOfTag = Units.inchesToMeters(60);

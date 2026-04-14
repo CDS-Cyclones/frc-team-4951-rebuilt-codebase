@@ -21,6 +21,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -179,24 +180,34 @@ public class Drive extends SubsystemBase {
     }
 
     Pose2d robotPose = getPose();
-    boolean positionReadyShoot =
+    boolean readyShoot =
         DriverStation.getAlliance()
             .map(
                 alliance -> {
-                  double targetX =
+                  Translation2d targetTranslation =
                       alliance == Alliance.Red
-                          ? Constants.DriveConstants.readyShootRedTranslation.getX()
-                          : Constants.DriveConstants.readyShootBlueTranslation.getX();
-                  double targetY =
+                          ? Constants.DriveConstants.readyShootRedTranslation
+                          : Constants.DriveConstants.readyShootBlueTranslation;
+
+                  Rotation2d targetRotation =
                       alliance == Alliance.Red
-                          ? Constants.DriveConstants.readyShootRedTranslation.getY()
-                          : Constants.DriveConstants.readyShootBlueTranslation.getY();
-                  return Math.hypot(robotPose.getX() - targetX, robotPose.getY() - targetY)
-                      <= Constants.DriveConstants.readyShootRadiusMeters;
+                          ? Constants.DriveConstants.readyShootRotation
+                          : Constants.DriveConstants.readyShootRotation;
+
+                  boolean positionReady =
+                      robotPose.getTranslation().getDistance(targetTranslation)
+                          <= Constants.DriveConstants.readyShootRadiusMeters;
+
+                  boolean rotationReady =
+                      Math.abs(robotPose.getRotation().minus(targetRotation).getRadians())
+                          <= Constants.DriveConstants.readyShootRotationTolerance;
+
+                  return positionReady && rotationReady;
                 })
             .orElse(false);
-    positionReadyShootPublisher.set(positionReadyShoot);
-    Logger.recordOutput("Drive/PositionReadyShoot", positionReadyShoot);
+
+    positionReadyShootPublisher.set(readyShoot);
+    Logger.recordOutput("Drive/PositionReadyShoot", readyShoot);
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
