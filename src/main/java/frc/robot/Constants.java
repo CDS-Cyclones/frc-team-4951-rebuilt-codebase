@@ -405,6 +405,14 @@ public final class Constants {
     public static final double kToleranceDegrees = 4.0;
   }
 
+  public static final class IntakeArmKickerConstants {
+    private IntakeArmKickerConstants() {}
+
+    public static final int kCanId = 26;
+    public static final int kCurrentLimit = 20;
+    public static final boolean kMotorInverted = false;
+  }
+
   public static final class ClimberConstants {
     private ClimberConstants() {}
 
