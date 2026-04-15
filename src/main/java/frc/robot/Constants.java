@@ -382,6 +382,30 @@ public final class Constants {
     public static final double kShootingSpeed = 0.8;
   }
 
+  public static final class IntakeArmConstants {
+    private IntakeArmConstants() {}
+
+    public static final int kCanId = 27;
+    public static final int kCurrentLimit = 40;
+    public static final boolean kMotorInverted = false; // TODO: Confirm intake arm inversion.
+    public static final double kGearReduction = 1.0; // TODO: Set the actual intake arm reduction.
+    public static final double kAbsolutePositionConversionFactor = 360.0;
+    public static final double kAbsoluteVelocityConversionFactor = 6.0;
+    public static final double kPositionConversionFactor = 360.0 / kGearReduction;
+    public static final double kVelocityConversionFactor = 6.0 / kGearReduction;
+    public static final double kStowedPositionDegrees = 0.0; // TODO: Set the real stowed angle.
+    public static final double kDeployedPositionDegrees =
+        90.0; // TODO: Set the real deployed angle.
+    public static final double kMaxVelocityDegreesPerSecond =
+        180.0; // TODO: Tune the motion profile max velocity.
+    public static final double kMaxAccelerationDegreesPerSecondSq =
+        360.0; // TODO: Tune the motion profile max acceleration.
+    public static final double kKp = 0.04; // TODO: Tune the intake arm position P gain.
+    public static final double kKi = 0.0;
+    public static final double kKd = 0.0; // TODO: Tune the intake arm position D gain.
+    public static final double kToleranceDegrees = 4.0;
+  }
+
   public static final class ClimberConstants {
     private ClimberConstants() {}
 

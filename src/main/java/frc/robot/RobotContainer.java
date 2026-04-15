@@ -31,6 +31,10 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOSparkMax;
+import frc.robot.subsystems.intakearm.IntakeArm;
+import frc.robot.subsystems.intakearm.IntakeArmIO;
+import frc.robot.subsystems.intakearm.IntakeArmIOSim;
+import frc.robot.subsystems.intakearm.IntakeArmIOSparkMax;
 import frc.robot.subsystems.kicker.Kicker;
 import frc.robot.subsystems.kicker.KickerIO;
 import frc.robot.subsystems.kicker.KickerIOSim;
@@ -61,6 +65,7 @@ public class RobotContainer {
   private final Drive drive;
   private final Vision vision;
   private final Intake intake;
+  private final IntakeArm intakeArm;
   private final Kicker kicker;
   private final Hopper hopper;
   private final Shooter shooter;
@@ -95,6 +100,7 @@ public class RobotContainer {
                 new VisionIOLimelight(Constants.VisionConstants.camera0Name, drive::getRotation),
                 new VisionIOLimelight(Constants.VisionConstants.camera1Name, drive::getRotation));
         intake = new Intake(new IntakeIOSparkMax());
+        intakeArm = new IntakeArm(new IntakeArmIOSparkMax());
         kicker = new Kicker(new KickerIOSparkMax());
         hopper = new Hopper(new HopperIOSparkMax());
         shooter = new Shooter(new ShooterIOSparkMax());
@@ -129,6 +135,7 @@ public class RobotContainer {
                     Constants.VisionConstants.botToCamTransformSimRear,
                     driveSimulation::getSimulatedDriveTrainPose));
         intake = new Intake(new IntakeIOSim(driveSimulation));
+        intakeArm = new IntakeArm(new IntakeArmIOSim());
         kicker = new Kicker(new KickerIOSim());
         hopper = new Hopper(new HopperIO() {});
         shooter = new Shooter(new ShooterIOSim());
@@ -147,6 +154,7 @@ public class RobotContainer {
                 new ModuleIO() {});
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         intake = new Intake(new IntakeIO() {});
+        intakeArm = new IntakeArm(new IntakeArmIO() {});
         kicker = new Kicker(new KickerIO() {});
         hopper = new Hopper(new HopperIO() {});
         shooter = new Shooter(new ShooterIO() {});
@@ -253,14 +261,15 @@ public class RobotContainer {
             : drive::zeroYaw;
 
     controller.start().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
-    
+
     // controller
     //     .leftBumper()
     //     .onTrue(
     //         Commands.runOnce(
     //             () -> {
     //               invertDrive = !invertDrive;
-    //               drive.setDefaultCommand(invertDrive ? invertedDriveCommand : normalDriveCommand);
+    //               drive.setDefaultCommand(invertDrive ? invertedDriveCommand :
+    // normalDriveCommand);
     //             },
     //             drive));
     // drive to scoring poses when the triggers are held, using vision to correct heading and strafe
