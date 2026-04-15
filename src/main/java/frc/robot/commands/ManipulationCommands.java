@@ -31,8 +31,6 @@ public class ManipulationCommands {
     intake.run(intakePower);
     kicker.run(kickerPower);
   }
-  // TODO: Replace () -> true on .onlyIf conditions with the actual supplier (Robot.isHubActive) at
-  // competition, when we actually have FMS data lol
 
   public static Command toggleIntake(Intake intake, Kicker kicker) {
     return holdIntake(intake, kicker);

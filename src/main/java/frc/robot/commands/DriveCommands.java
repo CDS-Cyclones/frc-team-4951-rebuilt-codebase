@@ -131,6 +131,23 @@ public class DriveCommands {
         .getTranslation();
   }
 
+  private static void driveFieldRelative(
+      Drive drive, double x, double y, double omega, Translation2d centerOfRotationMeters) {
+    ChassisSpeeds speeds =
+        new ChassisSpeeds(
+            x * drive.getMaxLinearSpeedMetersPerSec(),
+            y * drive.getMaxLinearSpeedMetersPerSec(),
+            omega * drive.getMaxAngularSpeedRadPerSec());
+    boolean isFlipped =
+        DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().get() == Alliance.Red;
+    drive.runVelocity(
+        ChassisSpeeds.fromFieldRelativeSpeeds(
+            speeds,
+            isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation()),
+        centerOfRotationMeters);
+  }
+
   /**
    * Field relative drive command using two joysticks (controlling linear and angular velocities).
    */
@@ -160,22 +177,54 @@ public class DriveCommands {
           double limitedOmega = omegaLimiter.calculate(omega);
 
           // Convert to field relative speeds & send command
-          ChassisSpeeds speeds =
-              new ChassisSpeeds(
-                  limitedX * drive.getMaxLinearSpeedMetersPerSec(),
-                  limitedY * drive.getMaxLinearSpeedMetersPerSec(),
-                  limitedOmega * drive.getMaxAngularSpeedRadPerSec());
-          boolean isFlipped =
-              DriverStation.getAlliance().isPresent()
-                  && DriverStation.getAlliance().get() == Alliance.Red;
-          drive.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  speeds,
-                  isFlipped
-                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                      : drive.getRotation()));
+          driveFieldRelative(drive, limitedX, limitedY, limitedOmega, Translation2d.kZero);
         },
         drive);
+  }
+
+  /**
+   * Field relative drive command using two joysticks and a configurable center of rotation. This
+   * can be used to pivot around a specific swerve module while still driving normally.
+   */
+  public static Command joystickDriveAroundPoint(
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      DoubleSupplier omegaSupplier,
+      Supplier<Translation2d> centerOfRotationSupplier) {
+    SlewRateLimiter xLimiter = new SlewRateLimiter(LINEAR_SLEW_RATE);
+    SlewRateLimiter yLimiter = new SlewRateLimiter(LINEAR_SLEW_RATE);
+    SlewRateLimiter omegaLimiter = new SlewRateLimiter(ROTATIONAL_SLEW_RATE);
+    return Commands.run(
+        () -> {
+          Translation2d linearVelocity =
+              getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+
+          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+          omega = Math.copySign(omega * omega, omega);
+
+          double limitedX = xLimiter.calculate(linearVelocity.getX());
+          double limitedY = yLimiter.calculate(linearVelocity.getY());
+          double limitedOmega = omegaLimiter.calculate(omega);
+
+          driveFieldRelative(
+              drive, limitedX, limitedY, limitedOmega, centerOfRotationSupplier.get());
+        },
+        drive);
+  }
+
+  /**
+   * Field relative drive command using two joysticks and a center of rotation at one of the swerve
+   * modules.
+   */
+  public static Command joystickDriveAroundModule(
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      DoubleSupplier omegaSupplier,
+      Translation2d moduleTranslation) {
+    return joystickDriveAroundPoint(
+        drive, xSupplier, ySupplier, omegaSupplier, () -> moduleTranslation);
   }
 
   /**

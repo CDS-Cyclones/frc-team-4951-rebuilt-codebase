@@ -274,6 +274,27 @@ public class RobotContainer {
     //             drive));
     // drive to scoring poses when the triggers are held, using vision to correct heading and strafe
     // as needed
+
+    // Hold the left bumper to pivot around the front-left module.
+    controller
+        .leftBumper()
+        .whileTrue(
+            DriveCommands.joystickDriveAroundModule(
+                drive,
+                () -> -controller.getLeftY(),
+                () -> -controller.getLeftX(),
+                () -> -controller.getRightX(),
+                Constants.DriveConstants.moduleTranslations[0]));
+    // Hold the right bumper to pivot around the front-right module.
+    controller
+        .rightBumper()
+        .whileTrue(
+            DriveCommands.joystickDriveAroundModule(
+                drive,
+                () -> -controller.getLeftY(),
+                () -> -controller.getLeftX(),
+                () -> -controller.getRightX(),
+                Constants.DriveConstants.moduleTranslations[1]));
     controller
         .leftTrigger()
         .whileTrue(

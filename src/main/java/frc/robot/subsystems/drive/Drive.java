@@ -94,7 +94,7 @@ public class Drive extends SubsystemBase {
         this::getPose,
         this::setPose,
         this::getChassisSpeeds,
-        this::runVelocity,
+        speeds -> runVelocity(speeds),
         new PPHolonomicDriveController(
             new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
         Constants.DriveConstants.ppConfig,
@@ -219,9 +219,20 @@ public class Drive extends SubsystemBase {
    * @param speeds Speeds in meters/sec
    */
   public void runVelocity(ChassisSpeeds speeds) {
+    runVelocity(speeds, Translation2d.kZero);
+  }
+
+  /**
+   * Runs the drive at the desired velocity around a custom center of rotation.
+   *
+   * @param speeds Speeds in meters/sec
+   * @param centerOfRotationMeters Robot-relative center of rotation in meters
+   */
+  public void runVelocity(ChassisSpeeds speeds, Translation2d centerOfRotationMeters) {
     // Calculate module setpoints
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
-    SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
+    SwerveModuleState[] setpointStates =
+        kinematics.toSwerveModuleStates(discreteSpeeds, centerOfRotationMeters);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         setpointStates, Constants.DriveConstants.maxSpeedMetersPerSec);
 
