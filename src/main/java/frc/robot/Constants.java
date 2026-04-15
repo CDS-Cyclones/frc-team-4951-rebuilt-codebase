@@ -247,7 +247,7 @@ public final class Constants {
     // Drive PID configuration
     public static final TunableNum driveKp = new TunableNum("Drive/drive/p", 0.01);
     public static final TunableNum driveKd = new TunableNum("Drive/drive/d", 0.02);
-    // TODO: Run FeedForward Characterization
+
     public static final double driveKs = 0.2;
     public static final double driveKv = 0.1;
     public static final double driveSimP = 0.05;
@@ -388,21 +388,20 @@ public final class Constants {
     public static final int kCanId = 27;
     public static final int kCurrentLimit = 40;
     public static final boolean kMotorInverted = false; // TODO: Confirm intake arm inversion.
-    public static final double kGearReduction = 1.0; // TODO: Set the actual intake arm reduction.
+    public static final double kGearReduction = 1.0;
     public static final double kAbsolutePositionConversionFactor = 360.0;
     public static final double kAbsoluteVelocityConversionFactor = 6.0;
     public static final double kPositionConversionFactor = 360.0 / kGearReduction;
     public static final double kVelocityConversionFactor = 6.0 / kGearReduction;
-    public static final double kStowedPositionDegrees = 0.0; // TODO: Set the real stowed angle.
-    public static final double kDeployedPositionDegrees =
-        90.0; // TODO: Set the real deployed angle.
-    public static final double kMaxVelocityDegreesPerSecond =
-        180.0; // TODO: Tune the motion profile max velocity.
-    public static final double kMaxAccelerationDegreesPerSecondSq =
-        360.0; // TODO: Tune the motion profile max acceleration.
-    public static final double kKp = 0.04; // TODO: Tune the intake arm position P gain.
-    public static final double kKi = 0.0;
-    public static final double kKd = 0.0; // TODO: Tune the intake arm position D gain.
+    public static final double kStowedPositionDegrees = 0.0; // TODO: check this
+    public static final double kDeployedPositionDegrees = 90.0; // TODO: check this
+    public static final double kMaxVelocityDegreesPerSecond = 180.0;
+    public static final double kMaxAccelerationDegreesPerSecondSq = 360.0;
+    public static final TunableNum kKp =
+        new TunableNum("IntakeArm/kP", 0.04); // TODO: Tune the intake arm position P gain.
+    public static final TunableNum kKi = new TunableNum("IntakeArm/kI", 0.0);
+    public static final TunableNum kKd =
+        new TunableNum("IntakeArm/kD", 0.0); // TODO: Tune the intake arm position D gain.
     public static final double kToleranceDegrees = 4.0;
   }
 
@@ -413,6 +412,7 @@ public final class Constants {
     public static final int kCurrentStallLimit = 40;
     public static final double kSecondsToClimb = 3.5;
     public static final double kClearRung = 333.6;
+    public static final double kClimbStowedPositionDegrees = 45.0; // TODO: Check this
     public static final double kAbsolutePositionConversionFactor = 360.0;
     public static final double kAbsoluteVelocityConversionFactor = 6.0;
     public static final double kRelativePositionConversionFactor = 9.0;

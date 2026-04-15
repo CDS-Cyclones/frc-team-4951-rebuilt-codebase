@@ -13,9 +13,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.Robot;
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intakearm.IntakeArm;
 import frc.robot.subsystems.kicker.Kicker;
 import frc.robot.subsystems.shooter.Shooter;
 import java.util.function.BooleanSupplier;
@@ -93,6 +95,40 @@ public class ManipulationCommands {
         },
         intake,
         kicker);
+  }
+
+  public static Command releaseIntakeArm(IntakeArm intakeArm, Climber climber) {
+    return Commands.run(intakeArm::release, intakeArm)
+        .until(
+            () ->
+                intakeArm.getAbsolutePositionDegrees()
+                    >= Constants.IntakeArmConstants.kDeployedPositionDegrees)
+        .onlyIf(
+            () ->
+                Math.abs(
+                        climber.getAbsolutePositionDegrees()
+                            - Constants.ClimberConstants.kClimbStowedPositionDegrees)
+                    <= 15.0);
+  }
+
+  public static Command stowIntakeArm(IntakeArm intakeArm) {
+    return Commands.run(intakeArm::stow, intakeArm)
+        .until(
+            () ->
+                intakeArm.getAbsolutePositionDegrees()
+                    <= Constants.IntakeArmConstants.kStowedPositionDegrees);
+  }
+
+  public static Command toggleIntakeArm(IntakeArm intakeArm, Climber climber) {
+    double halfwayDegrees =
+        (Constants.IntakeArmConstants.kStowedPositionDegrees
+                + Constants.IntakeArmConstants.kDeployedPositionDegrees)
+            / 2.0;
+
+    return Commands.either(
+        stowIntakeArm(intakeArm),
+        releaseIntakeArm(intakeArm, climber),
+        () -> intakeArm.getAbsolutePositionDegrees() >= halfwayDegrees);
   }
 
   public static Command runHopper(Hopper hopper) {

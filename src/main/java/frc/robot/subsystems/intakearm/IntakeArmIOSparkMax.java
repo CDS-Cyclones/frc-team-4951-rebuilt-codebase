@@ -20,7 +20,7 @@ public class IntakeArmIOSparkMax implements IntakeArmIO {
     SparkMaxConfig config = new SparkMaxConfig();
     config
         .inverted(Constants.IntakeArmConstants.kMotorInverted)
-        .idleMode(IdleMode.kBrake)
+        .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(Constants.IntakeArmConstants.kCurrentLimit)
         .voltageCompensation(12.0);
     config
@@ -45,6 +45,10 @@ public class IntakeArmIOSparkMax implements IntakeArmIO {
     inputs.absolutePositionDegrees = absoluteEncoder.getPosition();
     inputs.positionDegrees = encoder.getPosition();
     inputs.velocityDegreesPerSec = encoder.getVelocity();
+  }
+
+  public void getAbsoluteEncoderPosition() {
+    absoluteEncoder.getPosition();
   }
 
   @Override

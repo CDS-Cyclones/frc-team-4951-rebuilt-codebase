@@ -330,7 +330,7 @@ public class RobotContainer {
     operatorController.a().toggleOnTrue(ManipulationCommands.toggleIntake(intake, kicker));
     operatorController.b().toggleOnTrue(ManipulationCommands.outtake(intake, kicker));
     operatorController.x().toggleOnTrue(ManipulationCommands.outtake(intake));
-    operatorController.y().toggleOnTrue(ManipulationCommands.pulseHopper(hopper));
+    operatorController.y().onTrue(ManipulationCommands.toggleIntakeArm(intakeArm, climber));
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     /// ///////////////////////////////// TEST CONTROLLER ///////////////////////////////////////
@@ -343,7 +343,6 @@ public class RobotContainer {
         .whileTrue(
             TestCommands.holdKickerVelocity(
                 kicker, () -> Constants.KickerConstants.kKickerShootRPM.getAsDouble()));
-    testController.povUp().whileTrue(TestCommands.holdKicker(kicker, -0.55));
   }
 
   /**

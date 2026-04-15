@@ -13,9 +13,9 @@ public class IntakeArm extends SubsystemBase {
   private final IntakeArmIOInputsAutoLogged inputs = new IntakeArmIOInputsAutoLogged();
   private final ProfiledPIDController controller =
       new ProfiledPIDController(
-          kKp,
-          kKi,
-          kKd,
+          kKp.getAsDouble(),
+          kKi.getAsDouble(),
+          kKd.getAsDouble(),
           new TrapezoidProfile.Constraints(
               kMaxVelocityDegreesPerSecond, kMaxAccelerationDegreesPerSecondSq));
 
@@ -46,6 +46,10 @@ public class IntakeArm extends SubsystemBase {
 
   public void deploy() {
     goalDegrees = kDeployedPositionDegrees;
+  }
+
+  public void release() {
+    deploy();
   }
 
   public void stow() {
