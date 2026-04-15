@@ -35,6 +35,10 @@ import frc.robot.subsystems.intakearm.IntakeArm;
 import frc.robot.subsystems.intakearm.IntakeArmIO;
 import frc.robot.subsystems.intakearm.IntakeArmIOSim;
 import frc.robot.subsystems.intakearm.IntakeArmIOSparkMax;
+import frc.robot.subsystems.intakearmkicker.IntakeArmKicker;
+import frc.robot.subsystems.intakearmkicker.IntakeArmKickerIO;
+import frc.robot.subsystems.intakearmkicker.IntakeArmKickerIOSim;
+import frc.robot.subsystems.intakearmkicker.IntakeArmKickerIOSparkFlex;
 import frc.robot.subsystems.kicker.Kicker;
 import frc.robot.subsystems.kicker.KickerIO;
 import frc.robot.subsystems.kicker.KickerIOSim;
@@ -67,6 +71,7 @@ public class RobotContainer {
   private final Intake intake;
   private final IntakeArm intakeArm;
   private final Kicker kicker;
+  private final IntakeArmKicker intakeArmKicker;
   private final Hopper hopper;
   private final Shooter shooter;
   private final Climber climber;
@@ -102,6 +107,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSparkMax());
         intakeArm = new IntakeArm(new IntakeArmIOSparkMax());
         kicker = new Kicker(new KickerIOSparkMax());
+        intakeArmKicker = new IntakeArmKicker(new IntakeArmKickerIOSparkFlex());
         hopper = new Hopper(new HopperIOSparkMax());
         shooter = new Shooter(new ShooterIOSparkMax());
         climber = new Climber(new ClimberIOSparkMax());
@@ -137,6 +143,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSim(driveSimulation));
         intakeArm = new IntakeArm(new IntakeArmIOSim());
         kicker = new Kicker(new KickerIOSim());
+        intakeArmKicker = new IntakeArmKicker(new IntakeArmKickerIOSim());
         hopper = new Hopper(new HopperIO() {});
         shooter = new Shooter(new ShooterIOSim());
         climber = new Climber(new ClimberIO() {});
@@ -156,6 +163,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIO() {});
         intakeArm = new IntakeArm(new IntakeArmIO() {});
         kicker = new Kicker(new KickerIO() {});
+        intakeArmKicker = new IntakeArmKicker(new IntakeArmKickerIO() {});
         hopper = new Hopper(new HopperIO() {});
         shooter = new Shooter(new ShooterIO() {});
         climber = new Climber(new ClimberIO() {});
@@ -327,7 +335,9 @@ public class RobotContainer {
     operatorController.povUp().whileTrue(ClimbCommands.climbUp(climber));
     operatorController.povDown().whileTrue(ClimbCommands.climbDown(climber));
     operatorController.povLeft().onTrue(ClimbCommands.clearRung(climber));
-    operatorController.a().toggleOnTrue(ManipulationCommands.toggleIntake(intake, kicker));
+    operatorController
+        .a()
+        .toggleOnTrue(ManipulationCommands.toggleIntake(intake, kicker, intakeArmKicker));
     operatorController.b().toggleOnTrue(ManipulationCommands.outtake(intake, kicker));
     operatorController.x().toggleOnTrue(ManipulationCommands.outtake(intake));
     operatorController.y().onTrue(ManipulationCommands.toggleIntakeArm(intakeArm, climber));
@@ -376,7 +386,9 @@ public class RobotContainer {
 
   /** Publishes high-level manipulator activity flags to AdvantageKit/NT. */
   public void logManipulatorActivity() {
-    Logger.recordOutput("Manipulator/IntakeOrKickerActive", intake.isActive() || kicker.isActive());
+    Logger.recordOutput(
+        "Manipulator/IntakeOrKickerActive",
+        intake.isActive() || kicker.isActive() || intakeArmKicker.isActive());
     Logger.recordOutput("Manipulator/ShooterActive", shooter.isActive());
   }
 }

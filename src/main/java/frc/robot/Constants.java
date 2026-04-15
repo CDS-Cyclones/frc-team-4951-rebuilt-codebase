@@ -411,6 +411,7 @@ public final class Constants {
     public static final int kCanId = 26;
     public static final int kCurrentLimit = 20;
     public static final boolean kMotorInverted = false;
+    public static final double kRunPercent = 0.85;
   }
 
   public static final class ClimberConstants {

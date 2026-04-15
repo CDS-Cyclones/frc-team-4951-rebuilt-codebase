@@ -18,6 +18,7 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intakearm.IntakeArm;
+import frc.robot.subsystems.intakearmkicker.IntakeArmKicker;
 import frc.robot.subsystems.kicker.Kicker;
 import frc.robot.subsystems.shooter.Shooter;
 import java.util.function.BooleanSupplier;
@@ -36,6 +37,24 @@ public class ManipulationCommands {
 
   public static Command toggleIntake(Intake intake, Kicker kicker) {
     return holdIntake(intake, kicker);
+  }
+
+  public static Command toggleIntake(
+      Intake intake, Kicker kicker, IntakeArmKicker intakeArmKicker) {
+    return Commands.runEnd(
+        () -> {
+          intake.run(Constants.IntakeConstants.intakeSpeed);
+          kicker.run(Constants.IntakeConstants.kickerIntakeSpeed);
+          intakeArmKicker.run(Constants.IntakeArmKickerConstants.kRunPercent);
+        },
+        () -> {
+          intake.stop();
+          kicker.stop();
+          intakeArmKicker.stop();
+        },
+        intake,
+        kicker,
+        intakeArmKicker);
   }
 
   public static Command holdIntake(Intake intake, Kicker kicker) {

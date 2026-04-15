@@ -7,8 +7,7 @@ public class IntakeArmKicker extends SubsystemBase {
   private static final double kActiveThreshold = 1e-3;
 
   private final IntakeArmKickerIO io;
-  private final IntakeArmKickerIOInputsAutoLogged inputs =
-      new IntakeArmKickerIOInputsAutoLogged();
+  private final IntakeArmKickerIOInputsAutoLogged inputs = new IntakeArmKickerIOInputsAutoLogged();
   private boolean active = false;
 
   public IntakeArmKicker(IntakeArmKickerIO io) {
