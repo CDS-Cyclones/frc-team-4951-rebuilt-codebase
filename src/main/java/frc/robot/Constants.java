@@ -85,6 +85,7 @@ public final class Constants {
       middleScore(25, 10, inFrontOfTag, inFrontOfTagRightOffset, Units.degreesToRadians(0), false),
       leftScore(25, 10, inFrontOfTag, leftOfTag, Units.degreesToRadians(-120), false),
       rightScore(25, 10, inFrontOfTag, rightOfTag, Units.degreesToRadians(140), false),
+      lockto180(25, 25, 0, 0, Units.degreesToRadians(-180), true),
       climb(32, 16, inFrontOfTagClimb, 0, Units.degreesToRadians(0), false);
 
       private final int tagBlueId;
@@ -267,7 +268,6 @@ public final class Constants {
     public static final double turnEncoderVelocityFactor = (2 * Math.PI) / 60.0; // RPM -> Rad/Sec
 
     // Turn PID configuration
-    // Todo: Tune
     public static final TunableNum turnKp = new TunableNum("Drive/turn/p", 2.0);
     public static final TunableNum turnKd = new TunableNum("Drive/turn/d", 0.0);
     public static final double turnSimP = 10.0;
@@ -276,11 +276,11 @@ public final class Constants {
     public static final double turnPIDMaxInput = 2 * Math.PI; // Radians
 
     // TODO: THESE VALUES ARE SIM ONLY, CHANGE FOR REAL ROBOT
-    public static final PIDController angleController = new PIDController(1.0, 0.0, 0.0);
+    public static final PIDController angleController = new PIDController(0.2, 0.0, 0.05);
 
-    public static final PIDController translationXController = new PIDController(1.2, 0.0, 0.0);
+    public static final PIDController translationXController = new PIDController(0.0, 0.0, 0.0);
 
-    public static final PIDController translationYController = new PIDController(1.2, 0.0, 0.0);
+    public static final PIDController translationYController = new PIDController(0.0, 0.0, 0.0);
 
     // PathPlanner configuration
     public static final double robotMassKg = 40.28;

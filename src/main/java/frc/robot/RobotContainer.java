@@ -251,7 +251,7 @@ public class RobotContainer {
             drive,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
-            () -> -controller.getRightX());
+            () -> controller.getRightX());
     final Command invertedDriveCommand =
         DriveCommands.joystickDrive(
             drive,
@@ -317,7 +317,7 @@ public class RobotContainer {
         .x()
         .whileTrue(
             DriveCommands.driveToPose(
-                drive, vision, () -> Constants.DriveConstants.FieldPose.middleScore));
+                drive, vision, () -> Constants.DriveConstants.FieldPose.lockto180));
 
     controller.povUp().whileTrue((ClimbCommands.climbUpOverride(climber)));
     controller.povDown().whileTrue((ClimbCommands.climbDownOverride(climber)));
@@ -341,7 +341,6 @@ public class RobotContainer {
     operatorController.b().toggleOnTrue(ManipulationCommands.outtake(intake, kicker));
     operatorController.x().toggleOnTrue(ManipulationCommands.outtake(intake));
     operatorController.y().onTrue(ManipulationCommands.toggleIntakeArmOpenLoop(intakeArm, climber));
-
     ////////////////////////////////////////////////////////////////////////////////////////////
     /// ///////////////////////////////// TEST CONTROLLER ///////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////

@@ -29,6 +29,10 @@ import org.littletonrobotics.junction.Logger;
 
 public class ManipulationCommands {
 
+  private static boolean canMoveIntakeArm(Climber climber) {
+    return climber.getAbsolutePositionDegrees() < Constants.ClimberConstants.kClimbStowedPositionDegrees;
+  }
+
   private static void runIntakeWithKicker(
       Intake intake, Kicker kicker, double intakePower, double kickerPower) {
     intake.run(intakePower);
@@ -122,12 +126,7 @@ public class ManipulationCommands {
             () ->
                 intakeArm.getAbsolutePositionDegrees()
                     >= Constants.IntakeArmConstants.kDeployedPositionDegrees)
-        .onlyIf(
-            () ->
-                Math.abs(
-                        climber.getAbsolutePositionDegrees()
-                            - Constants.ClimberConstants.kClimbStowedPositionDegrees)
-                    <= 15.0);
+        .onlyIf(() -> canMoveIntakeArm(climber));
   }
 
   public static Command releaseIntakeArmOpenLoop(IntakeArm intakeArm, Climber climber) {
@@ -141,23 +140,19 @@ public class ManipulationCommands {
             () ->
                 intakeArm.getAbsolutePositionDegrees()
                     >= Constants.IntakeArmConstants.kDeployedPositionDegrees)
-        .onlyIf(
-            () ->
-                Math.abs(
-                        climber.getAbsolutePositionDegrees()
-                            - Constants.ClimberConstants.kClimbStowedPositionDegrees)
-                    <= 15.0);
+        .onlyIf(() -> canMoveIntakeArm(climber));
   }
 
-  public static Command stowIntakeArm(IntakeArm intakeArm) {
+  public static Command stowIntakeArm(IntakeArm intakeArm, Climber climber) {
     return Commands.run(intakeArm::stow, intakeArm)
         .until(
             () ->
                 intakeArm.getAbsolutePositionDegrees()
-                    <= Constants.IntakeArmConstants.kStowedPositionDegrees);
+                    <= Constants.IntakeArmConstants.kStowedPositionDegrees)
+        .onlyIf(() -> canMoveIntakeArm(climber));
   }
 
-  public static Command stowIntakeArmOpenLoop(IntakeArm intakeArm) {
+  public static Command stowIntakeArmOpenLoop(IntakeArm intakeArm, Climber climber) {
     return Commands.runEnd(
             () ->
                 intakeArm.runOpenLoop(
@@ -167,7 +162,8 @@ public class ManipulationCommands {
         .until(
             () ->
                 intakeArm.getAbsolutePositionDegrees()
-                    <= Constants.IntakeArmConstants.kStowedPositionDegrees);
+                    <= Constants.IntakeArmConstants.kStowedPositionDegrees)
+        .onlyIf(() -> canMoveIntakeArm(climber));
   }
 
   public static Command toggleIntakeArm(IntakeArm intakeArm, Climber climber) {
@@ -177,7 +173,7 @@ public class ManipulationCommands {
             / 2.0;
 
     return Commands.either(
-        stowIntakeArm(intakeArm),
+        stowIntakeArm(intakeArm, climber),
         releaseIntakeArm(intakeArm, climber),
         () -> intakeArm.getAbsolutePositionDegrees() >= halfwayDegrees);
   }
@@ -189,7 +185,7 @@ public class ManipulationCommands {
             / 2.0;
 
     return Commands.either(
-        stowIntakeArmOpenLoop(intakeArm),
+        stowIntakeArmOpenLoop(intakeArm, climber),
         releaseIntakeArmOpenLoop(intakeArm, climber),
         () -> intakeArm.getAbsolutePositionDegrees() >= halfwayDegrees);
   }
