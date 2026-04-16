@@ -340,14 +340,14 @@ public class RobotContainer {
         .toggleOnTrue(ManipulationCommands.toggleIntake(intake, kicker, intakeArmKicker));
     operatorController.b().toggleOnTrue(ManipulationCommands.outtake(intake, kicker));
     operatorController.x().toggleOnTrue(ManipulationCommands.outtake(intake));
-    operatorController.y().onTrue(ManipulationCommands.toggleIntakeArm(intakeArm, climber));
+    operatorController.y().onTrue(ManipulationCommands.toggleIntakeArmOpenLoop(intakeArm, climber));
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     /// ///////////////////////////////// TEST CONTROLLER ///////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////
     testController.povUp().whileTrue(ClimbCommands.climbUpOverride(climber));
     testController.povDown().whileTrue(ClimbCommands.climbDownOverride(climber));
-    testController.a().whileTrue(TestCommands.holdIntake(intake, 0.55));
+    testController.a().whileTrue(TestCommands.holdIntakeArm(intakeArm, 0.1));
     testController
         .b()
         .whileTrue(

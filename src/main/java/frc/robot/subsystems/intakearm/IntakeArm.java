@@ -20,6 +20,8 @@ public class IntakeArm extends SubsystemBase {
               kMaxVelocityDegreesPerSecond, kMaxAccelerationDegreesPerSecondSq));
 
   private double goalDegrees = kStowedPositionDegrees;
+  private boolean openLoopEnabled = false;
+  private double openLoopPercent = 0.0;
 
   public IntakeArm(IntakeArmIO io) {
     this.io = io;
@@ -33,18 +35,26 @@ public class IntakeArm extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("IntakeArm", inputs);
 
-    controller.setGoal(goalDegrees);
-    double outputVolts = MathUtil.clamp(controller.calculate(inputs.positionDegrees), -12.0, 12.0);
-    io.setVoltage(outputVolts);
+    if (openLoopEnabled) {
+      io.setPercent(openLoopPercent);
+    } else {
+      controller.setGoal(goalDegrees);
+      double outputVolts =
+          MathUtil.clamp(controller.calculate(inputs.positionDegrees), -12.0, 12.0);
+      io.setVoltage(outputVolts);
+    }
 
     Logger.recordOutput("IntakeArm/GoalDegrees", goalDegrees);
     Logger.recordOutput("IntakeArm/SetpointDegrees", controller.getSetpoint().position);
     Logger.recordOutput(
         "IntakeArm/SetpointVelocityDegreesPerSec", controller.getSetpoint().velocity);
     Logger.recordOutput("IntakeArm/AtGoal", controller.atGoal());
+    Logger.recordOutput("IntakeArm/OpenLoopEnabled", openLoopEnabled);
+    Logger.recordOutput("IntakeArm/OpenLoopPercent", openLoopPercent);
   }
 
   public void deploy() {
+    openLoopEnabled = false;
     goalDegrees = kDeployedPositionDegrees;
   }
 
@@ -53,11 +63,18 @@ public class IntakeArm extends SubsystemBase {
   }
 
   public void stow() {
+    openLoopEnabled = false;
     goalDegrees = kStowedPositionDegrees;
   }
 
   public void setGoalDegrees(double degrees) {
+    openLoopEnabled = false;
     goalDegrees = degrees;
+  }
+
+  public void runOpenLoop(double percent) {
+    openLoopEnabled = true;
+    openLoopPercent = MathUtil.clamp(percent, -1.0, 1.0);
   }
 
   public double getGoalDegrees() {
@@ -81,6 +98,8 @@ public class IntakeArm extends SubsystemBase {
   }
 
   public void stop() {
+    openLoopEnabled = false;
+    openLoopPercent = 0.0;
     goalDegrees = inputs.positionDegrees;
     controller.reset(inputs.positionDegrees);
     io.stop();

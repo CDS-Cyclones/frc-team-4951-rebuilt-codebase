@@ -57,6 +57,11 @@ public class IntakeArmIOSparkMax implements IntakeArmIO {
   }
 
   @Override
+  public void setPercent(double percent) {
+    motor.set(percent);
+  }
+
+  @Override
   public void resetPositionDegrees(double positionDegrees) {
     encoder.setPosition(positionDegrees);
   }

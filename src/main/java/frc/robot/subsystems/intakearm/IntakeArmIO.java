@@ -17,8 +17,11 @@ public interface IntakeArmIO {
 
   default void setVoltage(double volts) {}
 
+  default void setPercent(double percent) {}
+
   default void stop() {
     setVoltage(0.0);
+    setPercent(0.0);
   }
 
   default void resetPositionDegrees(double positionDegrees) {}

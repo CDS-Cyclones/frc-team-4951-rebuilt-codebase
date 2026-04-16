@@ -130,8 +130,40 @@ public class ManipulationCommands {
                     <= 15.0);
   }
 
+  public static Command releaseIntakeArmOpenLoop(IntakeArm intakeArm, Climber climber) {
+    return Commands.runEnd(
+            () ->
+                intakeArm.runOpenLoop(
+                    Constants.IntakeArmConstants.kDeployOpenLoopPercent.getAsDouble()),
+            intakeArm::stop,
+            intakeArm)
+        .until(
+            () ->
+                intakeArm.getAbsolutePositionDegrees()
+                    >= Constants.IntakeArmConstants.kDeployedPositionDegrees)
+        .onlyIf(
+            () ->
+                Math.abs(
+                        climber.getAbsolutePositionDegrees()
+                            - Constants.ClimberConstants.kClimbStowedPositionDegrees)
+                    <= 15.0);
+  }
+
   public static Command stowIntakeArm(IntakeArm intakeArm) {
     return Commands.run(intakeArm::stow, intakeArm)
+        .until(
+            () ->
+                intakeArm.getAbsolutePositionDegrees()
+                    <= Constants.IntakeArmConstants.kStowedPositionDegrees);
+  }
+
+  public static Command stowIntakeArmOpenLoop(IntakeArm intakeArm) {
+    return Commands.runEnd(
+            () ->
+                intakeArm.runOpenLoop(
+                    Constants.IntakeArmConstants.kStowOpenLoopPercent.getAsDouble()),
+            intakeArm::stop,
+            intakeArm)
         .until(
             () ->
                 intakeArm.getAbsolutePositionDegrees()
@@ -147,6 +179,18 @@ public class ManipulationCommands {
     return Commands.either(
         stowIntakeArm(intakeArm),
         releaseIntakeArm(intakeArm, climber),
+        () -> intakeArm.getAbsolutePositionDegrees() >= halfwayDegrees);
+  }
+
+  public static Command toggleIntakeArmOpenLoop(IntakeArm intakeArm, Climber climber) {
+    double halfwayDegrees =
+        (Constants.IntakeArmConstants.kStowedPositionDegrees
+                + Constants.IntakeArmConstants.kDeployedPositionDegrees)
+            / 2.0;
+
+    return Commands.either(
+        stowIntakeArmOpenLoop(intakeArm),
+        releaseIntakeArmOpenLoop(intakeArm, climber),
         () -> intakeArm.getAbsolutePositionDegrees() >= halfwayDegrees);
   }
 

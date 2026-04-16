@@ -402,6 +402,10 @@ public final class Constants {
     public static final TunableNum kKi = new TunableNum("IntakeArm/kI", 0.0);
     public static final TunableNum kKd =
         new TunableNum("IntakeArm/kD", 0.0); // TODO: Tune the intake arm position D gain.
+    public static final TunableNum kDeployOpenLoopPercent =
+        new TunableNum("IntakeArm/deployOpenLoopPercent", 0.35);
+    public static final TunableNum kStowOpenLoopPercent =
+        new TunableNum("IntakeArm/stowOpenLoopPercent", -0.35);
     public static final double kToleranceDegrees = 4.0;
   }
 
