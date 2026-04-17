@@ -424,6 +424,8 @@ public final class Constants {
     public static final int kCanId = 24;
     public static final int kCurrentStallLimit = 40;
     public static final double kSecondsToClimb = 3.5;
+    public static final double kClimbUpTargetDegrees =
+        45.0; // TODO: tune to match full climb stroke
     public static final double kClearRung = 333.6;
     public static final double kClimbStowedPositionDegrees = 45.0; // TODO: Check this
     public static final double kAbsolutePositionConversionFactor = 360.0;

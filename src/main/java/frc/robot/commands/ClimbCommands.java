@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.climber.Climber;
 
@@ -38,6 +39,16 @@ public class ClimbCommands {
   public static Command climbDownFor(Climber climber, double seconds) {
     return climbDown(climber).withTimeout(seconds).andThen(() -> climber.run(0.0));
   }
+
+  public static Command climbUpDegrees(Climber climber, double degrees) {
+    double[] startPos = new double[1];
+    return new FunctionalCommand(
+        () -> startPos[0] = climber.getRelativePositionDegrees(),
+        () -> climber.run(kClimbPercent),
+        interrupted -> climber.stop(),
+        () -> climber.getRelativePositionDegrees() - startPos[0] >= degrees,
+        climber);
+   }
 
   public static Command stopClimb(Climber climber) {
     return Commands.runOnce(() -> climber.stop());

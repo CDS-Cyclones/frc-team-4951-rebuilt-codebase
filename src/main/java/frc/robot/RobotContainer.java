@@ -179,6 +179,8 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "climbUp", ClimbCommands.climbUpFor(climber, Constants.ClimberConstants.kSecondsToClimb));
     NamedCommands.registerCommand(
+        "climbUpDegrees", ClimbCommands.climbUpDegrees(climber, Constants.ClimberConstants.kClimbUpTargetDegrees));
+    NamedCommands.registerCommand(
         "shootFuelAuto",
         ManipulationCommands.shootFuel(
             drive,
@@ -216,6 +218,9 @@ public class RobotContainer {
                 .andThen(
                     ClimbCommands.climbUpFor(
                         climber, Constants.ClimberConstants.kSecondsToClimb))));
+
+//                    ClimbCommands.climbUpDegrees(
+//                        climber, Constants.ClimberConstants.kClimbUpTargetDegrees))));
 
     autoChooser.addOption("test climb", ClimbCommands.climbDownFor(climber, 4.25));
 
