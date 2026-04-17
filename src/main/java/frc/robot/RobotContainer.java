@@ -346,12 +346,9 @@ public class RobotContainer {
     ///////////////////////////////////////////////////////////////////////////////////////////
     testController.povUp().whileTrue(ClimbCommands.climbUpOverride(climber));
     testController.povDown().whileTrue(ClimbCommands.climbDownOverride(climber));
-    testController.a().whileTrue(TestCommands.holdIntakeArm(intakeArm, 0.1));
-    testController
-        .b()
-        .whileTrue(
-            TestCommands.holdKickerVelocity(
-                kicker, () -> Constants.KickerConstants.kKickerShootRPM.getAsDouble()));
+    testController.a().whileTrue(TestCommands.holdIntakeArm(intakeArm, 1.0));
+    testController.x().whileTrue(TestCommands.holdIntakeArm(intakeArm, -1.0));
+    testController.b().whileTrue(TestCommands.holdIntakeArmKicker(intakeArmKicker));
   }
 
   /**

@@ -413,8 +413,8 @@ public final class Constants {
     private IntakeArmKickerConstants() {}
 
     public static final int kCanId = 26;
-    public static final int kCurrentLimit = 20;
-    public static final boolean kMotorInverted = false;
+    public static final int kCurrentLimit = 40;
+    public static final boolean kMotorInverted = true;
     public static final double kRunPercent = 0.85;
   }
 

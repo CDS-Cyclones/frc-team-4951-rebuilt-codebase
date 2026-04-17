@@ -30,7 +30,8 @@ import org.littletonrobotics.junction.Logger;
 public class ManipulationCommands {
 
   private static boolean canMoveIntakeArm(Climber climber) {
-    return climber.getAbsolutePositionDegrees() < Constants.ClimberConstants.kClimbStowedPositionDegrees;
+    return climber.getAbsolutePositionDegrees()
+        < Constants.ClimberConstants.kClimbStowedPositionDegrees;
   }
 
   private static void runIntakeWithKicker(
