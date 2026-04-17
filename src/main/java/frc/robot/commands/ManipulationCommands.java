@@ -195,22 +195,45 @@ public class ManipulationCommands {
     return Commands.runEnd(() -> hopper.run(0.05), hopper::stop, hopper);
   }
 
+  // public static Command pulseHopper(Hopper hopper) {
+  //   Timer pulseTimer = new Timer();
+  //   boolean[] forward = {true};
+  //   return Commands.runEnd(
+  //       () -> {
+  //         if (!pulseTimer.isRunning()) {
+  //           forward[0] = true;
+  //           pulseTimer.restart();
+  //           hopper.run(0.75);
+  //           return;
+  //         }
+
+  //         if (pulseTimer.hasElapsed(0.3)) {
+  //           forward[0] = !forward[0];
+  //           pulseTimer.restart();
+  //           hopper.run(forward[0] ? 0.75 : -0.75);
+  //         }
+  //       },
+  //       () -> {
+  //         pulseTimer.stop();
+  //         hopper.stop();
+  //       },
+  //       hopper);
+  // }
   public static Command pulseHopper(Hopper hopper) {
     Timer pulseTimer = new Timer();
-    boolean[] forward = {true};
+    boolean[] go = {true};
     return Commands.runEnd(
         () -> {
           if (!pulseTimer.isRunning()) {
-            forward[0] = true;
+            go[0] = true;
             pulseTimer.restart();
             hopper.run(0.75);
             return;
           }
-
           if (pulseTimer.hasElapsed(0.3)) {
-            forward[0] = !forward[0];
+            go[0] = !go[0];
             pulseTimer.restart();
-            hopper.run(forward[0] ? 0.75 : -0.75);
+            hopper.stop();
           }
         },
         () -> {

@@ -48,7 +48,7 @@ public class ClimbCommands {
         interrupted -> climber.stop(),
         () -> climber.getRelativePositionDegrees() - startPos[0] >= degrees,
         climber);
-   }
+  }
 
   public static Command stopClimb(Climber climber) {
     return Commands.runOnce(() -> climber.stop());

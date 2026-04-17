@@ -179,7 +179,8 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "climbUp", ClimbCommands.climbUpFor(climber, Constants.ClimberConstants.kSecondsToClimb));
     NamedCommands.registerCommand(
-        "climbUpDegrees", ClimbCommands.climbUpDegrees(climber, Constants.ClimberConstants.kClimbUpTargetDegrees));
+        "climbUpDegrees",
+        ClimbCommands.climbUpDegrees(climber, Constants.ClimberConstants.kClimbUpTargetDegrees));
     NamedCommands.registerCommand(
         "shootFuelAuto",
         ManipulationCommands.shootFuel(
@@ -219,8 +220,8 @@ public class RobotContainer {
                     ClimbCommands.climbUpFor(
                         climber, Constants.ClimberConstants.kSecondsToClimb))));
 
-//                    ClimbCommands.climbUpDegrees(
-//                        climber, Constants.ClimberConstants.kClimbUpTargetDegrees))));
+    // ClimbCommands.climbUpDegrees(
+    //     climber, Constants.ClimberConstants.kClimbUpTargetDegrees))));
 
     autoChooser.addOption("test climb", ClimbCommands.climbDownFor(climber, 4.25));
 
@@ -351,8 +352,8 @@ public class RobotContainer {
     ///////////////////////////////////////////////////////////////////////////////////////////
     testController.povUp().whileTrue(ClimbCommands.climbUpOverride(climber));
     testController.povDown().whileTrue(ClimbCommands.climbDownOverride(climber));
-    testController.a().whileTrue(TestCommands.holdIntakeArm(intakeArm, 0.50));
-    testController.x().whileTrue(TestCommands.holdIntakeArm(intakeArm, -1.0));
+    testController.a().whileTrue(TestCommands.holdIntakeArm(intakeArm, 0.7));
+    testController.x().whileTrue(TestCommands.holdIntakeArm(intakeArm, -0.7));
     testController.b().whileTrue(TestCommands.holdIntakeArmKicker(intakeArmKicker));
   }
 

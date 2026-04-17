@@ -386,7 +386,7 @@ public final class Constants {
     private IntakeArmConstants() {}
 
     public static final int kCanId = 27;
-    public static final int kCurrentLimit = 40;
+    public static final int kCurrentLimit = 60;
     public static final boolean kMotorInverted = false; // TODO: Confirm intake arm inversion.
     public static final double kGearReduction = 1.0;
     public static final double kAbsolutePositionConversionFactor = 360.0;
@@ -423,10 +423,10 @@ public final class Constants {
 
     public static final int kCanId = 24;
     public static final int kCurrentStallLimit = 40;
-    public static final double kSecondsToClimb = 3.5;
+    public static final double kSecondsToClimb = 5.0;
     public static final double kClimbUpTargetDegrees =
         45.0; // TODO: tune to match full climb stroke
-    public static final double kClearRung = 333.6;
+    public static final double kClearRung = 285.0;
     public static final double kClimbStowedPositionDegrees = 45.0; // TODO: Check this
     public static final double kAbsolutePositionConversionFactor = 360.0;
     public static final double kAbsoluteVelocityConversionFactor = 6.0;

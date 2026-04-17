@@ -21,8 +21,7 @@ public class IntakeArmIOSparkMax implements IntakeArmIO {
     config
         .inverted(Constants.IntakeArmConstants.kMotorInverted)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(Constants.IntakeArmConstants.kCurrentLimit)
-        .voltageCompensation(12.0);
+        .smartCurrentLimit(Constants.IntakeArmConstants.kCurrentLimit);
     config
         .absoluteEncoder
         .positionConversionFactor(Constants.IntakeArmConstants.kAbsolutePositionConversionFactor)
