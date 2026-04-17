@@ -19,6 +19,7 @@ public class IntakeArmKickerIOSparkFlex implements IntakeArmKickerIO {
     config
         .inverted(Constants.IntakeArmKickerConstants.kMotorInverted)
         .idleMode(IdleMode.kCoast)
+        .openLoopRampRate(2)
         .smartCurrentLimit(Constants.IntakeArmKickerConstants.kCurrentLimit)
         .voltageCompensation(12.0);
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

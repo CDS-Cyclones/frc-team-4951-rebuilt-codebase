@@ -20,7 +20,7 @@ public class IntakeArmIOSparkMax implements IntakeArmIO {
     SparkMaxConfig config = new SparkMaxConfig();
     config
         .inverted(Constants.IntakeArmConstants.kMotorInverted)
-        .idleMode(IdleMode.kCoast)
+        .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(Constants.IntakeArmConstants.kCurrentLimit)
         .voltageCompensation(12.0);
     config
@@ -34,8 +34,6 @@ public class IntakeArmIOSparkMax implements IntakeArmIO {
         .velocityConversionFactor(Constants.IntakeArmConstants.kVelocityConversionFactor);
 
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    // Assumes the arm starts stowed and the relative encoder is zeroed there.
-    encoder.setPosition(Constants.IntakeArmConstants.kStowedPositionDegrees);
   }
 
   @Override

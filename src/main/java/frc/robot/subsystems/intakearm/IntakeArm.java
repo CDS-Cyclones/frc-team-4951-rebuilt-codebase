@@ -3,31 +3,20 @@ package frc.robot.subsystems.intakearm;
 import static frc.robot.Constants.IntakeArmConstants.*;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeArm extends SubsystemBase {
   private final IntakeArmIO io;
   private final IntakeArmIOInputsAutoLogged inputs = new IntakeArmIOInputsAutoLogged();
-  private final ProfiledPIDController controller =
-      new ProfiledPIDController(
-          kKp.getAsDouble(),
-          kKi.getAsDouble(),
-          kKd.getAsDouble(),
-          new TrapezoidProfile.Constraints(
-              kMaxVelocityDegreesPerSecond, kMaxAccelerationDegreesPerSecondSq));
 
   private double goalDegrees = kStowedPositionDegrees;
+  private boolean goalSeekingEnabled = false;
   private boolean openLoopEnabled = false;
   private double openLoopPercent = 0.0;
 
   public IntakeArm(IntakeArmIO io) {
     this.io = io;
-    controller.setTolerance(kToleranceDegrees);
-    controller.reset(kStowedPositionDegrees);
-    io.resetPositionDegrees(kStowedPositionDegrees);
   }
 
   @Override
@@ -35,25 +24,37 @@ public class IntakeArm extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("IntakeArm", inputs);
 
+    double commandedPercent = 0.0;
     if (openLoopEnabled) {
-      io.setPercent(openLoopPercent);
-    } else {
-      controller.setGoal(goalDegrees);
-      double outputVolts =
-          MathUtil.clamp(controller.calculate(inputs.positionDegrees), -12.0, 12.0);
-      io.setVoltage(outputVolts);
+      commandedPercent = openLoopPercent;
+    } else if (goalSeekingEnabled) {
+      commandedPercent = getGoalSeekingPercent();
     }
+    io.setPercent(commandedPercent);
 
     Logger.recordOutput("IntakeArm/GoalDegrees", goalDegrees);
-    Logger.recordOutput("IntakeArm/SetpointDegrees", controller.getSetpoint().position);
-    Logger.recordOutput(
-        "IntakeArm/SetpointVelocityDegreesPerSec", controller.getSetpoint().velocity);
-    Logger.recordOutput("IntakeArm/AtGoal", controller.atGoal());
-    Logger.recordOutput("IntakeArm/OpenLoopEnabled", openLoopEnabled);
+    Logger.recordOutput("IntakeArm/AtGoal", atGoal());
+    Logger.recordOutput("IntakeArm/GoalSeekingEnabled", goalSeekingEnabled);
+    Logger.recordOutput("IntakeArm/ManualOpenLoopEnabled", openLoopEnabled);
     Logger.recordOutput("IntakeArm/OpenLoopPercent", openLoopPercent);
+    Logger.recordOutput("IntakeArm/CommandedPercent", commandedPercent);
+  }
+
+  private double getGoalSeekingPercent() {
+    double errorDegrees = goalDegrees - inputs.absolutePositionDegrees;
+    if (Math.abs(errorDegrees) <= kToleranceDegrees) {
+      return 0.0;
+    }
+
+    double percent =
+        errorDegrees > 0.0
+            ? kDeployOpenLoopPercent.getAsDouble()
+            : kStowOpenLoopPercent.getAsDouble();
+    return MathUtil.clamp(percent, -1.0, 1.0);
   }
 
   public void deploy() {
+    goalSeekingEnabled = true;
     openLoopEnabled = false;
     goalDegrees = kDeployedPositionDegrees;
   }
@@ -63,16 +64,19 @@ public class IntakeArm extends SubsystemBase {
   }
 
   public void stow() {
+    goalSeekingEnabled = true;
     openLoopEnabled = false;
     goalDegrees = kStowedPositionDegrees;
   }
 
   public void setGoalDegrees(double degrees) {
+    goalSeekingEnabled = true;
     openLoopEnabled = false;
     goalDegrees = degrees;
   }
 
   public void runOpenLoop(double percent) {
+    goalSeekingEnabled = false;
     openLoopEnabled = true;
     openLoopPercent = MathUtil.clamp(percent, -1.0, 1.0);
   }
@@ -82,11 +86,11 @@ public class IntakeArm extends SubsystemBase {
   }
 
   public boolean isDeployed() {
-    return Math.abs(goalDegrees - kDeployedPositionDegrees) < 1e-3;
+    return Math.abs(inputs.absolutePositionDegrees - kDeployedPositionDegrees) <= kToleranceDegrees;
   }
 
   public boolean atGoal() {
-    return controller.atGoal();
+    return Math.abs(goalDegrees - inputs.absolutePositionDegrees) <= kToleranceDegrees;
   }
 
   public double getAbsolutePositionDegrees() {
@@ -98,10 +102,10 @@ public class IntakeArm extends SubsystemBase {
   }
 
   public void stop() {
+    goalSeekingEnabled = false;
     openLoopEnabled = false;
     openLoopPercent = 0.0;
-    goalDegrees = inputs.positionDegrees;
-    controller.reset(inputs.positionDegrees);
+    goalDegrees = inputs.absolutePositionDegrees;
     io.stop();
   }
 }
