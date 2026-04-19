@@ -1,6 +1,5 @@
 package frc.robot.subsystems.intakearm;
 
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -13,7 +12,6 @@ import frc.robot.Constants;
 public class IntakeArmIOSparkMax implements IntakeArmIO {
   private final SparkMax motor =
       new SparkMax(Constants.IntakeArmConstants.kCanId, MotorType.kBrushless);
-  private final AbsoluteEncoder absoluteEncoder = motor.getAbsoluteEncoder();
   private final RelativeEncoder encoder = motor.getEncoder();
 
   public IntakeArmIOSparkMax() {
@@ -21,12 +19,14 @@ public class IntakeArmIOSparkMax implements IntakeArmIO {
     config
         .inverted(Constants.IntakeArmConstants.kMotorInverted)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(Constants.IntakeArmConstants.kCurrentLimit);
+        .smartCurrentLimit(Constants.IntakeArmConstants.kCurrentLimit)
+        .openLoopRampRate(2);
     config
-        .absoluteEncoder
-        .positionConversionFactor(Constants.IntakeArmConstants.kAbsolutePositionConversionFactor)
-        .velocityConversionFactor(Constants.IntakeArmConstants.kAbsoluteVelocityConversionFactor)
-        .inverted(false);
+        .softLimit
+        .reverseSoftLimit(-12000)
+        .reverseSoftLimitEnabled(true)
+        .forwardSoftLimit(1000)
+        .forwardSoftLimitEnabled(true);
     config
         .encoder
         .positionConversionFactor(Constants.IntakeArmConstants.kPositionConversionFactor)
@@ -39,13 +39,13 @@ public class IntakeArmIOSparkMax implements IntakeArmIO {
   public void updateInputs(IntakeArmIOInputs inputs) {
     inputs.appliedVolts = motor.getAppliedOutput() * motor.getBusVoltage();
     inputs.currentAmps = motor.getOutputCurrent();
-    inputs.absolutePositionDegrees = absoluteEncoder.getPosition();
     inputs.positionDegrees = encoder.getPosition();
     inputs.velocityDegreesPerSec = encoder.getVelocity();
   }
 
+  // ik this is relative not abs
   public void getAbsoluteEncoderPosition() {
-    absoluteEncoder.getPosition();
+    encoder.getPosition();
   }
 
   @Override

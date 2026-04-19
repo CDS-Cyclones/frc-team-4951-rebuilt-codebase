@@ -337,23 +337,23 @@ public class RobotContainer {
         .whileTrue(ManipulationCommands.shootFuel(intake, shooter, kicker, hopper));
     operatorController
         .rightTrigger()
-        .whileTrue(ManipulationCommands.passFuel(intake, shooter, kicker, hopper));
+        .whileTrue(ManipulationCommands.passFuel(intake, shooter, kicker, hopper, intakeArmKicker));
     operatorController.povUp().whileTrue(ClimbCommands.climbUp(climber));
     operatorController.povDown().whileTrue(ClimbCommands.climbDown(climber));
     operatorController.povLeft().onTrue(ClimbCommands.clearRung(climber));
-    operatorController
-        .a()
-        .toggleOnTrue(ManipulationCommands.toggleIntake(intake, kicker, intakeArmKicker));
+    operatorController.a().toggleOnTrue(ManipulationCommands.toggleIntake(intake, kicker));
     operatorController.b().toggleOnTrue(ManipulationCommands.outtake(intake, kicker));
-    operatorController.x().toggleOnTrue(ManipulationCommands.outtake(intake));
-    operatorController.y().onTrue(ManipulationCommands.toggleIntakeArmOpenLoop(intakeArm, climber));
+    operatorController.x().onTrue(ManipulationCommands.stowIntakeArmOpenLoop(intakeArm, climber));
+    operatorController
+        .y()
+        .onTrue(ManipulationCommands.releaseIntakeArmOpenLoop(intakeArm, climber));
     ////////////////////////////////////////////////////////////////////////////////////////////
     /// ///////////////////////////////// TEST CONTROLLER ///////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////
     testController.povUp().whileTrue(ClimbCommands.climbUpOverride(climber));
     testController.povDown().whileTrue(ClimbCommands.climbDownOverride(climber));
-    testController.a().whileTrue(TestCommands.holdIntakeArm(intakeArm, 0.7));
-    testController.x().whileTrue(TestCommands.holdIntakeArm(intakeArm, -0.7));
+    testController.a().whileTrue(TestCommands.holdIntakeArm(intakeArm, 0.5));
+    testController.x().whileTrue(TestCommands.holdIntakeArm(intakeArm, -0.3));
     testController.b().whileTrue(TestCommands.holdIntakeArmKicker(intakeArmKicker));
   }
 

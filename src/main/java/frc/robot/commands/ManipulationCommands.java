@@ -29,6 +29,10 @@ import org.littletonrobotics.junction.Logger;
 
 public class ManipulationCommands {
 
+  private static boolean isWithinTolerance(double value, double target, double tolerance) {
+    return Math.abs(value - target) <= tolerance;
+  }
+
   private static boolean canMoveIntakeArm(Climber climber) {
     return climber.getAbsolutePositionDegrees()
         < Constants.ClimberConstants.kClimbStowedPositionDegrees;
@@ -125,7 +129,7 @@ public class ManipulationCommands {
     return Commands.run(intakeArm::release, intakeArm)
         .until(
             () ->
-                intakeArm.getAbsolutePositionDegrees()
+                intakeArm.getPositionDegrees()
                     >= Constants.IntakeArmConstants.kDeployedPositionDegrees)
         .onlyIf(() -> canMoveIntakeArm(climber));
   }
@@ -139,8 +143,10 @@ public class ManipulationCommands {
             intakeArm)
         .until(
             () ->
-                intakeArm.getAbsolutePositionDegrees()
-                    >= Constants.IntakeArmConstants.kDeployedPositionDegrees)
+                isWithinTolerance(
+                    intakeArm.getPositionDegrees(),
+                    Constants.IntakeArmConstants.kDeployedPositionDegrees,
+                    Constants.IntakeArmConstants.kToleranceDegrees))
         .onlyIf(() -> canMoveIntakeArm(climber));
   }
 
@@ -148,7 +154,7 @@ public class ManipulationCommands {
     return Commands.run(intakeArm::stow, intakeArm)
         .until(
             () ->
-                intakeArm.getAbsolutePositionDegrees()
+                intakeArm.getPositionDegrees()
                     <= Constants.IntakeArmConstants.kStowedPositionDegrees)
         .onlyIf(() -> canMoveIntakeArm(climber));
   }
@@ -162,8 +168,10 @@ public class ManipulationCommands {
             intakeArm)
         .until(
             () ->
-                intakeArm.getAbsolutePositionDegrees()
-                    <= Constants.IntakeArmConstants.kStowedPositionDegrees)
+                isWithinTolerance(
+                    intakeArm.getPositionDegrees(),
+                    Constants.IntakeArmConstants.kStowedPositionDegrees,
+                    Constants.IntakeArmConstants.kToleranceDegrees))
         .onlyIf(() -> canMoveIntakeArm(climber));
   }
 
@@ -176,7 +184,7 @@ public class ManipulationCommands {
     return Commands.either(
         stowIntakeArm(intakeArm, climber),
         releaseIntakeArm(intakeArm, climber),
-        () -> intakeArm.getAbsolutePositionDegrees() >= halfwayDegrees);
+        () -> intakeArm.getPositionDegrees() >= halfwayDegrees);
   }
 
   public static Command toggleIntakeArmOpenLoop(IntakeArm intakeArm, Climber climber) {
@@ -188,7 +196,17 @@ public class ManipulationCommands {
     return Commands.either(
         stowIntakeArmOpenLoop(intakeArm, climber),
         releaseIntakeArmOpenLoop(intakeArm, climber),
-        () -> intakeArm.getAbsolutePositionDegrees() >= halfwayDegrees);
+        () -> {
+          double positionDegrees = intakeArm.getPositionDegrees();
+          double tolerance = Constants.IntakeArmConstants.kToleranceDegrees;
+          return isWithinTolerance(
+                  positionDegrees, Constants.IntakeArmConstants.kDeployedPositionDegrees, tolerance)
+              || (!isWithinTolerance(
+                      positionDegrees,
+                      Constants.IntakeArmConstants.kStowedPositionDegrees,
+                      tolerance)
+                  && positionDegrees >= halfwayDegrees);
+        });
   }
 
   public static Command runHopper(Hopper hopper) {
@@ -274,6 +292,27 @@ public class ManipulationCommands {
         hopper,
         () -> Constants.ShooterConstants.kPassRPM.getAsDouble(),
         () -> true);
+  }
+
+  public static Command runintakearmkicker(IntakeArmKicker intakearmkicker) {
+    return Commands.runEnd(() -> intakearmkicker.run(0.5), intakearmkicker::stop, intakearmkicker);
+  }
+
+  public static Command passFuel(
+      Intake intake,
+      Shooter shooter,
+      Kicker kicker,
+      Hopper hopper,
+      IntakeArmKicker intakearmkicker) {
+    return Commands.parallel(
+        runintakearmkicker(intakearmkicker),
+        createRealShootCommand(
+            intake,
+            shooter,
+            kicker,
+            hopper,
+            () -> Constants.ShooterConstants.kPassRPM.getAsDouble(),
+            () -> true));
   }
 
   public static Command shootFuel(
