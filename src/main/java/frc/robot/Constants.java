@@ -375,7 +375,7 @@ public final class Constants {
 
     public static final int kCanId = 20;
     public static final int kCurrentLimit = 40;
-    public static final double intakeSpeed = 0.60;
+    public static final double intakeSpeed = 0.40;
     public static final double kickerIntakeSpeed = -0.80;
     public static final double outtakeSpeed = -0.60;
     public static final double kickerOuttakeSpeed = 0.60;
@@ -386,15 +386,17 @@ public final class Constants {
     private IntakeArmConstants() {}
 
     public static final int kCanId = 27;
-    public static final int kCurrentLimit = 40;
+    public static final int kCurrentLimit = 60;
     public static final boolean kMotorInverted = false; // TODO: Confirm intake arm inversion.
     public static final double kGearReduction = 1.0;
     public static final double kAbsolutePositionConversionFactor = 360.0;
     public static final double kAbsoluteVelocityConversionFactor = 6.0;
     public static final double kPositionConversionFactor = 360.0 / kGearReduction;
     public static final double kVelocityConversionFactor = 6.0 / kGearReduction;
-    public static final double kStowedPositionDegrees = 0.0; // TODO: check this
-    public static final double kDeployedPositionDegrees = 90.0; // TODO: check this
+    public static final double tolerance = 1000;
+    // Anything between 0-1000 degrees is stowed
+    public static final double kStowedPositionDegrees = 800;
+    public static final double kDeployedPositionDegrees = -10000;
     public static final double kMaxVelocityDegreesPerSecond = 180.0;
     public static final double kMaxAccelerationDegreesPerSecondSq = 360.0;
     public static final TunableNum kKp =
@@ -403,9 +405,9 @@ public final class Constants {
     public static final TunableNum kKd =
         new TunableNum("IntakeArm/kD", 0.0); // TODO: Tune the intake arm position D gain.
     public static final TunableNum kDeployOpenLoopPercent =
-        new TunableNum("IntakeArm/deployOpenLoopPercent", 0.35);
+        new TunableNum("IntakeArm/deployOpenLoopPercent", 0.8);
     public static final TunableNum kStowOpenLoopPercent =
-        new TunableNum("IntakeArm/stowOpenLoopPercent", -0.35);
+        new TunableNum("IntakeArm/stowOpenLoopPercent", -0.8);
     public static final double kToleranceDegrees = 4.0;
   }
 
@@ -423,8 +425,10 @@ public final class Constants {
 
     public static final int kCanId = 24;
     public static final int kCurrentStallLimit = 40;
-    public static final double kSecondsToClimb = 3.5;
-    public static final double kClearRung = 333.6;
+    public static final double kSecondsToClimb = 4.0;
+    public static final double kClimbUpTargetDegrees =
+        45.0; // TODO: tune to match full climb stroke
+    public static final double kClearRung = 330.0;
     public static final double kClimbStowedPositionDegrees = 45.0; // TODO: Check this
     public static final double kAbsolutePositionConversionFactor = 360.0;
     public static final double kAbsoluteVelocityConversionFactor = 6.0;
@@ -452,7 +456,7 @@ public final class Constants {
     public static final TunableNum kShooterMainKs = new TunableNum("Shooter/kS", 0.1);
     public static final TunableNum kShooterMainKv = new TunableNum("Shooter/kV", 0.00202);
 
-    public static final TunableNum kShootRPM = new TunableNum("Shooter/kShootRPM", 2900);
+    public static final TunableNum kShootRPM = new TunableNum("Shooter/kShootRPM", 3100);
     public static final double k4mShootRPM = 3000;
     public static final double k2mShootRPM = 2825;
     public static final double k1mShootRPM = 2500;

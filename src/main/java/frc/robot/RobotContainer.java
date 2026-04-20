@@ -179,6 +179,9 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "climbUp", ClimbCommands.climbUpFor(climber, Constants.ClimberConstants.kSecondsToClimb));
     NamedCommands.registerCommand(
+        "climbUpDegrees",
+        ClimbCommands.climbUpDegrees(climber, Constants.ClimberConstants.kClimbUpTargetDegrees));
+    NamedCommands.registerCommand(
         "shootFuelAuto",
         ManipulationCommands.shootFuel(
             drive,
@@ -216,6 +219,9 @@ public class RobotContainer {
                 .andThen(
                     ClimbCommands.climbUpFor(
                         climber, Constants.ClimberConstants.kSecondsToClimb))));
+
+    // ClimbCommands.climbUpDegrees(
+    //     climber, Constants.ClimberConstants.kClimbUpTargetDegrees))));
 
     autoChooser.addOption("test climb", ClimbCommands.climbDownFor(climber, 4.25));
 
@@ -331,23 +337,23 @@ public class RobotContainer {
         .whileTrue(ManipulationCommands.shootFuel(intake, shooter, kicker, hopper));
     operatorController
         .rightTrigger()
-        .whileTrue(ManipulationCommands.passFuel(intake, shooter, kicker, hopper));
+        .whileTrue(ManipulationCommands.passFuel(intake, shooter, kicker, hopper, intakeArmKicker));
     operatorController.povUp().whileTrue(ClimbCommands.climbUp(climber));
     operatorController.povDown().whileTrue(ClimbCommands.climbDown(climber));
     operatorController.povLeft().onTrue(ClimbCommands.clearRung(climber));
-    operatorController
-        .a()
-        .toggleOnTrue(ManipulationCommands.toggleIntake(intake, kicker, intakeArmKicker));
+    operatorController.a().toggleOnTrue(ManipulationCommands.toggleIntake(intake, kicker));
     operatorController.b().toggleOnTrue(ManipulationCommands.outtake(intake, kicker));
-    operatorController.x().toggleOnTrue(ManipulationCommands.outtake(intake));
-    operatorController.y().onTrue(ManipulationCommands.toggleIntakeArmOpenLoop(intakeArm, climber));
+    operatorController.x().onTrue(ManipulationCommands.stowIntakeArmOpenLoop(intakeArm, climber));
+    operatorController
+        .y()
+        .onTrue(ManipulationCommands.releaseIntakeArmOpenLoop(intakeArm, climber));
     ////////////////////////////////////////////////////////////////////////////////////////////
     /// ///////////////////////////////// TEST CONTROLLER ///////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////
     testController.povUp().whileTrue(ClimbCommands.climbUpOverride(climber));
     testController.povDown().whileTrue(ClimbCommands.climbDownOverride(climber));
-    testController.a().whileTrue(TestCommands.holdIntakeArm(intakeArm, 0.50));
-    testController.x().whileTrue(TestCommands.holdIntakeArm(intakeArm, -1.0));
+    testController.a().whileTrue(TestCommands.holdIntakeArm(intakeArm, 0.5));
+    testController.x().whileTrue(TestCommands.holdIntakeArm(intakeArm, -0.3));
     testController.b().whileTrue(TestCommands.holdIntakeArmKicker(intakeArmKicker));
   }
 

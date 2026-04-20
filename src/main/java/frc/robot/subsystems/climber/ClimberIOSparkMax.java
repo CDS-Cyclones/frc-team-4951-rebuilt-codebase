@@ -53,6 +53,10 @@ public class ClimberIOSparkMax implements ClimberIO {
     motor.set(percent);
   }
 
+  public void getRelativePositionDegrees() {
+    relativeEncoder.getPosition();
+  }
+
   public void getAbsolutePositionDegrees() {
     absoluteEncoder.getPosition();
   }

@@ -41,7 +41,7 @@ public class IntakeArm extends SubsystemBase {
   }
 
   private double getGoalSeekingPercent() {
-    double errorDegrees = goalDegrees - inputs.absolutePositionDegrees;
+    double errorDegrees = goalDegrees - inputs.positionDegrees;
     if (Math.abs(errorDegrees) <= kToleranceDegrees) {
       return 0.0;
     }
@@ -86,11 +86,11 @@ public class IntakeArm extends SubsystemBase {
   }
 
   public boolean isDeployed() {
-    return Math.abs(inputs.absolutePositionDegrees - kDeployedPositionDegrees) <= kToleranceDegrees;
+    return Math.abs(inputs.positionDegrees - kDeployedPositionDegrees) <= kToleranceDegrees;
   }
 
   public boolean atGoal() {
-    return Math.abs(goalDegrees - inputs.absolutePositionDegrees) <= kToleranceDegrees;
+    return Math.abs(goalDegrees - inputs.positionDegrees) <= kToleranceDegrees;
   }
 
   public double getAbsolutePositionDegrees() {
@@ -105,7 +105,7 @@ public class IntakeArm extends SubsystemBase {
     goalSeekingEnabled = false;
     openLoopEnabled = false;
     openLoopPercent = 0.0;
-    goalDegrees = inputs.absolutePositionDegrees;
+    goalDegrees = inputs.positionDegrees;
     io.stop();
   }
 }
