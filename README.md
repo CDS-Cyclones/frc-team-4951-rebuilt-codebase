@@ -1,46 +1,54 @@
-# FRC Team 4951 Competition Robot
+# FRC Team 4951 Robot Code
 
-This repository contains Team 4951's command-based robot code for the 2026 competition season. It is built on WPILib, uses AdvantageKit for logging, and is structured to run in real robot, simulation, or replay mode.
+This repository contains Team 4951's Java/WPILib robot code. It is built around the AdvantageKit SparkSwerve template style, uses AdvantageKit for logging and replay, and is structured to run on the real robot, in simulation, or from replayed logs.
 
-## What Is In Here
+The documentation is written for future programmers who need to adapt this code for a new FRC season.
 
-The robot code is organized around these major subsystems:
+## Start Here
 
-- Swerve drive
-- Vision
-- Intake
-- Intake arm
-- Intake arm kicker
-- Kicker
-- Hopper
-- Shooter
-- Climber
-- LED
+1. [Introduction](docs/introduction.md)
+2. [Project Overview](docs/project-overview.md)
+3. [Coding From the AdvantageKit SparkSwerve Template](docs/advantagekit-sparkswerve-template.md)
+4. [RobotContainer Guide](docs/robotcontainer.md)
+5. [Subsystems and IO Layers](docs/subsystems-and-io.md)
+6. [Drive and Swerve](docs/drive-and-swerve.md)
+7. [Vision](docs/vision.md)
+8. [Autonomous and PathPlanner](docs/autonomous-and-pathplanner.md)
+9. [WPILib Command Syntax](docs/wpilib-command-syntax.md)
+10. [Simulation, Logging, and Replay](docs/simulation-logging-replay.md)
+11. [Adding New Robot Features](docs/adding-new-features.md)
+12. [External Code and Templates](docs/external-code-and-templates.md)
 
-The robot supports:
+## New Season Bring-Up
 
-- Driver and operator controller bindings
-- AdvantageKit logging to NT4 and WPILOG
-- Simulation support with MapleSim and PhotonVision simulation
+At the start of each season, do the software and control-system updates before spending time debugging robot code:
 
-## Requirements
+- Install the current season's WPILib release.
+- Install or update vendor libraries in `vendordeps`.
+- Image/update the roboRIO with the current season firmware using the roboRIO Imaging Tool.
+- Update the robot radio with the current FRC radio configuration utility.
+- Update Driver Station software on the driver laptop.
+- Confirm the team number, radio SSID, roboRIO network connection, and firewall settings.
+- Rebuild the project and deploy a simple known-good program before testing full robot code.
 
-- WPILib 2026.2.1
-- REV Spark motor controllers
-- Limelight cameras for vision on the real robot
+If the roboRIO image, radio configuration, Driver Station, WPILib, or vendor libraries are from different seasons, basic robot communication and deploys can fail even when the Java code is correct.
 
-Control bindings live in `src/main/java/frc/robot/RobotContainer.java`.
+## Important Files
 
-- Driver controller, port 0: Start resets the gyro / pose; left and right bumpers drive around the front modules; left trigger drives to the left score pose; right trigger drives to the right score pose; X drives to the middle score pose; POV up and down manually override the climber; POV left outtakes through the intake and kicker.
-- Operator controller, port 1: Left trigger shoots; right trigger passes; POV up and down climb; POV left clears the rung; A toggles intake, kicker, and intake arm kicker; B outtakes intake and kicker; X outtakes intake only; Y toggles the intake arm.
+- `src/main/java/frc/robot/Robot.java`: robot lifecycle, AdvantageKit setup, scheduler, simulation hooks.
+- `src/main/java/frc/robot/RobotContainer.java`: creates subsystems, selects real/sim/replay IO, registers autos, binds controllers.
+- `src/main/java/frc/robot/Constants.java`: robot-wide constants, CAN IDs, tuning values, field poses, camera names, simulation config.
+- `src/main/java/frc/robot/subsystems`: subsystem code.
+- `src/main/java/frc/robot/commands`: reusable robot actions.
+- `src/main/deploy/pathplanner`: PathPlanner autos, paths, settings, and navgrid.
+- `vendordeps`: installed vendor libraries.
 
-The test controller is reserved for subsystem validation and diagnostic commands.
+## Mental Model
 
-## Repository Layout
+The code is split into three main layers:
 
-- `src/main/java/frc/robot/` - robot entry points, constants, commands, and subsystems
-- `src/main/deploy/` - deploy-time assets such as PathPlanner files
-- `vendordeps/` - vendor dependency definitions
-- `build.gradle` - GradleRIO build configuration
+- `Robot.java` runs the robot program lifecycle.
+- `RobotContainer.java` wires the robot together.
+- Subsystems and commands contain the robot behavior.
 
-If you are adding new hardware, follow the existing pattern: define subsystem constants, add an IO interface, add REAL and SIM implementations, then wire the subsystem into `RobotContainer`.
+Most hardware access should go through an `IO` interface. That lets the same subsystem run on real hardware, in simulation, or in replay without rewriting the subsystem logic.
