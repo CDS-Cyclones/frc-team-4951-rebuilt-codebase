@@ -46,8 +46,6 @@ The exact names are project-specific. Check `RobotContainer.java` for the curren
 
 Always register named commands before building the auto chooser.
 
-If the command syntax around `NamedCommands`, lambdas, or chained commands looks confusing, read [WPILib Command Syntax](wpilib-command-syntax.md).
-
 ## Adding a New Auto Event
 
 1. Create a command factory in the appropriate command file.
@@ -93,7 +91,7 @@ DriveCommands.driveToPose(
     () -> Constants.DriveConstants.FieldPose.leftScore);
 ```
 
-Do not rewrite drive-to-pose from scratch unless there is a clear reason. Copy the working pattern, create a new `FieldPose` if needed, and tune the PID values.
+Do not rewrite drive-to-pose from scratch unless there is a clear reason. Copy the working pattern, create a new `FieldPose` and tune the PID values, dont be discouraged if it doesnt seem to work, PID is a bitch.
 
 The PID values currently live in `Constants.DriveConstants`:
 
